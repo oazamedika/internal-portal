@@ -12,39 +12,32 @@
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
   </script>
   <style>
-    :root {
-      --teal:#2a7a7a; --teal-dark:#1d5e5e; --green:#1a5c2a; --green-mid:#2e7d42;
-      --green-light:#e8f5ec; --teal-light:#e4f2f2; --cream:#f9faf8;
-      --text:#1c2a22; --text-mid:#3d5046; --text-light:#6b8070;
-      --white:#ffffff; --shadow:0 4px 32px rgba(26,92,42,0.10); --radius:14px;
-      --sidebar:240px; --amber:#f59e0b; --amber-light:#fef9ec;
-      --red:#c0392b; --red-light:#fdf0ee; --blue:#2563eb; --blue-light:#eff6ff;
+    :root{
+      --teal:#2a7a7a;--teal-dark:#1d5e5e;--green:#1a5c2a;--green-mid:#2e7d42;
+      --green-light:#e8f5ec;--teal-light:#e4f2f2;--cream:#f9faf8;
+      --text:#1c2a22;--text-mid:#3d5046;--text-light:#6b8070;
+      --white:#ffffff;--shadow:0 4px 32px rgba(26,92,42,.10);--radius:14px;
+      --sidebar:240px;--amber:#f59e0b;--amber-light:#fef9ec;
+      --red:#c0392b;--red-light:#fdf0ee;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}
     body{font-family:'Lato',sans-serif;background:var(--cream);color:var(--text);line-height:1.6;display:flex;min-height:100vh}
     h1,h2,h3,h4{font-family:'Playfair Display',serif;line-height:1.2}
 
-    /* SVG ICON HELPER */
-    .ico{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
-    .ico svg{stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round}
-
     /* ── SIDEBAR ── */
     .sidebar{width:var(--sidebar);background:linear-gradient(165deg,var(--teal-dark) 0%,var(--green) 70%,#0f3d1c 100%);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;overflow:hidden;transition:transform .3s ease}
     .sidebar::before{content:'';position:absolute;bottom:-80px;right:-80px;width:260px;height:260px;border-radius:50%;border:1px solid rgba(255,255,255,.06);pointer-events:none}
-
     .sidebar-logo{padding:1.4rem 1.4rem 1rem;display:flex;align-items:center;gap:10px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08)}
     .sidebar-logo img{height:42px;width:auto;filter:brightness(0) invert(1);opacity:.92}
     .sidebar-logo-text{display:flex;flex-direction:column;line-height:1.15}
     .sidebar-logo-text span:first-child{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fff}
     .sidebar-logo-text span:last-child{font-size:.62rem;color:rgba(255,255,255,.55);letter-spacing:.09em;text-transform:uppercase}
-
     .sidebar-user{margin:1rem 1rem .5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:.75rem 1rem;display:flex;align-items:center;gap:10px}
     .user-avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fff;flex-shrink:0}
     .user-info{flex:1;overflow:hidden}
     .user-name{font-size:.82rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .user-role{font-size:.68rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.07em}
-
     nav.sidebar-nav{flex:1;padding:.5rem 0;overflow-y:auto}
     .nav-section-label{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.35);padding:.8rem 1.4rem .3rem}
     .nav-link{display:flex;align-items:center;gap:10px;padding:.65rem 1.4rem;text-decoration:none;font-size:.85rem;font-weight:600;color:rgba(255,255,255,.65);transition:all .2s;border-left:3px solid transparent;cursor:pointer}
@@ -54,8 +47,6 @@
     .nav-link.active{color:#fff;background:rgba(255,255,255,.12);border-left-color:rgba(255,255,255,.6)}
     .nav-link .badge{margin-left:auto;background:var(--amber);color:#fff;font-size:.65rem;font-weight:700;padding:.15rem .45rem;border-radius:50px;min-width:18px;text-align:center}
     .doctor-only{display:none}
-
-    /* external links */
     .sidebar-ext{padding:.75rem 1rem .25rem;border-top:1px solid rgba(255,255,255,.08)}
     .ext-label{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.5rem;padding-left:.25rem}
     .btn-ext{width:100%;padding:.6rem .9rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:rgba(255,255,255,.75);font-family:'Lato',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:9px;transition:all .2s;text-decoration:none;margin-bottom:.5rem}
@@ -65,8 +56,6 @@
     .btn-ext-arrow{margin-left:auto;display:flex;align-items:center;opacity:.4}
     .btn-ext-arrow svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
     .btn-ext:hover .btn-ext-arrow{opacity:.8}
-
-    /* logout */
     .sidebar-bottom{padding:.75rem 1rem 1rem;border-top:1px solid rgba(255,255,255,.08)}
     .btn-logout{width:100%;padding:.6rem 1rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:rgba(255,255,255,.7);font-family:'Lato',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .2s}
     .btn-logout:hover{background:rgba(255,255,255,.15);color:#fff}
@@ -88,7 +77,6 @@
     .page-section{display:none}
     .page-section.active{display:block;animation:fadeIn .3s ease}
     @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-
     .section-header{margin-bottom:1.8rem}
     .section-label{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:.3rem}
     .section-title{font-size:clamp(1.5rem,2.5vw,2rem);color:var(--text)}
@@ -105,13 +93,28 @@
     .stat-label{font-size:.78rem;color:var(--text-light);font-weight:600;margin-top:.3rem;letter-spacing:.04em;text-transform:uppercase}
     .stat-sub{font-size:.75rem;color:var(--teal);font-weight:600;margin-top:.4rem}
 
-    /* ── CARDS ── */
+    /* ── CARD ── */
     .card{background:var(--white);border-radius:var(--radius);border:1px solid rgba(42,122,122,.08);padding:1.5rem;margin-bottom:1.5rem}
     .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;padding-bottom:.9rem;border-bottom:1px solid rgba(42,122,122,.08)}
     .card-title{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--text)}
-    .card-action{font-size:.78rem;color:var(--teal);font-weight:600;text-decoration:none;cursor:pointer;background:none;border:none;transition:color .2s}
+    .card-action{font-size:.78rem;color:var(--teal);font-weight:600;text-decoration:none;cursor:pointer;background:none;border:none;transition:color .2s;display:inline-flex;align-items:center;gap:5px}
     .card-action:hover{color:var(--teal-dark);text-decoration:underline}
     .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+
+    /* ── FORM INPUTS (shared) ── */
+    .f-group{margin-bottom:1.1rem}
+    .f-label{display:block;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);margin-bottom:.4rem}
+    .f-input{width:100%;padding:.75rem 1rem;border:2px solid rgba(42,122,122,.15);border-radius:10px;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text);background:var(--cream);outline:none;transition:border-color .2s}
+    .f-input:focus{border-color:var(--teal);background:var(--white)}
+    .f-input.error{border-color:var(--red);background:var(--red-light)}
+    .f-select{width:100%;padding:.75rem 1rem;border:2px solid rgba(42,122,122,.15);border-radius:10px;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text);background:var(--cream);outline:none}
+    .btn-primary{padding:.75rem 1.5rem;background:var(--teal);color:#fff;border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+    .btn-primary:hover{background:var(--teal-dark)}
+    .btn-primary:disabled{background:#9bb8b8;cursor:not-allowed}
+    .btn-danger{padding:.6rem 1rem;background:var(--red-light);color:var(--red);border:1px solid rgba(192,57,43,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+    .btn-danger:hover{background:var(--red);color:#fff}
+    .btn-secondary{padding:.6rem 1rem;background:var(--teal-light);color:var(--teal);border:1px solid rgba(42,122,122,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+    .btn-secondary:hover{background:var(--teal);color:#fff}
 
     /* ── CLOCK WIDGET ── */
     .clock-widget{background:linear-gradient(135deg,var(--teal),var(--green));border-radius:var(--radius);padding:1.8rem;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
@@ -160,11 +163,12 @@
     .task-title.done{text-decoration:line-through;color:var(--text-light)}
     .task-due{font-size:.75rem;color:var(--text-light);margin-top:2px}
     .task-due.overdue{color:var(--red);font-weight:600}
-    .task-owner{font-size:.72rem;color:var(--teal);font-weight:600;margin-left:auto;white-space:nowrap}
+    .task-owner{font-size:.72rem;color:var(--teal);font-weight:600;white-space:nowrap}
 
+    /* ── EMPTY STATE ── */
     .empty-state{text-align:center;padding:2.5rem 1rem;color:var(--text-light)}
-    .empty-state .empty-icon{width:48px;height:48px;margin:0 auto .8rem;background:var(--teal-light);border-radius:50%;display:flex;align-items:center;justify-content:center}
-    .empty-state .empty-icon svg{width:22px;height:22px;stroke:var(--teal);fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+    .empty-icon{width:48px;height:48px;margin:0 auto .8rem;background:var(--teal-light);border-radius:50%;display:flex;align-items:center;justify-content:center}
+    .empty-icon svg{width:22px;height:22px;stroke:var(--teal);fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
     .empty-state p{font-size:.88rem;font-weight:300}
 
     /* ── STAFF ── */
@@ -172,6 +176,28 @@
     .online-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#6ee89a;margin-right:5px}
     .role-tag{display:inline-flex;align-items:center;gap:5px;font-size:.78rem;font-weight:600}
     .role-tag svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+
+    /* ── SETTINGS: USER CARDS ── */
+    .user-card{background:var(--cream);border:1px solid rgba(42,122,122,.1);border-radius:var(--radius);padding:1.2rem 1.4rem;margin-bottom:.9rem;display:flex;align-items:flex-start;gap:1rem;transition:box-shadow .2s}
+    .user-card:hover{box-shadow:var(--shadow)}
+    .user-card-avatar{width:42px;height:42px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#fff;flex-shrink:0}
+    .user-card-info{flex:1}
+    .user-card-name{font-size:.95rem;font-weight:700;color:var(--text)}
+    .user-card-meta{font-size:.78rem;color:var(--text-light);margin-top:2px}
+    .user-card-actions{display:flex;gap:.5rem;flex-shrink:0}
+
+    /* ── MODAL ── */
+    .modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1.5rem}
+    .modal-overlay.open{display:flex;animation:fadeIn .2s ease}
+    .modal{background:var(--white);border-radius:20px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.2);animation:slideUp .3s ease}
+    @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .modal-header{padding:1.5rem 1.8rem 1rem;border-bottom:1px solid rgba(42,122,122,.08);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:1}
+    .modal-header h3{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--text)}
+    .modal-close{background:var(--teal-light);border:none;cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal);transition:background .2s;flex-shrink:0}
+    .modal-close:hover{background:var(--teal);color:#fff}
+    .modal-close svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    .modal-body{padding:1.5rem 1.8rem}
+    .modal-footer{padding:1rem 1.8rem 1.5rem;border-top:1px solid rgba(42,122,122,.08);display:flex;gap:.8rem;justify-content:flex-end}
 
     /* ── SKELETON ── */
     .skeleton{background:linear-gradient(90deg,#e8eee9 25%,#d4ddd5 50%,#e8eee9 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
@@ -203,27 +229,32 @@
 </head>
 <body>
 
-<!-- SVG SPRITE — reusable icon definitions -->
+<!-- SVG SPRITE -->
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
-  <symbol id="i-home"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
-  <symbol id="i-clock"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
-  <symbol id="i-check-sq" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
-  <symbol id="i-users"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
-  <symbol id="i-bar"      viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
-  <symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
-  <symbol id="i-logout"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
-  <symbol id="i-play"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
-  <symbol id="i-stop"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></symbol>
-  <symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
-  <symbol id="i-sick"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
-  <symbol id="i-check"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
-  <symbol id="i-doctor"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
-  <symbol id="i-nurse"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></symbol>
+  <symbol id="i-home"      viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+  <symbol id="i-clock"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-check-sq"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
+  <symbol id="i-users"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-bar"       viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+  <symbol id="i-settings"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="i-logout"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+  <symbol id="i-play"      viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
+  <symbol id="i-stop"      viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></symbol>
+  <symbol id="i-calendar"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+  <symbol id="i-sick"      viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+  <symbol id="i-check"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-doctor"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+  <symbol id="i-nurse"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></symbol>
   <symbol id="i-arrow-ext" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
-  <symbol id="i-menu"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
-  <symbol id="i-print"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
-  <symbol id="i-mail"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></symbol>
-  <symbol id="i-user-plus" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></symbol>
+  <symbol id="i-menu"      viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+  <symbol id="i-print"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
+  <symbol id="i-mail"      viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></symbol>
+  <symbol id="i-edit"      viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+  <symbol id="i-trash"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></symbol>
+  <symbol id="i-plus"      viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="i-user"      viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-key"       viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></symbol>
+  <symbol id="i-lock"      viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
 </svg>
 
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
@@ -237,7 +268,6 @@
       <span>Портал за вработени</span>
     </div>
   </a>
-
   <div class="sidebar-user">
     <div class="user-avatar" id="avatarInitial">–</div>
     <div class="user-info">
@@ -245,7 +275,6 @@
       <div class="user-role" id="sidebarUserRole">–</div>
     </div>
   </div>
-
   <nav class="sidebar-nav">
     <div class="nav-section-label">Главно мени</div>
     <a class="nav-link active" data-page="dashboard" onclick="navigate('dashboard')">
@@ -258,6 +287,9 @@
       <span class="nav-icon"><svg><use href="#i-check-sq"/></svg></span> Задачи
       <span class="badge" id="tasksBadge" style="display:none">0</span>
     </a>
+    <a class="nav-link" data-page="settings" onclick="navigate('settings')">
+      <span class="nav-icon"><svg><use href="#i-user"/></svg></span> Мој профил
+    </a>
     <div class="nav-section-label doctor-only">Доктор</div>
     <a class="nav-link doctor-only" data-page="staff" onclick="navigate('staff')">
       <span class="nav-icon"><svg><use href="#i-users"/></svg></span> Тим – преглед
@@ -269,32 +301,23 @@
       <span class="nav-icon"><svg><use href="#i-settings"/></svg></span> Управување со тим
     </a>
   </nav>
-
-  <!-- External portals -->
   <div class="sidebar-ext">
     <div class="ext-label">Надворешни портали</div>
     <a class="btn-ext" href="https://portal.fzo.org.mk/" target="_blank" rel="noopener noreferrer">
-      <img class="btn-ext-icon" src="fzom.png" alt="ФЗОМ"
-        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
-      <span style="display:none;width:24px;height:24px;align-items:center;justify-content:center">
-        <svg width="16" height="16" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-      </span>
+      <img class="btn-ext-icon" src="fzom.png" alt="ФЗОМ" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+      <span style="display:none;width:24px;height:24px;align-items:center;justify-content:center"><svg width="16" height="16" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-sick"/></svg></span>
       Портал на ФЗОМ
       <span class="btn-ext-arrow"><svg><use href="#i-arrow-ext"/></svg></span>
     </a>
     <a class="btn-ext" href="https://app.helio.mk/" target="_blank" rel="noopener noreferrer">
-      <img class="btn-ext-icon" src="helio.png" alt="Хелио"
-        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
-      <span style="display:none;width:24px;height:24px;align-items:center;justify-content:center">
-        <svg width="16" height="16" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-      </span>
+      <img class="btn-ext-icon" src="helio.png" alt="Хелио" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+      <span style="display:none;width:24px;height:24px;align-items:center;justify-content:center"><svg width="16" height="16" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></span>
       Хелио Пациенти
       <span class="btn-ext-arrow"><svg><use href="#i-arrow-ext"/></svg></span>
     </a>
   </div>
-
   <div class="sidebar-bottom">
-    <button class="btn-logout" onclick="handleLogout()">
+    <button class="btn-logout" id="logoutBtn">
       <svg><use href="#i-logout"/></svg> Одјавете се
     </button>
   </div>
@@ -303,18 +326,14 @@
 <!-- ── TOPBAR ── -->
 <header class="topbar">
   <div class="topbar-left">
-    <button class="hamburger-btn" onclick="toggleSidebar()">
-      <svg><use href="#i-menu"/></svg>
-    </button>
+    <button class="hamburger-btn" onclick="toggleSidebar()"><svg><use href="#i-menu"/></svg></button>
     <div>
       <div class="topbar-title" id="topbarTitle">Контролна табла</div>
       <div class="topbar-date"  id="topbarDate"></div>
     </div>
   </div>
   <div class="topbar-right">
-    <span class="topbar-badge" id="roleBadge">
-      <svg><use href="#i-doctor"/></svg> Вчитување…
-    </span>
+    <span class="topbar-badge" id="roleBadge"><svg><use href="#i-doctor"/></svg> Вчитување…</span>
   </div>
 </header>
 
@@ -323,7 +342,6 @@
 
   <!-- ═══ DASHBOARD ═══ -->
   <section class="page-section active" id="page-dashboard">
-
     <div class="clock-widget">
       <div class="clock-info">
         <h3>Денешен датум и час</h3>
@@ -348,7 +366,6 @@
         </button>
       </div>
     </div>
-
     <div class="stats-grid" id="statsGrid">
       <div class="stat-card skeleton skel-stat"></div>
       <div class="stat-card skeleton skel-stat"></div>
@@ -356,7 +373,6 @@
       <div class="stat-card skeleton skel-stat"></div>
     </div>
     <div class="stats-grid doctor-only" id="doctorStatsGrid" style="display:none"></div>
-
     <div class="two-col">
       <div class="card">
         <div class="card-header">
@@ -375,21 +391,17 @@
           <span class="card-title">Претстојни задачи</span>
           <button class="card-action" onclick="navigate('tasks')">Сите →</button>
         </div>
-        <div class="task-list" id="upcomingTasksList">
-          <div class="skeleton skel-row"></div>
-          <div class="skeleton skel-row"></div>
-        </div>
+        <div class="task-list" id="upcomingTasksList"><div class="skeleton skel-row"></div></div>
       </div>
     </div>
-
     <div class="card doctor-only" id="teamOverviewCard" style="display:none">
       <div class="card-header">
-        <span class="card-title">Тим денес — краток преглед</span>
+        <span class="card-title">Тим денес</span>
         <button class="card-action" onclick="navigate('staff')">Целосен преглед →</button>
       </div>
       <div class="log-table-wrap">
         <table>
-          <thead><tr><th>Вработен</th><th>Улога</th><th>Статус денес</th><th>Последна активност</th></tr></thead>
+          <thead><tr><th>Вработен</th><th>Улога</th><th>Статус</th><th>Активност</th></tr></thead>
           <tbody id="teamTodayBody"><tr><td colspan="4"><div class="skeleton skel-row"></div></td></tr></tbody>
         </table>
       </div>
@@ -401,23 +413,32 @@
     <div class="section-header">
       <div class="section-label">Евиденција</div>
       <h2 class="section-title">Работни часови</h2>
-      <p class="section-sub">Ваша целосна историја на евиденција на присуство</p>
+      <p class="section-sub">Целосна историја на евиденција на присуство</p>
     </div>
     <div class="card">
       <div class="card-header">
         <span class="card-title">Историја</span>
-        <div style="display:flex;gap:.6rem;align-items:center">
-          <input type="month" id="logMonthFilter" style="padding:.35rem .7rem;border:1.5px solid rgba(42,122,122,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.83rem;color:var(--text);background:var(--cream);outline:none" onchange="loadWorkLogs()">
-          <select id="staffFilter" class="doctor-only" style="display:none;padding:.35rem .7rem;border:1.5px solid rgba(42,122,122,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.83rem;color:var(--text);background:var(--cream);outline:none" onchange="loadWorkLogs()">
+        <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+          <input type="month" id="logMonthFilter" class="f-input" style="width:auto;padding:.35rem .7rem" onchange="loadWorkLogs()">
+          <select id="staffFilter" class="f-select doctor-only" style="display:none;width:auto;padding:.35rem .7rem" onchange="loadWorkLogs()">
             <option value="">Сите вработени</option>
           </select>
         </div>
       </div>
       <div class="log-table-wrap">
         <table>
-          <thead><tr><th>Датум</th><th id="logColEmployee" style="display:none">Вработен</th><th>Пријава</th><th>Одјава</th><th>Вкупно часови</th><th>Тип</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Датум</th>
+              <th id="logColEmployee" style="display:none">Вработен</th>
+              <th>Пријава</th><th>Одјава</th><th>Вкупно часови</th><th>Тип</th>
+            </tr>
+          </thead>
           <tbody id="workLogsBody"><tr><td colspan="6"><div class="skeleton skel-row"></div></td></tr></tbody>
         </table>
+      </div>
+      <div id="workLogTotals" style="padding:.8rem 1rem 0;font-size:.83rem;color:var(--text-mid);font-weight:600;border-top:2px solid rgba(42,122,122,.08);margin-top:.5rem;display:none">
+        Вкупно: <span id="totalHoursDisplay" style="color:var(--teal)">0 ч.</span> работни часови · <span id="totalDaysDisplay" style="color:var(--teal)">0</span> работни денови
       </div>
     </div>
   </section>
@@ -426,37 +447,92 @@
   <section class="page-section" id="page-tasks">
     <div class="section-header">
       <div class="section-label">Задачи</div>
-      <h2 class="section-title">Мои задачи</h2>
-      <p class="section-sub">Управувајте со вашите задачи и рокови</p>
+      <h2 class="section-title">Задачи</h2>
+      <p class="section-sub" id="tasksSub">Управувајте со вашите задачи и рокови</p>
     </div>
     <div class="card">
       <div class="card-header"><span class="card-title">Додај нова задача</span></div>
       <div style="display:grid;grid-template-columns:1fr auto auto;gap:.8rem;align-items:end">
         <div>
-          <label style="font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);display:block;margin-bottom:.4rem">Наслов</label>
-          <input id="taskTitle" type="text" placeholder="Опис на задачата…" style="width:100%;padding:.75rem 1rem;border:2px solid rgba(42,122,122,.15);border-radius:10px;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text);background:var(--cream);outline:none;transition:border-color .2s" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='rgba(42,122,122,.15)'" />
+          <label class="f-label">Наслов</label>
+          <input id="taskTitle" type="text" class="f-input" placeholder="Опис на задачата…" />
         </div>
         <div>
-          <label style="font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);display:block;margin-bottom:.4rem">Рок</label>
-          <input id="taskDueDate" type="date" style="padding:.75rem 1rem;border:2px solid rgba(42,122,122,.15);border-radius:10px;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text);background:var(--cream);outline:none" />
+          <label class="f-label">Рок</label>
+          <input id="taskDueDate" type="date" class="f-input" style="width:auto" />
         </div>
-        <button onclick="addTask()" style="padding:.75rem 1.4rem;background:var(--teal);color:#fff;border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:background .2s;white-space:nowrap;display:flex;align-items:center;gap:6px" onmouseover="this.style.background='var(--teal-dark)'" onmouseout="this.style.background='var(--teal)'">
-          <svg width="14" height="14" stroke="#fff" fill="none" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Додај
+        <button class="btn-primary" onclick="addTask()">
+          <svg width="14" height="14" stroke="#fff" fill="none" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><use href="#i-plus"/></svg> Додај
         </button>
       </div>
     </div>
     <div class="card">
       <div class="card-header">
         <span class="card-title">Активни задачи</span>
-        <select id="taskStatusFilter" style="padding:.3rem .7rem;border:1.5px solid rgba(42,122,122,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.8rem;color:var(--text);background:var(--cream);outline:none" onchange="renderTasks()">
+        <select id="taskStatusFilter" class="f-select" style="width:auto;padding:.3rem .7rem" onchange="renderTasks()">
           <option value="all">Сите</option>
           <option value="pending">Во тек</option>
           <option value="done">Завршени</option>
         </select>
       </div>
-      <div class="task-list" id="fullTaskList">
-        <div class="skeleton skel-row"></div>
-        <div class="skeleton skel-row"></div>
+      <div class="task-list" id="fullTaskList"><div class="skeleton skel-row"></div></div>
+    </div>
+  </section>
+
+  <!-- ═══ MY PROFILE / SETTINGS ═══ -->
+  <section class="page-section" id="page-settings">
+    <div class="section-header">
+      <div class="section-label">Профил</div>
+      <h2 class="section-title">Мој профил</h2>
+      <p class="section-sub">Прегледај и уреди ги твоите податоци</p>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Лични податоци</span></div>
+        <div id="profileForm">
+          <div class="f-group">
+            <label class="f-label">Целосно ime</label>
+            <input type="text" id="pFullName" class="f-input" placeholder="Вашето ime" />
+          </div>
+          <div class="f-group">
+            <label class="f-label">Е-пошта</label>
+            <input type="email" id="pEmail" class="f-input" disabled style="opacity:.6;cursor:not-allowed" />
+          </div>
+          <div class="f-group">
+            <label class="f-label">Телефон</label>
+            <input type="tel" id="pPhone" class="f-input" placeholder="+389 70 000 000" />
+          </div>
+          <div class="f-group">
+            <label class="f-label">Позиција / специјализација</label>
+            <input type="text" id="pJobTitle" class="f-input" placeholder="пр. Општа медицина" />
+          </div>
+          <div class="f-group">
+            <label class="f-label">Датум на вработување</label>
+            <input type="date" id="pEmployedDate" class="f-input" />
+          </div>
+          <div class="f-group">
+            <label class="f-label">Денови годишен одмор</label>
+            <input type="number" id="pLeaveDays" class="f-input" min="0" max="60" placeholder="20" id="editLeaveDays" />
+          </div>
+          <button class="btn-primary" onclick="saveProfile()" id="saveProfileBtn">
+            <svg width="14" height="14" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-check"/></svg> Зачувај промени
+          </button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Лозинка</span></div>
+        <p style="font-size:.88rem;color:var(--text-light);font-weight:300;margin-bottom:1.2rem;line-height:1.6">За промена на лозинката ќе добиете линк на вашата е-пошта.</p>
+        <button class="btn-primary" onclick="sendPasswordReset()" id="pwdResetBtn">
+          <svg width="14" height="14" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-key"/></svg> Испрати линк за ресетирање
+        </button>
+        <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(42,122,122,.08)">
+          <div class="card-title" style="margin-bottom:.8rem;font-size:.95rem">Информации за сметката</div>
+          <div style="font-size:.83rem;color:var(--text-mid);display:flex;flex-direction:column;gap:.5rem" id="accountInfo">
+            <div>Улога: <strong id="infoRole">–</strong></div>
+            <div>Вработен/а од: <strong id="infoEmployed">–</strong></div>
+            <div>Денови одмор: <strong id="infoLeave">–</strong></div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -469,10 +545,10 @@
       <p class="section-sub">Активност и присуство на сите вработени</p>
     </div>
     <div class="card">
-      <div class="card-header"><span class="card-title">Вработени</span></div>
+      <div class="card-header"><span class="card-title">Вработени овој месец</span></div>
       <div class="log-table-wrap">
         <table>
-          <thead><tr><th>Вработен</th><th>Улога</th><th>Работни часови (месец)</th><th>Боледување</th><th>Одмор</th><th>Статус</th></tr></thead>
+          <thead><tr><th>Вработен</th><th>Улога</th><th>Работни ч.</th><th>Боледување</th><th>Одмор</th><th>Статус</th></tr></thead>
           <tbody id="staffTableBody"><tr><td colspan="6"><div class="skeleton skel-row"></div></td></tr></tbody>
         </table>
       </div>
@@ -490,17 +566,15 @@
       <div class="card-header"><span class="card-title">Параметри</span></div>
       <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end">
         <div>
-          <label style="font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);display:block;margin-bottom:.4rem">Вработен</label>
-          <select id="reportEmployee" style="padding:.75rem 1rem;border:2px solid rgba(42,122,122,.15);border-radius:10px;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text);background:var(--cream);outline:none;min-width:200px">
-            <option value="">Сите вработени</option>
-          </select>
+          <label class="f-label">Вработен</label>
+          <select id="reportEmployee" class="f-select" style="min-width:200px"><option value="">Сите вработени</option></select>
         </div>
         <div>
-          <label style="font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);display:block;margin-bottom:.4rem">Месец</label>
-          <input type="month" id="reportMonth" style="padding:.75rem 1rem;border:2px solid rgba(42,122,122,.15);border-radius:10px;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text);background:var(--cream);outline:none" />
+          <label class="f-label">Месец</label>
+          <input type="month" id="reportMonth" class="f-input" style="width:auto" />
         </div>
-        <button onclick="generateReport()" style="padding:.75rem 1.5rem;background:var(--teal);color:#fff;border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:background .2s;display:flex;align-items:center;gap:8px" onmouseover="this.style.background='var(--teal-dark)'" onmouseout="this.style.background='var(--teal)'">
-          <svg width="15" height="15" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-bar"/></svg> Генерирај извештај
+        <button class="btn-primary" onclick="generateReport()">
+          <svg width="15" height="15" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-bar"/></svg> Генерирај
         </button>
       </div>
     </div>
@@ -509,7 +583,7 @@
       <div class="card">
         <div class="card-header">
           <span class="card-title" id="reportTableTitle">Детали</span>
-          <button class="card-action" onclick="printReport()" style="display:flex;align-items:center;gap:5px">
+          <button class="card-action" onclick="printReport()">
             <svg width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-print"/></svg> Печати
           </button>
         </div>
@@ -528,74 +602,140 @@
     <div class="section-header">
       <div class="section-label">Администрација</div>
       <h2 class="section-title">Управување со тимот</h2>
-      <p class="section-sub">Додавај или управувај со сметките на вработените</p>
+      <p class="section-sub">Создавај и уредувај профили на вработени</p>
     </div>
     <div class="two-col">
       <div class="card">
-        <div class="card-header"><span class="card-title">Покани нов вработен</span></div>
-        <div style="display:flex;flex-direction:column;gap:1rem">
-          <div>
-            <label style="font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);display:block;margin-bottom:.4rem">Целосно ime</label>
-            <input id="inviteName" type="text" placeholder="Ана Петровска" style="width:100%;padding:.75rem 1rem;border:2px solid rgba(42,122,122,.15);border-radius:10px;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text);background:var(--cream);outline:none" />
-          </div>
-          <div>
-            <label style="font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);display:block;margin-bottom:.4rem">Е-пошта</label>
-            <input id="inviteEmail" type="email" placeholder="ana@oazamedika.mk" style="width:100%;padding:.75rem 1rem;border:2px solid rgba(42,122,122,.15);border-radius:10px;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text);background:var(--cream);outline:none" />
-          </div>
-          <div>
-            <label style="font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);display:block;margin-bottom:.4rem">Улога</label>
-            <select id="inviteRole" style="width:100%;padding:.75rem 1rem;border:2px solid rgba(42,122,122,.15);border-radius:10px;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text);background:var(--cream);outline:none">
-              <option value="nurse">Медицинска сестра</option>
-              <option value="doctor">Доктор</option>
-            </select>
-          </div>
-          <button onclick="inviteEmployee()" style="padding:.8rem 1.4rem;background:var(--teal);color:#fff;border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:background .2s;display:flex;align-items:center;gap:8px" onmouseover="this.style.background='var(--teal-dark)'" onmouseout="this.style.background='var(--teal)'">
-            <svg width="15" height="15" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-mail"/></svg> Испрати покана
-          </button>
+        <div class="card-header"><span class="card-title">Додај нов вработен</span></div>
+        <div class="f-group">
+          <label class="f-label">Целосно ime</label>
+          <input id="newName" type="text" class="f-input" placeholder="Ана Петровска" />
         </div>
+        <div class="f-group">
+          <label class="f-label">Е-пошта</label>
+          <input id="newEmail" type="email" class="f-input" placeholder="ana@oazamedika.mk" />
+        </div>
+        <div class="f-group">
+          <label class="f-label">Привремена лозинка</label>
+          <input id="newPassword" type="password" class="f-input" placeholder="Мин. 6 знаци" />
+        </div>
+        <div class="f-group">
+          <label class="f-label">Улога</label>
+          <select id="newRole" class="f-select">
+            <option value="nurse">Медицинска сестра</option>
+            <option value="doctor">Доктор</option>
+          </select>
+        </div>
+        <div class="f-group">
+          <label class="f-label">Телефон</label>
+          <input id="newPhone" type="tel" class="f-input" placeholder="+389 70 000 000" />
+        </div>
+        <div class="f-group">
+          <label class="f-label">Позиција</label>
+          <input id="newJobTitle" type="text" class="f-input" placeholder="пр. Медицинска сестра" />
+        </div>
+        <div class="f-group">
+          <label class="f-label">Датум на вработување</label>
+          <input id="newEmployedDate" type="date" class="f-input" />
+        </div>
+        <div class="f-group">
+          <label class="f-label">Денови годишен одмор</label>
+          <input id="newLeaveDays" type="number" class="f-input" value="20" min="0" max="60" />
+        </div>
+        <button class="btn-primary" onclick="createEmployee()" id="createEmpBtn">
+          <svg width="14" height="14" stroke="#fff" fill="none" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><use href="#i-plus"/></svg> Создај сметка
+        </button>
+        <p style="font-size:.75rem;color:var(--text-light);margin-top:.8rem;line-height:1.5">Вработениот ќе добие e-пошта за потврда. Привремената лозинка треба да ја смени при прво најавување.</p>
       </div>
       <div class="card">
-        <div class="card-header"><span class="card-title">Постоечки сметки</span></div>
-        <div id="adminUserList">
-          <div class="skeleton skel-row"></div>
-          <div class="skeleton skel-row"></div>
+        <div class="card-header">
+          <span class="card-title">Вработени</span>
+          <button class="card-action" onclick="loadAdminUsers()">
+            <svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-4.43"/></svg> Освежи
+          </button>
         </div>
+        <div id="adminUserList"><div class="skeleton skel-row"></div><div class="skeleton skel-row"></div></div>
       </div>
     </div>
   </section>
 
 </main>
 
+<!-- ═══ EDIT USER MODAL ═══ -->
+<div class="modal-overlay" id="editUserModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Уреди вработен</h3>
+      <button class="modal-close" onclick="closeModal('editUserModal')">
+        <svg><use href="#i-trash" style="display:none"/><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editUserId" />
+      <div class="f-group"><label class="f-label">Целосно ime</label><input type="text" id="editFullName" class="f-input" /></div>
+      <div class="f-group"><label class="f-label">Телефон</label><input type="tel" id="editPhone" class="f-input" /></div>
+      <div class="f-group"><label class="f-label">Позиција</label><input type="text" id="editJobTitle" class="f-input" /></div>
+      <div class="f-group"><label class="f-label">Датум на вработување</label><input type="date" id="editEmployedDate" class="f-input" /></div>
+      <div class="f-group"><label class="f-label">Денови годишен одмор</label><input type="number" id="editLeaveDays2" class="f-input" min="0" max="60" /></div>
+      <div class="f-group"><label class="f-label">Улога</label>
+        <select id="editRole" class="f-select">
+          <option value="nurse">Медицинска сестра</option>
+          <option value="doctor">Доктор</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('editUserModal')">Откажи</button>
+      <button class="btn-primary" onclick="saveEditUser()">
+        <svg width="14" height="14" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-check"/></svg> Зачувај
+      </button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
-/* ── STATE ── */
+/* ══════════════════════════════════════════
+   STATE
+══════════════════════════════════════════ */
 let currentUser    = null;
 let currentProfile = null;
 let allStaff       = [];
 let allTasks       = [];
 let activeClock    = null;
 
-/* ── INIT ── */
-document.addEventListener('DOMContentLoaded', async () => {
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
   setTopbarDate();
   startClock();
+
   const now = new Date();
   const ym  = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
   document.getElementById('logMonthFilter').value = ym;
   document.getElementById('reportMonth').value    = ym;
 
+  // Logout button — wired here to avoid inline onclick issues
+  document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+
+  // Auth listener
   sb.auth.onAuthStateChange(async (event, session) => {
     if (!session) { window.location.href = 'index.html'; return; }
     currentUser = session.user;
     await loadProfile();
     await bootDashboard();
   });
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) { window.location.href = 'index.html'; }
+
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (!session) window.location.href = 'index.html';
+  });
 });
 
-/* ── PROFILE ── */
+/* ══════════════════════════════════════════
+   PROFILE
+══════════════════════════════════════════ */
 async function loadProfile() {
   const { data, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
   if (error || !data) { showToast('Грешка при вчитување на профилот.', 'error'); return; }
@@ -609,11 +749,9 @@ function applyRoleUI(role, name) {
   document.getElementById('avatarInitial').textContent   = (name || '?')[0].toUpperCase();
 
   const badge = document.getElementById('roleBadge');
-  if (role === 'doctor') {
-    badge.innerHTML = `<svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-doctor"/></svg> Доктор`;
-  } else {
-    badge.innerHTML = `<svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-nurse"/></svg> Мед. сестра`;
-  }
+  badge.innerHTML = role === 'doctor'
+    ? `<svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-doctor"/></svg> Доктор`
+    : `<svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-nurse"/></svg> Мед. сестра`;
 
   if (role === 'doctor') {
     document.querySelectorAll('.doctor-only').forEach(el => {
@@ -623,7 +761,7 @@ function applyRoleUI(role, name) {
     document.getElementById('doctorStatsGrid').style.display  = 'grid';
     document.getElementById('staffFilter').style.display      = 'block';
     document.getElementById('logColEmployee').style.display   = '';
-    document.querySelector('#page-tasks .section-sub').textContent = 'Прегледај ги сопствените и задачите на тимот';
+    document.getElementById('tasksSub').textContent = 'Прегледај ги сопствените и задачите на тимот';
   }
 }
 
@@ -632,12 +770,14 @@ async function bootDashboard() {
   if (currentProfile?.role === 'doctor') { await loadStaffList(); await loadTeamToday(); }
 }
 
-/* ── CLOCK ── */
+/* ══════════════════════════════════════════
+   CLOCK
+══════════════════════════════════════════ */
 function startClock() {
-  function tick() {
+  const tick = () => {
     document.getElementById('liveTime').textContent =
       new Date().toLocaleTimeString('mk-MK', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-  }
+  };
   tick(); setInterval(tick, 1000);
 }
 function setTopbarDate() {
@@ -646,8 +786,13 @@ function setTopbarDate() {
   document.getElementById('clockDate').textContent  = str;
 }
 
-/* ── NAV ── */
-const PAGE_TITLES = { dashboard:'Контролна табла', worklog:'Работни часови', tasks:'Задачи', staff:'Тим – преглед', reports:'Месечни извештаи', admin:'Управување со тим' };
+/* ══════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════ */
+const PAGE_TITLES = {
+  dashboard:'Контролна табла', worklog:'Работни часови', tasks:'Задачи',
+  settings:'Мој профил', staff:'Тим – преглед', reports:'Месечни извештаи', admin:'Управување со тим'
+};
 function navigate(page) {
   if (['staff','reports','admin'].includes(page) && currentProfile?.role !== 'doctor') return;
   document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
@@ -655,153 +800,233 @@ function navigate(page) {
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
   document.querySelector(`.nav-link[data-page="${page}"]`)?.classList.add('active');
   document.getElementById('topbarTitle').textContent = PAGE_TITLES[page] || page;
-  if (page === 'worklog') loadWorkLogs();
-  if (page === 'tasks')   loadTasks();
-  if (page === 'staff')   loadStaffTable();
-  if (page === 'admin')   loadAdminUsers();
+  if (page === 'worklog')  loadWorkLogs();
+  if (page === 'tasks')    loadTasks();
+  if (page === 'settings') loadSettingsPage();
+  if (page === 'staff')    loadStaffTable();
+  if (page === 'admin')    loadAdminUsers();
   closeSidebar();
 }
-function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('show'); }
-function closeSidebar()  { document.getElementById('sidebar').classList.remove('open');  document.getElementById('sidebarOverlay').classList.remove('show'); }
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
 
-/* ── WORK LOG ── */
+/* ══════════════════════════════════════════
+   WORK LOG — CLOCK IN / OUT
+══════════════════════════════════════════ */
 async function checkTodayClock() {
   const today = new Date().toISOString().slice(0,10);
-  const { data } = await sb.from('work_logs').select('*').eq('user_id', currentUser.id).eq('date', today).is('end_time', null).maybeSingle();
+  const { data } = await sb
+    .from('work_logs').select('*')
+    .eq('user_id', currentUser.id).eq('date', today).is('end_time', null)
+    .maybeSingle();
   if (data) { activeClock = data.id; setClockedIn(true, data.log_type); }
-  else { setClockedIn(false); }
+  else setClockedIn(false);
 }
-function setClockedIn(on, type='work') {
-  document.getElementById('clockDot').className       = 'status-dot' + (on ? '' : ' out');
+
+function setClockedIn(on, type = 'work') {
+  document.getElementById('clockDot').className         = 'status-dot' + (on ? '' : ' out');
   document.getElementById('clockStatusText').textContent = on ? `Пријавени сте (${typeLabelMk(type)})` : 'Не сте пријавени';
-  document.getElementById('btnClockIn').disabled      = on;
-  document.getElementById('btnClockOut').disabled     = !on;
-  document.getElementById('leaveType').disabled       = on;
-  if (on) document.getElementById('leaveType').value  = type;
+  document.getElementById('btnClockIn').disabled         = on;
+  document.getElementById('btnClockOut').disabled        = !on;
+  document.getElementById('leaveType').disabled          = on;
+  if (on) document.getElementById('leaveType').value     = type;
 }
+
 async function clockIn() {
-  const type = document.getElementById('leaveType').value;
+  const type  = document.getElementById('leaveType').value;
   const today = new Date().toISOString().slice(0,10);
   const now   = new Date().toTimeString().slice(0,8);
-  const { data, error } = await sb.from('work_logs').insert({ user_id: currentUser.id, date: today, start_time: now, log_type: type }).select().single();
-  if (error) { showToast('Грешка при пријавување.', 'error'); return; }
-  activeClock = data.id; setClockedIn(true, type);
-  showToast('Успешно пријавени!', 'success'); loadStats();
+  const { data, error } = await sb
+    .from('work_logs')
+    .insert({ user_id: currentUser.id, date: today, start_time: now, log_type: type })
+    .select().single();
+  if (error) { showToast('Грешка при пријавување: ' + error.message, 'error'); return; }
+  activeClock = data.id;
+  setClockedIn(true, type);
+  showToast('Успешно пријавени!', 'success');
+  loadStats(); loadRecentLogs();
 }
+
 async function clockOut() {
   if (!activeClock) return;
   const now = new Date().toTimeString().slice(0,8);
   const { error } = await sb.from('work_logs').update({ end_time: now }).eq('id', activeClock);
-  if (error) { showToast('Грешка при одјавување.', 'error'); return; }
-  activeClock = null; setClockedIn(false);
-  showToast('Успешно одјавени!', 'success'); loadStats(); loadRecentLogs();
+  if (error) { showToast('Грешка при одјавување: ' + error.message, 'error'); return; }
+  activeClock = null;
+  setClockedIn(false);
+  showToast('Успешно одјавени!', 'success');
+  loadStats(); loadRecentLogs();
 }
 
-/* ── STATS ── */
+/* ══════════════════════════════════════════
+   STATS
+══════════════════════════════════════════ */
 async function loadStats() {
-  const now = new Date(), year = now.getFullYear(), month = now.getMonth()+1;
+  const now = new Date(), year = now.getFullYear(), month = now.getMonth() + 1;
   const from = `${year}-${String(month).padStart(2,'0')}-01`;
   const to   = `${year}-${String(month).padStart(2,'0')}-${String(new Date(year,month,0).getDate()).padStart(2,'0')}`;
-  const { data: logs } = await sb.from('work_logs').select('*').eq('user_id', currentUser.id).gte('date', from).lte('date', to);
+
+  const { data: logs } = await sb.from('work_logs').select('*')
+    .eq('user_id', currentUser.id).gte('date', from).lte('date', to);
+
   const workDays = logs?.filter(l => l.log_type==='work' && l.end_time).length || 0;
   const sickDays = logs?.filter(l => l.log_type==='sick').length || 0;
   const totalHrs = logs?.filter(l => l.end_time).reduce((a,l) => a + calcHours(l.start_time, l.end_time), 0) || 0;
-  const { count: taskCount } = await sb.from('tasks').select('id', { count:'exact', head:true }).eq('user_id', currentUser.id).eq('status', 'pending');
 
-  const clockSvg    = `<svg viewBox="0 0 24 24"><use href="#i-clock"/></svg>`;
-  const calSvg      = `<svg viewBox="0 0 24 24"><use href="#i-calendar"/></svg>`;
-  const sickSvg     = `<svg viewBox="0 0 24 24"><use href="#i-sick"/></svg>`;
-  const checkSvg    = `<svg viewBox="0 0 24 24"><use href="#i-check-sq"/></svg>`;
+  const { count: taskCount } = await sb.from('tasks').select('id', { count:'exact', head:true })
+    .eq('user_id', currentUser.id).eq('status', 'pending');
 
+  const si = s => `<div class="stat-icon"><svg viewBox="0 0 24 24"><use href="#i-${s}"/></svg></div>`;
   document.getElementById('statsGrid').innerHTML = `
-    <div class="stat-card"><div class="stat-icon">${clockSvg}</div><div class="stat-val">${Math.round(totalHrs)}</div><div class="stat-label">Работни часови</div><div class="stat-sub">овој месец</div></div>
-    <div class="stat-card"><div class="stat-icon">${calSvg}</div><div class="stat-val">${workDays}</div><div class="stat-label">Работни денови</div><div class="stat-sub">овој месец</div></div>
-    <div class="stat-card"><div class="stat-icon">${sickSvg}</div><div class="stat-val">${sickDays}</div><div class="stat-label">Боледување</div><div class="stat-sub">денови</div></div>
-    <div class="stat-card"><div class="stat-icon">${checkSvg}</div><div class="stat-val">${taskCount ?? 0}</div><div class="stat-label">Активни задачи</div><div class="stat-sub">чекаат</div></div>
+    <div class="stat-card">${si('clock')}<div class="stat-val">${Math.round(totalHrs)}</div><div class="stat-label">Работни часови</div><div class="stat-sub">овој месец</div></div>
+    <div class="stat-card">${si('calendar')}<div class="stat-val">${workDays}</div><div class="stat-label">Работни денови</div><div class="stat-sub">овој месец</div></div>
+    <div class="stat-card">${si('sick')}<div class="stat-val">${sickDays}</div><div class="stat-label">Боледување</div><div class="stat-sub">денови</div></div>
+    <div class="stat-card">${si('check-sq')}<div class="stat-val">${taskCount ?? 0}</div><div class="stat-label">Активни задачи</div><div class="stat-sub">чекаат</div></div>
   `;
+
   const badge = document.getElementById('tasksBadge');
-  if (taskCount > 0) { badge.textContent = taskCount; badge.style.display = ''; } else { badge.style.display = 'none'; }
+  badge.textContent = taskCount ?? 0;
+  badge.style.display = (taskCount > 0) ? '' : 'none';
 
   if (currentProfile?.role === 'doctor') {
-    const { data: allLogs } = await sb.from('work_logs').select('*').gte('date', from).lte('date', to);
-    const staffOnline = new Set(allLogs?.filter(l => !l.end_time).map(l => l.user_id)).size;
-    const { count: totalStaff } = await sb.from('profiles').select('id', { count:'exact', head:true });
-    const usersSvg = `<svg viewBox="0 0 24 24"><use href="#i-users"/></svg>`;
+    const { data: allLogs } = await sb.from('work_logs').select('user_id,end_time,date').gte('date', from).lte('date', to);
+    const today = new Date().toISOString().slice(0,10);
+    const online = new Set(allLogs?.filter(l => !l.end_time && l.date === today).map(l => l.user_id)).size;
+    const { count: total } = await sb.from('profiles').select('id', { count:'exact', head:true });
     document.getElementById('doctorStatsGrid').innerHTML = `
-      <div class="stat-card"><div class="stat-icon">${usersSvg}</div><div class="stat-val">${totalStaff ?? 0}</div><div class="stat-label">Вкупно вработени</div><div class="stat-sub">во системот</div></div>
-      <div class="stat-card"><div class="stat-icon">${usersSvg}</div><div class="stat-val">${staffOnline}</div><div class="stat-label">Пријавени денес</div><div class="stat-sub">моментално</div></div>
+      <div class="stat-card">${si('users')}<div class="stat-val">${total ?? 0}</div><div class="stat-label">Вкупно вработени</div><div class="stat-sub">во системот</div></div>
+      <div class="stat-card">${si('users')}<div class="stat-val">${online}</div><div class="stat-label">Пријавени денес</div><div class="stat-sub">моментално</div></div>
     `;
   }
 }
 
 async function loadRecentLogs() {
-  const { data } = await sb.from('work_logs').select('*').eq('user_id', currentUser.id).order('date', { ascending:false }).limit(5);
+  const { data } = await sb.from('work_logs').select('*')
+    .eq('user_id', currentUser.id).order('date', { ascending:false }).limit(5);
   const tbody = document.getElementById('recentLogsBody');
-  if (!data?.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-light);padding:1.2rem;font-size:.85rem">Нема евиденции</td></tr>'; return; }
-  tbody.innerHTML = data.map(l => `<tr><td>${formatDate(l.date)}</td><td>${l.start_time?.slice(0,5)||'–'}</td><td>${l.end_time?.slice(0,5)||'–'}</td><td><span class="pill pill-${l.log_type}">${typeLabelMk(l.log_type)}</span></td></tr>`).join('');
+  if (!data?.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-light);padding:1.2rem;font-size:.85rem">Нема евиденции</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(l =>
+    `<tr><td>${formatDate(l.date)}</td><td>${l.start_time?.slice(0,5)||'–'}</td><td>${l.end_time?.slice(0,5)||'–'}</td><td><span class="pill pill-${l.log_type}">${typeLabelMk(l.log_type)}</span></td></tr>`
+  ).join('');
 }
 
+/* ══════════════════════════════════════════
+   WORK LOG — FULL TABLE
+══════════════════════════════════════════ */
 async function loadWorkLogs() {
-  const month = document.getElementById('logMonthFilter').value;
+  const month    = document.getElementById('logMonthFilter').value;
   const staffSel = document.getElementById('staffFilter').value;
+  if (!month) return;
   const [year, mo] = month.split('-');
-  const from = `${month}-01`, to = `${month}-${String(new Date(parseInt(year),parseInt(mo),0).getDate()).padStart(2,'0')}`;
-  let query = sb.from('work_logs').select('*, profiles(full_name)').gte('date', from).lte('date', to).order('date', { ascending:false });
+  const from = `${month}-01`;
+  const to   = `${month}-${String(new Date(parseInt(year), parseInt(mo), 0).getDate()).padStart(2,'0')}`;
+
+  let query = sb.from('work_logs').select('*, profiles(full_name)')
+    .gte('date', from).lte('date', to).order('date', { ascending:false });
+
   if (currentProfile?.role !== 'doctor') query = query.eq('user_id', currentUser.id);
   else if (staffSel) query = query.eq('user_id', staffSel);
-  const { data } = await query;
+
+  const { data, error } = await query;
   const isDoc = currentProfile?.role === 'doctor';
+  const cols  = isDoc ? 6 : 5;
   const tbody = document.getElementById('workLogsBody');
-  if (!data?.length) { tbody.innerHTML = `<tr><td colspan="${isDoc?6:5}" style="text-align:center;color:var(--text-light);padding:1.5rem;font-size:.85rem">Нема евиденции за избраниот месец</td></tr>`; return; }
+
+  if (error) { showToast('Грешка при вчитување: ' + error.message, 'error'); return; }
+  if (!data?.length) {
+    tbody.innerHTML = `<tr><td colspan="${cols}" style="text-align:center;color:var(--text-light);padding:1.5rem;font-size:.85rem">Нема евиденции за избраниот месец</td></tr>`;
+    document.getElementById('workLogTotals').style.display = 'none';
+    return;
+  }
+
   tbody.innerHTML = data.map(l => {
-    const hrs = l.start_time && l.end_time ? calcHours(l.start_time, l.end_time).toFixed(1) : '–';
-    return `<tr><td>${formatDate(l.date)}</td>${isDoc?`<td>${l.profiles?.full_name||'–'}</td>`:''}<td>${l.start_time?.slice(0,5)||'–'}</td><td>${l.end_time?.slice(0,5)||'–'}</td><td>${hrs !== '–' ? hrs+' ч.' : '–'}</td><td><span class="pill pill-${l.log_type}">${typeLabelMk(l.log_type)}</span></td></tr>`;
+    const hrs = (l.start_time && l.end_time) ? calcHours(l.start_time, l.end_time).toFixed(1) : '–';
+    return `<tr>
+      <td>${formatDate(l.date)}</td>
+      ${isDoc ? `<td>${l.profiles?.full_name||'–'}</td>` : ''}
+      <td>${l.start_time?.slice(0,5)||'–'}</td>
+      <td>${l.end_time?.slice(0,5)||'–'}</td>
+      <td>${hrs !== '–' ? hrs + ' ч.' : '–'}</td>
+      <td><span class="pill pill-${l.log_type}">${typeLabelMk(l.log_type)}</span></td>
+    </tr>`;
   }).join('');
+
+  // Totals row
+  const completedLogs = data.filter(l => l.end_time && l.log_type === 'work');
+  const totalHrs = completedLogs.reduce((a,l) => a + calcHours(l.start_time, l.end_time), 0);
+  document.getElementById('totalHoursDisplay').textContent = totalHrs.toFixed(1) + ' ч.';
+  document.getElementById('totalDaysDisplay').textContent  = completedLogs.length;
+  document.getElementById('workLogTotals').style.display   = 'block';
 }
 
-/* ── TASKS ── */
+/* ══════════════════════════════════════════
+   TASKS
+══════════════════════════════════════════ */
 async function loadTasks() {
   let query = sb.from('tasks').select('*, profiles(full_name)').order('due_date', { ascending:true });
   if (currentProfile?.role !== 'doctor') query = query.eq('user_id', currentUser.id);
-  const { data } = await query;
+  const { data, error } = await query;
+  if (error) { showToast('Грешка при вчитување на задачи.', 'error'); return; }
   allTasks = data || [];
   renderTasks();
+  renderUpcoming();
+}
+
+async function loadUpcomingTasks() { await loadTasks(); }
+
+function renderUpcoming() {
   const upcoming = allTasks.filter(t => t.status === 'pending').slice(0, 4);
   const ul = document.getElementById('upcomingTasksList');
-  if (!upcoming.length) { ul.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24"><use href="#i-check-sq"/></svg></div><p>Нема активни задачи</p></div>'; return; }
-  ul.innerHTML = upcoming.map(t => taskItemHTML(t)).join('');
+  if (!upcoming.length) {
+    ul.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24"><use href="#i-check-sq"/></svg></div><p>Нема активни задачи</p></div>';
+    return;
+  }
+  ul.innerHTML = upcoming.map(t => taskItemHTML(t, false)).join('');
 }
-async function loadUpcomingTasks() { await loadTasks(); }
 
 function renderTasks() {
   const filter = document.getElementById('taskStatusFilter').value;
   const list   = filter === 'all' ? allTasks : allTasks.filter(t => t.status === filter);
   const el     = document.getElementById('fullTaskList');
-  if (!list.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24"><use href="#i-check-sq"/></svg></div><p>Нема задачи</p></div>'; return; }
+  if (!list.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24"><use href="#i-check-sq"/></svg></div><p>Нема задачи</p></div>';
+    return;
+  }
   el.innerHTML = list.map(t => taskItemHTML(t, true)).join('');
 }
 
-function taskItemHTML(t, showToggle = false) {
+function taskItemHTML(t, showToggle) {
   const overdue = t.due_date && new Date(t.due_date) < new Date() && t.status !== 'done';
   const isDoc   = currentProfile?.role === 'doctor';
-  return `
-    <div class="task-item" id="task-${t.id}">
-      ${showToggle ? `<div class="task-check ${t.status==='done'?'checked':''}" onclick="toggleTask('${t.id}','${t.status}')"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg></div>` : ''}
-      <div class="task-body">
-        <div class="task-title ${t.status==='done'?'done':''}">${t.title}</div>
-        ${t.due_date ? `<div class="task-due ${overdue?'overdue':''}">${overdue?'Задоцнето: ':'Рок: '}${formatDate(t.due_date)}</div>` : ''}
-      </div>
-      ${isDoc && t.profiles?.full_name ? `<div class="task-owner">${t.profiles.full_name}</div>` : ''}
-      <span class="pill ${t.status==='done'?'pill-done':'pill-pending'}">${t.status==='done'?'Завршена':'Во тек'}</span>
-    </div>`;
+  return `<div class="task-item" id="task-${t.id}">
+    ${showToggle ? `<div class="task-check ${t.status==='done'?'checked':''}" onclick="toggleTask('${t.id}','${t.status}')"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg></div>` : ''}
+    <div class="task-body">
+      <div class="task-title ${t.status==='done'?'done':''}">${escHtml(t.title)}</div>
+      ${t.due_date ? `<div class="task-due${overdue?' overdue':''}">${overdue?'Задоцнето: ':'Рок: '}${formatDate(t.due_date)}</div>` : ''}
+    </div>
+    ${isDoc && t.profiles?.full_name ? `<div class="task-owner">${escHtml(t.profiles.full_name)}</div>` : ''}
+    <span class="pill ${t.status==='done'?'pill-done':'pill-pending'}">${t.status==='done'?'Завршена':'Во тек'}</span>
+    ${showToggle ? `<button onclick="deleteTask('${t.id}')" style="background:none;border:none;cursor:pointer;color:var(--text-light);display:flex;align-items:center;padding:4px;border-radius:6px;transition:color .2s" title="Избриши"><svg width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-trash"/></svg></button>` : ''}
+  </div>`;
 }
 
 async function addTask() {
   const title = document.getElementById('taskTitle').value.trim();
   const due   = document.getElementById('taskDueDate').value;
   if (!title) { showToast('Внесете наслов на задачата.', 'error'); return; }
-  const { error } = await sb.from('tasks').insert({ user_id: currentUser.id, title, due_date: due || null, status: 'pending' });
-  if (error) { showToast('Грешка при додавање.', 'error'); return; }
+  const { error } = await sb.from('tasks').insert({
+    user_id: currentUser.id, title, due_date: due || null, status: 'pending'
+  });
+  if (error) { showToast('Грешка при додавање: ' + error.message, 'error'); return; }
   document.getElementById('taskTitle').value   = '';
   document.getElementById('taskDueDate').value = '';
   showToast('Задачата е додадена!', 'success');
@@ -813,131 +1038,301 @@ async function toggleTask(id, currentStatus) {
   const { error } = await sb.from('tasks').update({ status: newStatus }).eq('id', id);
   if (error) { showToast('Грешка.', 'error'); return; }
   allTasks = allTasks.map(t => t.id === id ? { ...t, status: newStatus } : t);
-  renderTasks(); loadStats();
+  renderTasks(); renderUpcoming(); loadStats();
 }
 
-/* ── STAFF ── */
+async function deleteTask(id) {
+  if (!confirm('Да се избрише задачата?')) return;
+  const { error } = await sb.from('tasks').delete().eq('id', id);
+  if (error) { showToast('Грешка при бришење.', 'error'); return; }
+  allTasks = allTasks.filter(t => t.id !== id);
+  renderTasks(); renderUpcoming(); loadStats();
+  showToast('Задачата е избришана.', 'success');
+}
+
+/* ══════════════════════════════════════════
+   MY PROFILE / SETTINGS
+══════════════════════════════════════════ */
+function loadSettingsPage() {
+  if (!currentProfile) return;
+  const p = currentProfile;
+  document.getElementById('pFullName').value     = p.full_name     || '';
+  document.getElementById('pEmail').value        = currentUser.email || '';
+  document.getElementById('pPhone').value        = p.phone         || '';
+  document.getElementById('pJobTitle').value     = p.job_title     || '';
+  document.getElementById('pEmployedDate').value = p.employed_date || '';
+  document.getElementById('pLeaveDays').value    = p.leave_days    ?? 20;
+  // Info sidebar
+  document.getElementById('infoRole').textContent     = p.role === 'doctor' ? 'Доктор' : 'Медицинска сестра';
+  document.getElementById('infoEmployed').textContent = p.employed_date ? formatDate(p.employed_date) : '–';
+  document.getElementById('infoLeave').textContent    = (p.leave_days ?? 20) + ' денови';
+}
+
+async function saveProfile() {
+  const btn = document.getElementById('saveProfileBtn');
+  btn.disabled = true;
+  const updates = {
+    full_name:     document.getElementById('pFullName').value.trim(),
+    phone:         document.getElementById('pPhone').value.trim(),
+    job_title:     document.getElementById('pJobTitle').value.trim(),
+    employed_date: document.getElementById('pEmployedDate').value || null,
+    leave_days:    parseInt(document.getElementById('pLeaveDays').value) || 20,
+  };
+  const { error } = await sb.from('profiles').update(updates).eq('id', currentUser.id);
+  btn.disabled = false;
+  if (error) { showToast('Грешка при зачувување: ' + error.message, 'error'); return; }
+  // Update local cache
+  currentProfile = { ...currentProfile, ...updates };
+  applyRoleUI(currentProfile.role, currentProfile.full_name);
+  loadSettingsPage();
+  showToast('Профилот е зачуван!', 'success');
+}
+
+async function sendPasswordReset() {
+  const btn = document.getElementById('pwdResetBtn');
+  btn.disabled = true;
+  const { error } = await sb.auth.resetPasswordForEmail(currentUser.email, {
+    redirectTo: window.location.origin + '/index.html'
+  });
+  btn.disabled = false;
+  if (error) { showToast('Грешка: ' + error.message, 'error'); return; }
+  showToast('Линкот е испратен на вашата е-пошта!', 'success');
+}
+
+/* ══════════════════════════════════════════
+   STAFF (DOCTOR)
+══════════════════════════════════════════ */
 async function loadStaffList() {
   const { data } = await sb.from('profiles').select('*').order('full_name');
   allStaff = data || [];
-  const opts = allStaff.map(s => `<option value="${s.id}">${s.full_name} (${s.role==='doctor'?'Доктор':'Сестра'})</option>`).join('');
-  document.getElementById('staffFilter').innerHTML  = '<option value="">Сите вработени</option>' + opts;
+  const opts = allStaff.map(s =>
+    `<option value="${s.id}">${escHtml(s.full_name)} (${s.role==='doctor'?'Доктор':'Сестра'})</option>`
+  ).join('');
+  document.getElementById('staffFilter').innerHTML    = '<option value="">Сите вработени</option>' + opts;
   document.getElementById('reportEmployee').innerHTML = '<option value="">Сите вработени</option>' + opts;
 }
 
 async function loadTeamToday() {
   const today = new Date().toISOString().slice(0,10);
-  const { data: logs } = await sb.from('work_logs').select('*, profiles(full_name,role)').eq('date', today);
+  const { data: logs } = await sb.from('work_logs')
+    .select('*, profiles(full_name,role)').eq('date', today);
   const tbody = document.getElementById('teamTodayBody');
-  if (!logs?.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-light);padding:1.2rem;font-size:.85rem">Нема активности денес</td></tr>'; return; }
-  tbody.innerHTML = logs.map(l => `
-    <tr>
-      <td><strong>${l.profiles?.full_name||'–'}</strong></td>
-      <td><span class="role-tag">${l.profiles?.role==='doctor'?
-        `<svg viewBox="0 0 24 24"><use href="#i-doctor"/></svg> Доктор`:
-        `<svg viewBox="0 0 24 24"><use href="#i-nurse"/></svg> Сестра`}</span></td>
-      <td><span class="pill pill-${l.log_type}">${typeLabelMk(l.log_type)}</span></td>
-      <td>${l.end_time ? 'Одјавен/а '+l.end_time.slice(0,5) : '<span style="color:var(--green);font-weight:600">Активен/а</span>'}</td>
-    </tr>`).join('');
+  if (!logs?.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-light);padding:1.2rem;font-size:.85rem">Нема активности денес</td></tr>';
+    return;
+  }
+  tbody.innerHTML = logs.map(l => `<tr>
+    <td><strong>${escHtml(l.profiles?.full_name||'–')}</strong></td>
+    <td><span class="role-tag">${l.profiles?.role==='doctor'
+      ?`<svg viewBox="0 0 24 24"><use href="#i-doctor"/></svg> Доктор`
+      :`<svg viewBox="0 0 24 24"><use href="#i-nurse"/></svg> Сестра`}</span></td>
+    <td><span class="pill pill-${l.log_type}">${typeLabelMk(l.log_type)}</span></td>
+    <td>${l.end_time ? 'Одјавен/а ' + l.end_time.slice(0,5) : '<span style="color:var(--green);font-weight:600">Активен/а</span>'}</td>
+  </tr>`).join('');
 }
 
 async function loadStaffTable() {
-  const now = new Date(), year = now.getFullYear(), month = now.getMonth()+1;
-  const from = `${year}-${String(month).padStart(2,'0')}-01`, to = `${year}-${String(month).padStart(2,'0')}-${String(new Date(year,month,0).getDate()).padStart(2,'0')}`;
+  const now = new Date(), year = now.getFullYear(), month = now.getMonth() + 1;
+  const from = `${year}-${String(month).padStart(2,'0')}-01`;
+  const to   = `${year}-${String(month).padStart(2,'0')}-${String(new Date(year,month,0).getDate()).padStart(2,'0')}`;
   const { data: logs  } = await sb.from('work_logs').select('*').gte('date', from).lte('date', to);
   const { data: staff } = await sb.from('profiles').select('*').order('full_name');
+  const today = new Date().toISOString().slice(0,10);
   const tbody = document.getElementById('staffTableBody');
   tbody.innerHTML = (staff||[]).map(s => {
-    const sLogs = (logs||[]).filter(l => l.user_id===s.id);
-    const hours = sLogs.filter(l => l.end_time && l.log_type==='work').reduce((a,l) => a+calcHours(l.start_time,l.end_time), 0);
-    const sick  = sLogs.filter(l => l.log_type==='sick').length;
-    const hols  = sLogs.filter(l => l.log_type==='holiday').length;
-    const isClockedIn = sLogs.some(l => !l.end_time && l.date===new Date().toISOString().slice(0,10));
-    return `<tr class="staff-row"><td>${s.full_name}</td><td><span class="role-tag">${s.role==='doctor'?`<svg viewBox="0 0 24 24"><use href="#i-doctor"/></svg> Доктор`:`<svg viewBox="0 0 24 24"><use href="#i-nurse"/></svg> Сестра`}</span></td><td>${Math.round(hours)} ч.</td><td>${sick}</td><td>${hols}</td><td>${isClockedIn?'<span class="online-dot"></span>Пријавен/а':'<span style="color:var(--text-light)">Одјавен/а</span>'}</td></tr>`;
+    const sl   = (logs||[]).filter(l => l.user_id === s.id);
+    const hrs  = sl.filter(l => l.end_time && l.log_type==='work').reduce((a,l) => a + calcHours(l.start_time, l.end_time), 0);
+    const sick = sl.filter(l => l.log_type==='sick').length;
+    const hols = sl.filter(l => l.log_type==='holiday').length;
+    const on   = sl.some(l => !l.end_time && l.date === today);
+    return `<tr class="staff-row">
+      <td>${escHtml(s.full_name)}</td>
+      <td><span class="role-tag">${s.role==='doctor'
+        ?`<svg viewBox="0 0 24 24"><use href="#i-doctor"/></svg> Доктор`
+        :`<svg viewBox="0 0 24 24"><use href="#i-nurse"/></svg> Сестра`}</span></td>
+      <td>${Math.round(hrs)} ч.</td>
+      <td>${sick}</td><td>${hols}</td>
+      <td>${on?'<span class="online-dot"></span>Пријавен/а':'<span style="color:var(--text-light)">Одјавен/а</span>'}</td>
+    </tr>`;
   }).join('');
 }
 
-/* ── REPORTS ── */
+/* ══════════════════════════════════════════
+   REPORTS
+══════════════════════════════════════════ */
 async function generateReport() {
   const empId = document.getElementById('reportEmployee').value;
   const month = document.getElementById('reportMonth').value;
   if (!month) { showToast('Изберете месец.', 'error'); return; }
   const [year, mo] = month.split('-');
-  const from = `${month}-01`, to = `${month}-${String(new Date(parseInt(year),parseInt(mo),0).getDate()).padStart(2,'0')}`;
+  const from = `${month}-01`;
+  const to   = `${month}-${String(new Date(parseInt(year), parseInt(mo), 0).getDate()).padStart(2,'0')}`;
   let query = sb.from('work_logs').select('*, profiles(full_name)').gte('date', from).lte('date', to).order('date');
   if (empId) query = query.eq('user_id', empId);
   const { data: logs } = await query;
-  const workLogs = logs?.filter(l => l.log_type==='work' && l.end_time) || [];
-  const totalHrs = workLogs.reduce((a,l) => a+calcHours(l.start_time,l.end_time), 0);
-  const sickDays = logs?.filter(l => l.log_type==='sick').length || 0;
-  const holDays  = logs?.filter(l => l.log_type==='holiday').length || 0;
-  const clockSvg = `<svg viewBox="0 0 24 24"><use href="#i-clock"/></svg>`;
-  const calSvg   = `<svg viewBox="0 0 24 24"><use href="#i-calendar"/></svg>`;
-  const sickSvg  = `<svg viewBox="0 0 24 24"><use href="#i-sick"/></svg>`;
-  const palmSvg  = `<svg viewBox="0 0 24 24"><use href="#i-bar"/></svg>`;
+  const wl  = logs?.filter(l => l.log_type==='work' && l.end_time) || [];
+  const hrs = wl.reduce((a,l) => a + calcHours(l.start_time, l.end_time), 0);
+  const sd  = logs?.filter(l => l.log_type==='sick').length    || 0;
+  const hd  = logs?.filter(l => l.log_type==='holiday').length || 0;
+  const si  = s => `<div class="stat-icon"><svg viewBox="0 0 24 24"><use href="#i-${s}"/></svg></div>`;
   document.getElementById('reportStats').innerHTML = `
-    <div class="stat-card"><div class="stat-icon">${clockSvg}</div><div class="stat-val">${Math.round(totalHrs)}</div><div class="stat-label">Вкупно часови</div></div>
-    <div class="stat-card"><div class="stat-icon">${calSvg}</div><div class="stat-val">${workLogs.length}</div><div class="stat-label">Работни денови</div></div>
-    <div class="stat-card"><div class="stat-icon">${sickSvg}</div><div class="stat-val">${sickDays}</div><div class="stat-label">Боледување</div></div>
-    <div class="stat-card"><div class="stat-icon">${palmSvg}</div><div class="stat-val">${holDays}</div><div class="stat-label">Годишен одмор</div></div>
+    <div class="stat-card">${si('clock')}<div class="stat-val">${Math.round(hrs)}</div><div class="stat-label">Вкупно часови</div></div>
+    <div class="stat-card">${si('calendar')}<div class="stat-val">${wl.length}</div><div class="stat-label">Работни денови</div></div>
+    <div class="stat-card">${si('sick')}<div class="stat-val">${sd}</div><div class="stat-label">Боледување</div></div>
+    <div class="stat-card">${si('bar')}<div class="stat-val">${hd}</div><div class="stat-label">Годишен одмор</div></div>
   `;
-  document.getElementById('reportTableTitle').textContent = `Детали – ${month} ${empId?'':'(сите вработени)'}`;
+  document.getElementById('reportTableTitle').textContent = `Детали – ${month}${empId ? '' : ' (сите вработени)'}`;
   document.getElementById('reportTableBody').innerHTML = (logs||[]).map(l => {
-    const hrs = l.start_time && l.end_time ? calcHours(l.start_time,l.end_time).toFixed(1)+' ч.' : '–';
-    return `<tr><td>${formatDate(l.date)}</td><td>${l.profiles?.full_name||'–'}</td><td>${l.start_time?.slice(0,5)||'–'}</td><td>${l.end_time?.slice(0,5)||'–'}</td><td>${hrs}</td><td><span class="pill pill-${l.log_type}">${typeLabelMk(l.log_type)}</span></td></tr>`;
+    const h = (l.start_time && l.end_time) ? calcHours(l.start_time, l.end_time).toFixed(1) + ' ч.' : '–';
+    return `<tr><td>${formatDate(l.date)}</td><td>${escHtml(l.profiles?.full_name||'–')}</td><td>${l.start_time?.slice(0,5)||'–'}</td><td>${l.end_time?.slice(0,5)||'–'}</td><td>${h}</td><td><span class="pill pill-${l.log_type}">${typeLabelMk(l.log_type)}</span></td></tr>`;
   }).join('');
   document.getElementById('reportOutput').style.display = 'block';
   showToast('Извештајот е генериран!', 'success');
 }
 function printReport() { window.print(); }
 
-/* ── ADMIN ── */
+/* ══════════════════════════════════════════
+   ADMIN — CREATE / EDIT / DELETE USERS
+══════════════════════════════════════════ */
 async function loadAdminUsers() {
-  const { data } = await sb.from('profiles').select('*').order('full_name');
+  const { data, error } = await sb.from('profiles').select('*').order('full_name');
   const el = document.getElementById('adminUserList');
+  if (error) { el.innerHTML = `<p style="color:var(--red);font-size:.85rem">Грешка: ${error.message}</p>`; return; }
   if (!data?.length) { el.innerHTML = '<p style="color:var(--text-light);font-size:.85rem">Нема вработени.</p>'; return; }
   el.innerHTML = data.map(s => `
-    <div style="display:flex;align-items:center;gap:10px;padding:.7rem .5rem;border-bottom:1px solid rgba(42,122,122,.07)">
-      <div style="width:32px;height:32px;border-radius:50%;background:var(--teal-light);color:var(--teal);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0">${(s.full_name||'?')[0]}</div>
-      <div style="flex:1">
-        <div style="font-size:.88rem;font-weight:600;color:var(--text)">${s.full_name}</div>
-        <div style="font-size:.75rem;color:var(--text-light)">${s.role==='doctor'?'Доктор':'Мед. сестра'}</div>
+    <div class="user-card">
+      <div class="user-card-avatar">${(s.full_name||'?')[0].toUpperCase()}</div>
+      <div class="user-card-info">
+        <div class="user-card-name">${escHtml(s.full_name||'–')}</div>
+        <div class="user-card-meta">${s.role==='doctor'?'Доктор':'Мед. сестра'}${s.job_title?' · '+escHtml(s.job_title):''}${s.employed_date?' · од '+formatDate(s.employed_date):''}</div>
+        <div class="user-card-meta">${s.leave_days ?? 20} денови одмор${s.phone?' · '+escHtml(s.phone):''}</div>
+      </div>
+      <div class="user-card-actions">
+        <button class="btn-secondary" onclick="openEditUser('${s.id}')">
+          <svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-edit"/></svg>
+        </button>
       </div>
     </div>`).join('');
 }
 
-async function inviteEmployee() {
-  const name  = document.getElementById('inviteName').value.trim();
-  const email = document.getElementById('inviteEmail').value.trim();
-  const role  = document.getElementById('inviteRole').value;
-  if (!name || !email) { showToast('Пополнете ги сите полиња.', 'error'); return; }
-  const { data, error } = await sb.auth.admin.inviteUserByEmail(email, { data: { full_name: name, role } });
-  if (error) { showToast('Поканата бара серверски клуч. Користете го Supabase Dashboard за сега.', 'error'); return; }
-  showToast(`Покана испратена до ${email}!`, 'success');
-  document.getElementById('inviteName').value  = '';
-  document.getElementById('inviteEmail').value = '';
+function openEditUser(id) {
+  const s = allStaff.find(u => u.id === id);
+  if (!s) { showToast('Вработениот не е пронајден.', 'error'); return; }
+  document.getElementById('editUserId').value       = s.id;
+  document.getElementById('editFullName').value     = s.full_name     || '';
+  document.getElementById('editPhone').value        = s.phone         || '';
+  document.getElementById('editJobTitle').value     = s.job_title     || '';
+  document.getElementById('editEmployedDate').value = s.employed_date || '';
+  document.getElementById('editLeaveDays2').value   = s.leave_days    ?? 20;
+  document.getElementById('editRole').value         = s.role          || 'nurse';
+  openModal('editUserModal');
+}
+
+async function saveEditUser() {
+  const id = document.getElementById('editUserId').value;
+  const updates = {
+    full_name:     document.getElementById('editFullName').value.trim(),
+    phone:         document.getElementById('editPhone').value.trim(),
+    job_title:     document.getElementById('editJobTitle').value.trim(),
+    employed_date: document.getElementById('editEmployedDate').value || null,
+    leave_days:    parseInt(document.getElementById('editLeaveDays2').value) || 20,
+    role:          document.getElementById('editRole').value,
+  };
+  const { error } = await sb.from('profiles').update(updates).eq('id', id);
+  if (error) { showToast('Грешка: ' + error.message, 'error'); return; }
+  allStaff = allStaff.map(s => s.id === id ? { ...s, ...updates } : s);
+  closeModal('editUserModal');
+  loadAdminUsers();
+  await loadStaffList();
+  showToast('Профилот е зачуван!', 'success');
+}
+
+async function createEmployee() {
+  const name     = document.getElementById('newName').value.trim();
+  const email    = document.getElementById('newEmail').value.trim();
+  const password = document.getElementById('newPassword').value;
+  const role     = document.getElementById('newRole').value;
+  const phone    = document.getElementById('newPhone').value.trim();
+  const jobTitle = document.getElementById('newJobTitle').value.trim();
+  const empDate  = document.getElementById('newEmployedDate').value;
+  const leaveDays= parseInt(document.getElementById('newLeaveDays').value) || 20;
+
+  if (!name || !email || !password) { showToast('Пополнете ги задолжителните полиња.', 'error'); return; }
+  if (password.length < 6)          { showToast('Лозинката мора да има мин. 6 знаци.', 'error'); return; }
+
+  const btn = document.getElementById('createEmpBtn');
+  btn.disabled = true;
+
+  // Create auth user via signUp (works client-side with anon key)
+  const { data: authData, error: authErr } = await sb.auth.signUp({
+    email, password,
+    options: { data: { full_name: name, role } }
+  });
+
+  if (authErr) { showToast('Грешка: ' + authErr.message, 'error'); btn.disabled = false; return; }
+
+  // Update the profile row (trigger creates it, we update extra fields)
+  if (authData?.user) {
+    await sb.from('profiles').update({
+      phone, job_title: jobTitle,
+      employed_date: empDate || null,
+      leave_days: leaveDays
+    }).eq('id', authData.user.id);
+  }
+
+  btn.disabled = false;
+  showToast(`Сметката за ${name} е создадена! Ќе добие е-мејл за потврда.`, 'success');
+  ['newName','newEmail','newPassword','newPhone','newJobTitle','newEmployedDate'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('newLeaveDays').value = 20;
+  await loadStaffList();
   loadAdminUsers();
 }
 
-/* ── AUTH ── */
-async function handleLogout() { await sb.auth.signOut(); window.location.href = 'index.html'; }
+/* ══════════════════════════════════════════
+   MODAL HELPERS
+══════════════════════════════════════════ */
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+// Close on backdrop click
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('modal-overlay')) closeModal(e.target.id);
+});
 
-/* ── HELPERS ── */
+/* ══════════════════════════════════════════
+   AUTH
+══════════════════════════════════════════ */
+async function handleLogout() {
+  const { error } = await sb.auth.signOut();
+  if (error) { showToast('Грешка при одјавување.', 'error'); return; }
+  window.location.href = 'index.html';
+}
+
+/* ══════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════ */
 function calcHours(start, end) {
   if (!start || !end) return 0;
-  const [sh,sm] = start.split(':').map(Number), [eh,em] = end.split(':').map(Number);
-  return ((eh*60+em)-(sh*60+sm))/60;
+  const [sh,sm] = start.split(':').map(Number);
+  const [eh,em] = end.split(':').map(Number);
+  return ((eh*60+em) - (sh*60+sm)) / 60;
 }
 function formatDate(d) {
   if (!d) return '–';
-  return new Date(d+'T00:00:00').toLocaleDateString('mk-MK', { day:'2-digit', month:'2-digit', year:'numeric' });
+  return new Date(d + 'T00:00:00').toLocaleDateString('mk-MK', { day:'2-digit', month:'2-digit', year:'numeric' });
 }
 function typeLabelMk(t) { return { work:'Работа', sick:'Боледување', holiday:'Одмор' }[t] || t; }
-function showToast(msg, type='') {
+function escHtml(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function showToast(msg, type = '') {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'show ' + type;
+  t.textContent = msg;
+  t.className   = 'show ' + type;
   clearTimeout(t._timer);
-  t._timer = setTimeout(() => { t.className = type; }, 3200);
+  t._timer = setTimeout(() => { t.className = type; }, 3500);
 }
 </script>
 </body>
