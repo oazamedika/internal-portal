@@ -513,6 +513,10 @@ var currentUser=null,currentProfile=null,allStaff=[],activeClock=null;
   sb.auth.onAuthStateChange(function(ev,s){if(ev==='SIGNED_OUT')window.location.replace('index.html');});
   await loadProfile();
   await bootDashboard();
+  // Navigate to section if arriving from another page via hash (e.g. tasks.html links)
+  var hashMap={dashboard:'dashboard',workhours:'worklog',worklog:'worklog',profile:'settings',team:'staff',reports:'reports',settings:'admin',admin:'admin'};
+  var hash=(window.location.hash||'').replace('#','');
+  if(hash&&hashMap[hash])navigate(hashMap[hash]);
 })();
 
 async function loadProfile(){
