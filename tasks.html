@@ -6,7 +6,6 @@
   <title>Оаза Медика – Задачи</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Marked.js for Markdown rendering -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
     const SUPABASE_URL  = 'https://pmolxspputemoyvilzyq.supabase.co';
@@ -14,221 +13,193 @@
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
   </script>
   <style>
-    :root{--teal:#2a7a7a;--teal-dark:#1d5e5e;--green:#1a5c2a;--green-light:#e8f5ec;--teal-light:#e4f2f2;--cream:#f9faf8;--text:#1c2a22;--text-mid:#3d5046;--text-light:#6b8070;--white:#fff;--shadow:0 4px 32px rgba(26,92,42,.10);--radius:14px;--sidebar:240px;--amber:#f59e0b;--amber-light:#fef9ec;--red:#c0392b;--red-light:#fdf0ee;--blue:#2563eb;--blue-light:#eff6ff;--purple:#7c3aed;--purple-light:#f5f3ff}
+    :root{--teal:#2a7a7a;--teal-dark:#1d5e5e;--green:#1a5c2a;--green-light:#e8f5ec;--teal-light:#e4f2f2;--cream:#f9faf8;--text:#1c2a22;--text-mid:#3d5046;--text-light:#6b8070;--white:#fff;--shadow:0 4px 32px rgba(26,92,42,.10);--radius:14px;--sidebar:240px;--amber:#f59e0b;--amber-light:#fef9ec;--red:#c0392b;--red-light:#fdf0ee;--blue:#2563eb;--blue-light:#eff6ff;--purple:#7c3aed}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Lato',sans-serif;background:var(--cream);color:var(--text);line-height:1.6;display:flex;min-height:100vh}
     h1,h2,h3,h4{font-family:'Playfair Display',serif;line-height:1.2}
-
-    /* SIDEBAR */
-    .sidebar{width:var(--sidebar);background:linear-gradient(165deg,var(--teal-dark) 0%,var(--green) 70%,#0f3d1c 100%);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .3s ease;overflow-y:auto}
-    .sidebar-logo{padding:1.4rem 1.4rem 1rem;display:flex;align-items:center;gap:10px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08)}
-    .sidebar-logo img{height:42px;width:auto;filter:brightness(0) invert(1);opacity:.92}
-    .sidebar-logo-text{display:flex;flex-direction:column;line-height:1.15}
-    .sidebar-logo-text span:first-child{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fff}
-    .sidebar-logo-text span:last-child{font-size:.62rem;color:rgba(255,255,255,.55);letter-spacing:.09em;text-transform:uppercase}
-    .sidebar-user{margin:1rem 1rem .5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:.75rem 1rem;display:flex;align-items:center;gap:10px}
-    .user-avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fff;flex-shrink:0}
+    .sidebar{width:var(--sidebar);background:linear-gradient(165deg,var(--teal-dark) 0%,var(--green) 70%,#0f3d1c 100%);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .3s ease;overflow:hidden}
+    .sidebar-logo{padding:1rem 1.1rem .85rem;display:flex;align-items:center;gap:9px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .sidebar-logo img{height:34px;width:auto;filter:brightness(0) invert(1);opacity:.92;flex-shrink:0}
+    .sidebar-logo-text{font-size:.6rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+    .sidebar-user{margin:.65rem .85rem .4rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:.6rem .8rem;display:flex;align-items:center;gap:8px;flex-shrink:0}
+    .user-avatar{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0}
     .user-info{flex:1;overflow:hidden}
-    .user-name{font-size:.82rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .user-role{font-size:.68rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.07em}
-    nav.sidebar-nav{flex:1;padding:.5rem 0}
-    .nav-section-label{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.35);padding:.8rem 1.4rem .3rem}
-    .nav-link{display:flex;align-items:center;gap:10px;padding:.65rem 1.4rem;text-decoration:none;font-size:.85rem;font-weight:600;color:rgba(255,255,255,.65);transition:all .2s;border-left:3px solid transparent;cursor:pointer;user-select:none}
-    .nav-link .nav-icon{width:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .nav-link .nav-icon svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+    .user-name{font-size:.78rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .user-role{font-size:.62rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em}
+    nav.sidebar-nav{flex:1;padding:.3rem 0;overflow:hidden}
+    .nav-section-label{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.33);padding:.55rem 1.1rem .2rem}
+    .nav-link{display:flex;align-items:center;gap:9px;padding:.56rem 1.1rem;text-decoration:none;font-size:.81rem;font-weight:600;color:rgba(255,255,255,.65);transition:all .2s;border-left:3px solid transparent;cursor:pointer;user-select:none;white-space:nowrap}
+    .nav-link .nav-icon{width:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .nav-link .nav-icon svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
     .nav-link:hover{color:#fff;background:rgba(255,255,255,.07)}
     .nav-link.active{color:#fff;background:rgba(255,255,255,.12);border-left-color:rgba(255,255,255,.6)}
-    .nav-link .badge{margin-left:auto;background:var(--amber);color:#fff;font-size:.65rem;font-weight:700;padding:.15rem .45rem;border-radius:50px;min-width:18px;text-align:center}
+    .nav-link .badge{margin-left:auto;background:var(--amber);color:#fff;font-size:.6rem;font-weight:700;padding:.1rem .38rem;border-radius:50px;min-width:16px;text-align:center}
     .doctor-only{display:none}
-    .sidebar-ext{padding:.75rem 1rem .25rem;border-top:1px solid rgba(255,255,255,.08)}
-    .ext-label{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.5rem;padding-left:.25rem}
-    .btn-ext{width:100%;padding:.6rem .9rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:rgba(255,255,255,.75);font-family:'Lato',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:9px;transition:all .2s;text-decoration:none;margin-bottom:.5rem}
-    .btn-ext:hover{background:rgba(255,255,255,.16);color:#fff}
-    .btn-ext-icon{width:24px;height:24px;flex-shrink:0;object-fit:contain;filter:brightness(0) invert(1);opacity:.85}
-    .btn-ext-arrow{margin-left:auto;display:flex;align-items:center;opacity:.4}
-    .btn-ext-arrow svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
-    .sidebar-bottom{padding:.75rem 1rem 1.2rem;border-top:1px solid rgba(255,255,255,.08)}
-    .btn-logout{width:100%;padding:.65rem 1rem;background:rgba(255,80,80,.15);border:1px solid rgba(255,100,100,.25);border-radius:10px;color:rgba(255,200,200,.9);font-family:'Lato',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .2s;letter-spacing:.02em}
+    .sidebar-ext{padding:.45rem .85rem .2rem;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .ext-label{font-size:.57rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:.38rem;padding-left:.18rem}
+    .btn-ext{width:100%;padding:.45rem .65rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:rgba(255,255,255,.72);font-family:'Lato',sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;text-decoration:none;margin-bottom:.35rem}
+    .btn-ext:hover{background:rgba(255,255,255,.15);color:#fff}
+    .btn-ext-icon{width:18px;height:18px;flex-shrink:0;object-fit:contain;filter:brightness(0) invert(1);opacity:.85}
+    .btn-ext-arrow{margin-left:auto;opacity:.4}.btn-ext-arrow svg{width:10px;height:10px;stroke:#fff;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    .sidebar-bottom{padding:.45rem .85rem .7rem;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .btn-logout{width:100%;padding:.52rem .85rem;background:rgba(255,80,80,.15);border:1px solid rgba(255,100,100,.25);border-radius:9px;color:rgba(255,200,200,.9);font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s}
     .btn-logout:hover{background:rgba(192,57,43,.6);color:#fff;border-color:rgba(255,100,100,.5)}
-    .btn-logout svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
-
-    /* TOPBAR */
-    .topbar{position:fixed;top:0;left:var(--sidebar);right:0;height:60px;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-bottom:1px solid rgba(42,122,122,.1);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;z-index:100}
-    .topbar-left{display:flex;align-items:center;gap:.8rem}
+    .btn-logout svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    .topbar{position:fixed;top:0;left:var(--sidebar);right:0;height:56px;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-bottom:1px solid rgba(42,122,122,.1);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;z-index:100}
+    .topbar-left{display:flex;align-items:center;gap:.7rem}
     .hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;color:var(--teal)}
     .hamburger-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-width:2}
-    .topbar-title{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--text)}
-    .topbar-date{font-size:.8rem;color:var(--text-light);font-weight:300}
+    .topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--text)}
     .topbar-right{display:flex;align-items:center;gap:1rem}
-    .topbar-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green-light);color:var(--green);padding:.3rem .85rem;border-radius:50px;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
-
-    /* MAIN */
-    .main{margin-left:var(--sidebar);margin-top:60px;padding:2rem;flex:1;min-width:0}
+    .topbar-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green);padding:.25rem .75rem;border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    .main{margin-left:var(--sidebar);margin-top:56px;padding:1.5rem;flex:1;min-width:0}
     @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-    .section-header{margin-bottom:1.8rem}
-    .section-label{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:.3rem}
-    .section-title{font-size:clamp(1.5rem,2.5vw,2rem);color:var(--text)}
-    .section-sub{font-size:.9rem;color:var(--text-light);font-weight:300;margin-top:.3rem}
-
-    /* CARD */
-    .card{background:var(--white);border-radius:var(--radius);border:1px solid rgba(42,122,122,.08);padding:1.5rem;margin-bottom:1.5rem}
-    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;padding-bottom:.9rem;border-bottom:1px solid rgba(42,122,122,.08);flex-wrap:wrap;gap:.6rem}
-    .card-title{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--text)}
-    .card-action{font-size:.78rem;color:var(--teal);font-weight:600;text-decoration:none;cursor:pointer;background:none;border:none;transition:color .2s;display:inline-flex;align-items:center;gap:5px}
-    .card-action:hover{color:var(--teal-dark);text-decoration:underline}
-
-    /* FORMS */
-    .f-group{margin-bottom:1.1rem}
-    .f-label{display:block;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);margin-bottom:.4rem}
-    .f-input{width:100%;padding:.75rem 1rem;border:2px solid rgba(42,122,122,.15);border-radius:10px;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text);background:var(--cream);outline:none;transition:border-color .2s}
+    .anim{animation:fadeIn .3s ease}
+    .section-header{margin-bottom:1.4rem;display:flex;align-items:flex-start;justify-content:space-between;gap:.8rem;flex-wrap:wrap}
+    .section-label{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:.25rem}
+    .section-title{font-size:clamp(1.4rem,2.5vw,1.9rem);color:var(--text)}
+    .section-sub{font-size:.88rem;color:var(--text-light);font-weight:300;margin-top:.25rem}
+    .card{background:var(--white);border-radius:var(--radius);border:1px solid rgba(42,122,122,.08);padding:1.3rem;margin-bottom:1.3rem}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid rgba(42,122,122,.08);flex-wrap:wrap;gap:.5rem}
+    .card-title{font-family:'Playfair Display',serif;font-size:1rem;color:var(--text)}
+    .card-action{font-size:.76rem;color:var(--teal);font-weight:600;cursor:pointer;background:none;border:none;display:inline-flex;align-items:center;gap:4px;transition:color .2s}
+    .f-group{margin-bottom:.95rem}
+    .f-label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);margin-bottom:.33rem}
+    .f-input{width:100%;padding:.65rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.87rem;color:var(--text);background:var(--cream);outline:none;transition:border-color .2s}
     .f-input:focus{border-color:var(--teal);background:var(--white)}
-    .f-select{width:100%;padding:.75rem 1rem;border:2px solid rgba(42,122,122,.15);border-radius:10px;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text);background:var(--cream);outline:none}
-    .f-textarea{width:100%;padding:.75rem 1rem;border:2px solid rgba(42,122,122,.15);border-radius:10px;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text);background:var(--cream);outline:none;transition:border-color .2s;resize:vertical;min-height:100px}
+    .f-select{width:100%;padding:.65rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.87rem;color:var(--text);background:var(--cream);outline:none}
+    .f-textarea{width:100%;padding:.65rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.87rem;color:var(--text);background:var(--cream);outline:none;transition:border-color .2s;resize:vertical;min-height:90px}
     .f-textarea:focus{border-color:var(--teal);background:var(--white)}
-    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-    .form-grid.three{grid-template-columns:1fr 1fr 1fr}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
     .span-2{grid-column:span 2}
-    .btn-primary{padding:.75rem 1.5rem;background:var(--teal);color:#fff;border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+    .btn-primary{padding:.65rem 1.3rem;background:var(--teal);color:#fff;border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.87rem;font-weight:700;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:7px}
     .btn-primary:hover{background:var(--teal-dark)}
     .btn-primary:disabled{background:#9bb8b8;cursor:not-allowed}
-    .btn-secondary{padding:.6rem 1rem;background:var(--teal-light);color:var(--teal);border:1px solid rgba(42,122,122,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+    .btn-secondary{padding:.5rem .85rem;background:var(--teal-light);color:var(--teal);border:1px solid rgba(42,122,122,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.79rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
     .btn-secondary:hover{background:var(--teal);color:#fff}
-    .btn-danger{padding:.6rem 1rem;background:var(--red-light);color:var(--red);border:1px solid rgba(192,57,43,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+    .btn-danger{padding:.5rem .85rem;background:var(--red-light);color:var(--red);border:1px solid rgba(192,57,43,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.79rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
     .btn-danger:hover{background:var(--red);color:#fff}
-
-    /* TOOLBAR */
-    .tasks-toolbar{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
-    .tasks-toolbar .f-select,.tasks-toolbar .f-input{width:auto;padding:.4rem .75rem;font-size:.83rem}
-    .tasks-toolbar .search-input{min-width:200px}
-
-    /* TASK TABLE */
-    .task-table-wrap{overflow-x:auto}
-    table{width:100%;border-collapse:collapse;font-size:.85rem}
-    thead th{text-align:left;padding:.6rem 1rem;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);border-bottom:2px solid rgba(42,122,122,.1);white-space:nowrap}
+    .fab{position:fixed;bottom:1.5rem;right:1.5rem;z-index:150;width:52px;height:52px;border-radius:50%;background:var(--teal);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(42,122,122,.4);transition:all .2s}
+    .fab:hover{background:var(--teal-dark);transform:scale(1.07)}
+    .fab svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    .toolbar{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
+    .toolbar .f-select,.toolbar .f-input{width:auto;padding:.37rem .7rem;font-size:.81rem}
+    .toolbar .search-input{min-width:175px}
+    .task-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    table{width:100%;border-collapse:collapse;font-size:.83rem}
+    thead th{text-align:left;padding:.52rem .85rem;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);border-bottom:2px solid rgba(42,122,122,.1);white-space:nowrap}
     tbody tr{border-bottom:1px solid rgba(42,122,122,.06);transition:background .15s;cursor:pointer}
     tbody tr:hover{background:var(--cream)}
-    tbody td{padding:.75rem 1rem;color:var(--text-mid);vertical-align:middle}
-    .td-title{font-weight:600;color:var(--text);max-width:260px}
-    .td-title .title-text{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .td-title .desc-preview{font-size:.75rem;color:var(--text-light);font-weight:400;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}
+    tbody td{padding:.65rem .85rem;color:var(--text-mid);vertical-align:middle}
+    .td-title{font-weight:600;color:var(--text);max-width:240px}
+    .td-title .t-name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .td-title .t-desc{font-size:.73rem;color:var(--text-light);font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px}
+    .td-title .t-recur{font-size:.68rem;color:var(--teal);font-weight:700;margin-top:1px}
     .td-nowrap{white-space:nowrap}
-
-    /* PILLS */
-    .pill{display:inline-flex;align-items:center;padding:.2rem .7rem;border-radius:50px;font-size:.72rem;font-weight:700;white-space:nowrap}
+    .pill{display:inline-flex;align-items:center;padding:.18rem .62rem;border-radius:50px;font-size:.7rem;font-weight:700;white-space:nowrap}
     .pill-pending{background:#f3f4f6;color:#6b7280}
     .pill-in_progress{background:var(--blue-light);color:var(--blue)}
     .pill-completed{background:var(--green-light);color:var(--green)}
     .pill-archived{background:#f3f0ff;color:var(--purple)}
     .pill-overdue{background:var(--red-light);color:var(--red)}
-
-    /* PRIORITY */
-    .prio-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;flex-shrink:0}
-    .prio-low{background:#6ee89a}
-    .prio-medium{background:var(--amber)}
-    .prio-high{background:var(--red)}
-
-    /* SKELETON */
-    .skeleton{background:linear-gradient(90deg,#e8eee9 25%,#d4ddd5 50%,#e8eee9 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;height:40px;margin-bottom:.5rem}
+    .skeleton{background:linear-gradient(90deg,#e8eee9 25%,#d4ddd5 50%,#e8eee9 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;height:36px;margin-bottom:.45rem}
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
-    /* EMPTY STATE */
-    .empty-state{text-align:center;padding:2.5rem 1rem;color:var(--text-light)}
-    .empty-icon{width:48px;height:48px;margin:0 auto .8rem;background:var(--teal-light);border-radius:50%;display:flex;align-items:center;justify-content:center}
-    .empty-icon svg{width:22px;height:22px;stroke:var(--teal);fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
-
-    /* MODAL */
-    .modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1.5rem}
+    .empty-state{text-align:center;padding:2rem 1rem;color:var(--text-light)}
+    .empty-icon{width:40px;height:40px;margin:0 auto .6rem;background:var(--teal-light);border-radius:50%;display:flex;align-items:center;justify-content:center}
+    .empty-icon svg{width:18px;height:18px;stroke:var(--teal);fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+    .modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.52);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem}
     .modal-overlay.open{display:flex}
-    .modal{background:var(--white);border-radius:20px;width:100%;max-width:620px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.2)}
-    .modal-wide{max-width:760px}
-    .modal-header{padding:1.4rem 1.6rem 1rem;border-bottom:1px solid rgba(42,122,122,.08);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:1}
-    .modal-header h3{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--text)}
-    .modal-close{background:var(--teal-light);border:none;cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal);transition:background .2s;flex-shrink:0}
+    .modal{background:var(--white);border-radius:18px;width:100%;max-width:580px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.22)}
+    .modal-wide{max-width:700px}
+    .modal-header{padding:1.15rem 1.3rem .85rem;border-bottom:1px solid rgba(42,122,122,.08);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:1}
+    .modal-header h3{font-family:'Playfair Display',serif;font-size:1.08rem;color:var(--text)}
+    .modal-close{background:var(--teal-light);border:none;cursor:pointer;width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal);transition:background .2s;flex-shrink:0}
     .modal-close:hover{background:var(--teal);color:#fff}
-    .modal-close svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
-    .modal-body{padding:1.4rem 1.6rem}
-    .modal-footer{padding:.8rem 1.6rem 1.4rem;border-top:1px solid rgba(42,122,122,.08);display:flex;gap:.8rem;justify-content:flex-end;flex-wrap:wrap}
-
-    /* DETAIL VIEW */
-    .detail-section{margin-bottom:1.4rem}
-    .detail-label{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);margin-bottom:.35rem}
-    .detail-value{font-size:.9rem;color:var(--text);line-height:1.6}
-    .detail-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.4rem}
-    .md-content{font-size:.88rem;line-height:1.7;color:var(--text-mid)}
-    .md-content h1,.md-content h2,.md-content h3{font-family:'Playfair Display',serif;margin:.8rem 0 .4rem}
-    .md-content p{margin-bottom:.6rem}
-    .md-content ul,.md-content ol{padding-left:1.4rem;margin-bottom:.6rem}
-    .md-content li{margin-bottom:.2rem}
-    .md-content code{background:var(--cream);padding:.1rem .35rem;border-radius:4px;font-size:.82rem}
-    .md-content pre{background:var(--cream);padding:.8rem;border-radius:8px;overflow-x:auto;margin-bottom:.6rem}
-
-    /* STATUS BADGE inline */
-    .status-changer{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
-    .status-btn{padding:.3rem .8rem;border-radius:50px;border:2px solid transparent;font-family:'Lato',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s}
-    .status-btn:not(.active){background:var(--cream);color:var(--text-mid);border-color:rgba(42,122,122,.15)}
-    .status-btn:not(.active):hover{border-color:var(--teal);color:var(--teal)}
-    .status-btn.active{border-color:transparent}
-    .status-btn.active.s-pending{background:#f3f4f6;color:#6b7280}
-    .status-btn.active.s-in_progress{background:var(--blue-light);color:var(--blue)}
-    .status-btn.active.s-completed{background:var(--green-light);color:var(--green)}
-    .status-btn.active.s-archived{background:#f3f0ff;color:var(--purple)}
-
-    /* TOAST */
-    #toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;background:var(--text);color:#fff;padding:.85rem 1.4rem;border-radius:12px;font-size:.87rem;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.22,.68,0,1.1);max-width:340px;pointer-events:none}
+    .modal-close svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    .modal-body{padding:1.15rem 1.3rem}
+    .modal-footer{padding:.65rem 1.3rem 1.15rem;border-top:1px solid rgba(42,122,122,.08);display:flex;gap:.65rem;justify-content:flex-end;flex-wrap:wrap}
+    .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.2rem}
+    .detail-item .d-label{font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-light);margin-bottom:.25rem}
+    .detail-item .d-val{font-size:.88rem;color:var(--text)}
+    .md-content{font-size:.86rem;line-height:1.7;color:var(--text-mid)}
+    .md-content h1,.md-content h2,.md-content h3{font-family:'Playfair Display',serif;margin:.7rem 0 .35rem}
+    .md-content p{margin-bottom:.55rem}
+    .md-content ul,.md-content ol{padding-left:1.3rem;margin-bottom:.55rem}
+    .md-content code{background:var(--cream);padding:.1rem .3rem;border-radius:4px;font-size:.8rem}
+    .status-changer{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.45rem}
+    .st-btn{padding:.28rem .75rem;border-radius:50px;border:2px solid rgba(42,122,122,.18);background:var(--cream);font-family:'Lato',sans-serif;font-size:.73rem;font-weight:700;cursor:pointer;transition:all .2s;color:var(--text-mid)}
+    .st-btn:hover{border-color:var(--teal);color:var(--teal)}
+    .st-btn.active.s-pending{background:#f3f4f6;color:#6b7280;border-color:transparent}
+    .st-btn.active.s-in_progress{background:var(--blue-light);color:var(--blue);border-color:transparent}
+    .st-btn.active.s-completed{background:var(--green-light);color:var(--green);border-color:transparent}
+    .st-btn.active.s-archived{background:#f3f0ff;color:var(--purple);border-color:transparent}
+    .recur-section{background:var(--teal-light);border-radius:10px;padding:.85rem 1rem;margin-top:.55rem}
+    .recur-section .r-title{font-size:.78rem;font-weight:700;color:var(--teal-dark);margin-bottom:.65rem;display:flex;align-items:center;gap:6px}
+    .recur-section .r-title svg{width:14px;height:14px;stroke:var(--teal-dark);fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+    .recur-row{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}
+    .toggle-row{display:flex;align-items:center;gap:.65rem;margin-bottom:.65rem}
+    .toggle-switch{position:relative;width:38px;height:20px;flex-shrink:0}
+    .toggle-switch input{opacity:0;width:0;height:0;position:absolute}
+    .toggle-knob{position:absolute;inset:0;background:#d1d5db;border-radius:50px;cursor:pointer;transition:background .2s}
+    .toggle-knob:before{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+    .toggle-switch input:checked + .toggle-knob{background:var(--teal)}
+    .toggle-switch input:checked + .toggle-knob:before{transform:translateX(18px)}
+    .toggle-label{font-size:.82rem;font-weight:600;color:var(--text-mid)}
+    #recurOptions{display:none}
+    .recur-badge{display:inline-flex;align-items:center;gap:4px;background:var(--teal-light);color:var(--teal);font-size:.68rem;font-weight:700;padding:.12rem .5rem;border-radius:50px}
+    #toast{position:fixed;bottom:1.2rem;right:1.2rem;z-index:9999;background:var(--text);color:#fff;padding:.78rem 1.2rem;border-radius:11px;font-size:.84rem;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.22,.68,0,1.1);max-width:310px;pointer-events:none}
     #toast.show{transform:translateY(0);opacity:1}
     #toast.success{background:var(--teal-dark)}
     #toast.error{background:var(--red)}
-
-    /* MOBILE */
     .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:199;opacity:0;pointer-events:none;transition:opacity .3s}
     .sidebar-overlay.show{opacity:1;pointer-events:auto}
     @media(max-width:900px){
-      .sidebar{transform:translateX(-100%);display:flex}
+      .sidebar{width:260px;transform:translateX(-100%);display:flex}
       .sidebar.open{transform:translateX(0)}
       .sidebar-overlay{display:block}
       .topbar{left:0}
-      .main{margin-left:0;padding:1.2rem}
+      .main{margin-left:0;padding:1rem}
       .hamburger-btn{display:block}
-      .form-grid,.form-grid.three{grid-template-columns:1fr}
+      .form-grid{grid-template-columns:1fr}
       .span-2{grid-column:span 1}
-      .detail-meta-grid{grid-template-columns:1fr}
+      .detail-grid{grid-template-columns:1fr}
+      .recur-row{grid-template-columns:1fr}
     }
     @media(max-width:600px){
-      .tasks-toolbar{flex-direction:column;align-items:stretch}
-      .tasks-toolbar .f-select,.tasks-toolbar .f-input,.tasks-toolbar .search-input{width:100%}
+      .main{padding:.75rem}
+      .toolbar{flex-direction:column;align-items:stretch}
+      .toolbar .f-select,.toolbar .f-input,.toolbar .search-input{width:100%}
+      .fab{bottom:1rem;right:1rem}
+      thead th:nth-child(n+4){display:none}
+      tbody td:nth-child(n+4){display:none}
     }
   </style>
 </head>
 <body>
-
-<!-- SVG SPRITE -->
 <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
-  <symbol id="i-home"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
-  <symbol id="i-clock"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
-  <symbol id="i-tasks"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
-  <symbol id="i-user"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
-  <symbol id="i-users"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
-  <symbol id="i-bar"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
-  <symbol id="i-gear"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
-  <symbol id="i-logout"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
-  <symbol id="i-plus"    viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
-  <symbol id="i-check"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
-  <symbol id="i-edit"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
-  <symbol id="i-trash"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></symbol>
-  <symbol id="i-x"       viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
-  <symbol id="i-menu"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
-  <symbol id="i-ext"     viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
-  <symbol id="i-archive" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></symbol>
-  <symbol id="i-filter"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></symbol>
+  <symbol id="i-home"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+  <symbol id="i-clock"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-tasks"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
+  <symbol id="i-user"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-users"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-bar"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+  <symbol id="i-gear"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+  <symbol id="i-plus"   viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="i-check"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-edit"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+  <symbol id="i-trash"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></symbol>
+  <symbol id="i-x"      viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+  <symbol id="i-menu"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+  <symbol id="i-ext"    viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+  <symbol id="i-archive"viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></symbol>
+  <symbol id="i-repeat" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></symbol>
 </svg>
-
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
   <a href="https://oazamedika.mk" class="sidebar-logo">
     <img src="logo_header.png" alt="Оаза Медика" onerror="this.style.display='none'"/>
-    <div class="sidebar-logo-text"><span>Оаза Медика</span><span>Портал за вработени</span></div>
+    <span class="sidebar-logo-text">Портал за вработени</span>
   </a>
   <div class="sidebar-user">
     <div class="user-avatar" id="avatarInitial">–</div>
@@ -239,116 +210,44 @@
   </div>
   <nav class="sidebar-nav">
     <div class="nav-section-label">Мени</div>
-    <a class="nav-link" href="dashboard.html">
-      <span class="nav-icon"><svg><use href="#i-home"/></svg></span>Контролна табла
-    </a>
-    <a class="nav-link" href="dashboard.html#worklog">
-      <span class="nav-icon"><svg><use href="#i-clock"/></svg></span>Работни часови
-    </a>
-    <a class="nav-link active" href="tasks.html">
-      <span class="nav-icon"><svg><use href="#i-tasks"/></svg></span>Задачи
-      <span class="badge" id="tasksBadge" style="display:none">0</span>
-    </a>
-    <a class="nav-link" href="dashboard.html#settings">
-      <span class="nav-icon"><svg><use href="#i-user"/></svg></span>Мој профил
-    </a>
+    <a class="nav-link" href="dashboard.html"><span class="nav-icon"><svg><use href="#i-home"/></svg></span>Контролна табла</a>
+    <a class="nav-link" href="dashboard.html"><span class="nav-icon"><svg><use href="#i-clock"/></svg></span>Работни часови</a>
+    <a class="nav-link active" href="tasks.html"><span class="nav-icon"><svg><use href="#i-tasks"/></svg></span>Задачи<span class="badge" id="tasksBadge" style="display:none">0</span></a>
+    <a class="nav-link" href="dashboard.html"><span class="nav-icon"><svg><use href="#i-user"/></svg></span>Мој профил</a>
     <div class="nav-section-label doctor-only">Доктор</div>
-    <a class="nav-link doctor-only" href="dashboard.html#staff">
-      <span class="nav-icon"><svg><use href="#i-users"/></svg></span>Тим – преглед
-    </a>
-    <a class="nav-link doctor-only" href="dashboard.html#reports">
-      <span class="nav-icon"><svg><use href="#i-bar"/></svg></span>Извештаи
-    </a>
-    <a class="nav-link doctor-only" href="dashboard.html#admin">
-      <span class="nav-icon"><svg><use href="#i-gear"/></svg></span>Управување со тим
-    </a>
+    <a class="nav-link doctor-only" href="dashboard.html"><span class="nav-icon"><svg><use href="#i-users"/></svg></span>Тим – преглед</a>
+    <a class="nav-link doctor-only" href="dashboard.html"><span class="nav-icon"><svg><use href="#i-bar"/></svg></span>Извештаи</a>
+    <a class="nav-link doctor-only" href="dashboard.html"><span class="nav-icon"><svg><use href="#i-gear"/></svg></span>Управување со тим</a>
   </nav>
   <div class="sidebar-ext">
     <div class="ext-label">Надворешни портали</div>
-    <a class="btn-ext" href="https://portal.fzo.org.mk/" target="_blank" rel="noopener">
-      <img class="btn-ext-icon" src="fzom.png" alt="" onerror="this.style.display='none'"/>
-      Портал на ФЗОМ
-      <span class="btn-ext-arrow"><svg><use href="#i-ext"/></svg></span>
-    </a>
-    <a class="btn-ext" href="https://app.helio.mk/" target="_blank" rel="noopener">
-      <img class="btn-ext-icon" src="helio.png" alt="" onerror="this.style.display='none'"/>
-      Хелио Пациенти
-      <span class="btn-ext-arrow"><svg><use href="#i-ext"/></svg></span>
-    </a>
+    <a class="btn-ext" href="https://portal.fzo.org.mk/" target="_blank" rel="noopener"><img class="btn-ext-icon" src="fzom.png" alt="" onerror="this.style.display='none'"/>Портал на ФЗОМ<span class="btn-ext-arrow"><svg><use href="#i-ext"/></svg></span></a>
+    <a class="btn-ext" href="https://app.helio.mk/" target="_blank" rel="noopener"><img class="btn-ext-icon" src="helio.png" alt="" onerror="this.style.display='none'"/>Хелио Пациенти<span class="btn-ext-arrow"><svg><use href="#i-ext"/></svg></span></a>
   </div>
   <div class="sidebar-bottom">
-    <button class="btn-logout" id="logoutBtn" type="button">
-      <svg><use href="#i-logout"/></svg>Одјавете се
-    </button>
+    <button class="btn-logout" id="logoutBtn" type="button"><svg><use href="#i-logout"/></svg>Одјавете се</button>
   </div>
 </aside>
-
-<!-- TOPBAR -->
 <header class="topbar">
   <div class="topbar-left">
     <button class="hamburger-btn" id="hamburgerBtn" type="button"><svg><use href="#i-menu"/></svg></button>
-    <div>
-      <div class="topbar-title">Задачи</div>
-      <div class="topbar-date" id="topbarDate"></div>
-    </div>
+    <div class="topbar-title">Задачи</div>
   </div>
-  <div class="topbar-right">
-    <span class="topbar-badge" id="roleBadge">…</span>
-  </div>
+  <div class="topbar-right"><span class="topbar-badge" id="roleBadge">…</span></div>
 </header>
-
-<!-- MAIN -->
 <main class="main">
-  <div style="animation:fadeIn .3s ease">
-
+  <div class="anim">
     <div class="section-header">
-      <div class="section-label">Управување</div>
-      <h2 class="section-title">Задачи</h2>
-      <p class="section-sub" id="tasksSub">Вчитување…</p>
-    </div>
-
-    <!-- Doctor: Create task card -->
-    <div class="card doctor-only" id="createTaskCard" style="display:none">
-      <div class="card-header">
-        <span class="card-title">Создај нова задача</span>
-      </div>
-      <div class="form-grid">
-        <div class="f-group span-2">
-          <label class="f-label">Наслов <span style="color:var(--red)">*</span></label>
-          <input id="newTitle" type="text" class="f-input" placeholder="пр. Инсталирај ЕКГ машина во соба 1"/>
-        </div>
-        <div class="f-group span-2">
-          <label class="f-label">Опис <span style="color:var(--text-light);font-weight:400;text-transform:none;letter-spacing:0">(поддржува Markdown)</span></label>
-          <textarea id="newDescription" class="f-textarea" placeholder="Детален опис, чекори, белешки…"></textarea>
-        </div>
-        <div class="f-group">
-          <label class="f-label">Доделено на <span style="color:var(--red)">*</span></label>
-          <select id="newAssignee" class="f-select"><option value="">— Изберете вработен —</option></select>
-        </div>
-        <div class="f-group">
-          <label class="f-label">Статус</label>
-          <select id="newStatus" class="f-select">
-            <option value="pending">Во чекање</option>
-            <option value="in_progress">Во тек</option>
-          </select>
-        </div>
-        <div class="f-group">
-          <label class="f-label">Рок (датум и час)</label>
-          <input id="newDueDate" type="datetime-local" class="f-input"/>
-        </div>
-        <div class="f-group" style="display:flex;align-items:flex-end">
-          <button class="btn-primary" type="button" id="createTaskBtn" style="width:100%;justify-content:center">
-            <svg width="14" height="14" stroke="#fff" fill="none" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><use href="#i-plus"/></svg>Создај задача
-          </button>
-        </div>
+      <div>
+        <div class="section-label">Управување</div>
+        <h2 class="section-title">Задачи</h2>
+        <p class="section-sub" id="tasksSub">Вчитување…</p>
       </div>
     </div>
-
-    <!-- Active Tasks -->
     <div class="card">
       <div class="card-header">
         <span class="card-title">Активни задачи</span>
-        <div class="tasks-toolbar">
+        <div class="toolbar">
           <input type="search" id="searchInput" class="f-input search-input" placeholder="Пребарај…"/>
           <select id="filterStatus" class="f-select">
             <option value="all">Сите статуси</option>
@@ -356,31 +255,25 @@
             <option value="in_progress">Во тек</option>
             <option value="completed">Завршени</option>
           </select>
-          <select id="filterAssignee" class="f-select doctor-only" style="display:none">
-            <option value="">Сите вработени</option>
-          </select>
+          <select id="filterAssignee" class="f-select doctor-only" style="display:none"><option value="">Сите вработени</option></select>
         </div>
       </div>
       <div class="task-table-wrap">
-        <table id="tasksTable">
+        <table>
           <thead>
             <tr>
               <th>Наслов</th>
               <th>Статус</th>
               <th>Рок</th>
               <th class="doctor-only" id="colAssignee" style="display:none">Доделено на</th>
-              <th class="doctor-only" id="colCreator" style="display:none">Создадено од</th>
+              <th class="doctor-only" id="colCreator"  style="display:none">Создадено од</th>
               <th>Акции</th>
             </tr>
           </thead>
-          <tbody id="tasksBody">
-            <tr><td colspan="6"><div class="skeleton"></div></td></tr>
-          </tbody>
+          <tbody id="tasksBody"><tr><td colspan="6"><div class="skeleton"></div></td></tr></tbody>
         </table>
       </div>
     </div>
-
-    <!-- Doctor: Archived Tasks -->
     <div class="card doctor-only" id="archivedCard" style="display:none">
       <div class="card-header">
         <span class="card-title">Архивирани задачи</span>
@@ -389,26 +282,105 @@
       <div id="archivedSection" style="display:none">
         <div class="task-table-wrap">
           <table>
-            <thead>
-              <tr>
-                <th>Наслов</th>
-                <th>Доделено на</th>
-                <th>Создадено од</th>
-                <th>Завршено на</th>
-                <th>Создадено на</th>
-                <th>Акции</th>
-              </tr>
-            </thead>
-            <tbody id="archivedBody">
-              <tr><td colspan="6" style="text-align:center;color:var(--text-light);padding:1.2rem">Нема архивирани задачи</td></tr>
-            </tbody>
+            <thead><tr><th>Наслов</th><th>Доделено на</th><th>Создадено од</th><th>Завршено на</th><th>Создадено на</th><th>Акции</th></tr></thead>
+            <tbody id="archivedBody"><tr><td colspan="6" style="text-align:center;color:var(--text-light);padding:1.1rem">Нема архивирани задачи</td></tr></tbody>
           </table>
         </div>
       </div>
     </div>
-
   </div>
 </main>
+
+<!-- FAB -->
+<button class="fab doctor-only" id="fabNewTask" title="Нова задача" style="display:none">
+  <svg><use href="#i-plus"/></svg>
+</button>
+
+<!-- CREATE TASK MODAL -->
+<div class="modal-overlay" id="createModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Нова задача</h3>
+      <button class="modal-close" type="button" id="closeCreateModal"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="f-group span-2">
+          <label class="f-label">Наслов <span style="color:var(--red)">*</span></label>
+          <input id="newTitle" type="text" class="f-input" placeholder="пр. Инсталирај ЕКГ машина во соба 1"/>
+        </div>
+        <div class="f-group span-2">
+          <label class="f-label">Опис <small style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.7rem;color:var(--text-light)">(Markdown)</small></label>
+          <textarea id="newDescription" class="f-textarea" placeholder="Детален опис, чек-листа, упатства…"></textarea>
+        </div>
+        <div class="f-group">
+          <label class="f-label">Доделено на <span style="color:var(--red)">*</span></label>
+          <select id="newAssignee" class="f-select"><option value="">— Изберете —</option></select>
+        </div>
+        <div class="f-group">
+          <label class="f-label">Статус</label>
+          <select id="newStatus" class="f-select">
+            <option value="pending">Во чекање</option>
+            <option value="in_progress">Во тек</option>
+          </select>
+        </div>
+        <div class="f-group span-2">
+          <label class="f-label">Рок (датум и час)</label>
+          <input id="newDueDate" type="datetime-local" class="f-input"/>
+        </div>
+      </div>
+      <!-- RECURRING -->
+      <div class="recur-section">
+        <div class="r-title"><svg viewBox="0 0 24 24"><use href="#i-repeat"/></svg> Повторувачка задача</div>
+        <div class="toggle-row">
+          <label class="toggle-switch">
+            <input type="checkbox" id="recurEnabled"/>
+            <span class="toggle-knob"></span>
+          </label>
+          <span class="toggle-label">Овозможи повторување</span>
+        </div>
+        <div id="recurOptions">
+          <div class="recur-row">
+            <div class="f-group">
+              <label class="f-label">Фреквенција</label>
+              <select id="recurFreq" class="f-select">
+                <option value="daily">Секој ден</option>
+                <option value="weekly" selected>Секоја недела</option>
+                <option value="monthly">Секој месец</option>
+              </select>
+            </div>
+            <div class="f-group" id="recurDayGroup">
+              <label class="f-label">Ден во неделата</label>
+              <select id="recurDay" class="f-select">
+                <option value="1">Понеделник</option>
+                <option value="2">Вторник</option>
+                <option value="3">Среда</option>
+                <option value="4">Четврток</option>
+                <option value="5">Петок</option>
+                <option value="6">Сабота</option>
+                <option value="0">Недела</option>
+              </select>
+            </div>
+            <div class="f-group" id="recurDateGroup" style="display:none">
+              <label class="f-label">Ден во месецот</label>
+              <input id="recurDate" type="number" class="f-input" min="1" max="31" value="1" placeholder="1–31"/>
+            </div>
+          </div>
+          <div class="f-group">
+            <label class="f-label">Краен датум на повторување</label>
+            <input id="recurUntil" type="date" class="f-input"/>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" type="button" id="cancelCreateModal">Откажи</button>
+      <button class="btn-primary" type="button" id="submitCreateTask">
+        <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><use href="#i-plus"/></svg>Создај задача
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- TASK DETAIL / EDIT MODAL -->
 <div class="modal-overlay" id="taskModal">
@@ -423,463 +395,336 @@
 </div>
 
 <div id="toast"></div>
-
 <script>
-// ═══════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════
-var currentUser    = null;
-var currentProfile = null;
-var allTasks       = [];
-var archivedTasks  = [];
-var allStaff       = [];
-var editingTaskId  = null;
+var currentUser=null,currentProfile=null,allTasks=[],archivedTasks=[],allStaff=[],editingTaskId=null;
 
-// ═══════════════════════════════════════
-// BOOT
-// ═══════════════════════════════════════
-(async function init() {
-  setTopbarDate();
-
-  document.getElementById('logoutBtn').addEventListener('click', handleLogout);
-  document.getElementById('hamburgerBtn').addEventListener('click', toggleSidebar);
-  document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
-  document.getElementById('createTaskBtn') && document.getElementById('createTaskBtn').addEventListener('click', createTask);
-  document.getElementById('searchInput').addEventListener('input', renderTasks);
-  document.getElementById('filterStatus').addEventListener('change', renderTasks);
-  document.getElementById('filterAssignee').addEventListener('change', renderTasks);
-  document.getElementById('closeTaskModal').addEventListener('click', function(){ closeModal('taskModal'); });
-  document.getElementById('taskModal').addEventListener('click', function(e){ if(e.target===this) closeModal('taskModal'); });
-  document.getElementById('toggleArchiveBtn').addEventListener('click', toggleArchive);
-
-  var res = await sb.auth.getSession();
-  if (!res.data || !res.data.session) { window.location.replace('index.html'); return; }
-  currentUser = res.data.session.user;
-
-  sb.auth.onAuthStateChange(function(event, session) {
-    if (event === 'SIGNED_OUT') window.location.replace('index.html');
+(async function init(){
+  document.getElementById('logoutBtn').addEventListener('click',handleLogout);
+  document.getElementById('hamburgerBtn').addEventListener('click',toggleSidebar);
+  document.getElementById('sidebarOverlay').addEventListener('click',closeSidebar);
+  document.getElementById('searchInput').addEventListener('input',renderTasks);
+  document.getElementById('filterStatus').addEventListener('change',renderTasks);
+  document.getElementById('filterAssignee').addEventListener('change',renderTasks);
+  document.getElementById('closeTaskModal').addEventListener('click',function(){closeModal('taskModal');});
+  document.getElementById('taskModal').addEventListener('click',function(e){if(e.target===this)closeModal('taskModal');});
+  document.getElementById('toggleArchiveBtn').addEventListener('click',toggleArchive);
+  document.getElementById('fabNewTask').addEventListener('click',function(){openModal('createModal');});
+  document.getElementById('closeCreateModal').addEventListener('click',function(){closeModal('createModal');});
+  document.getElementById('cancelCreateModal').addEventListener('click',function(){closeModal('createModal');});
+  document.getElementById('createModal').addEventListener('click',function(e){if(e.target===this)closeModal('createModal');});
+  document.getElementById('submitCreateTask').addEventListener('click',createTask);
+  document.getElementById('recurEnabled').addEventListener('change',function(){
+    document.getElementById('recurOptions').style.display=this.checked?'block':'none';
+  });
+  document.getElementById('recurFreq').addEventListener('change',function(){
+    var isWeekly=this.value==='weekly',isMonthly=this.value==='monthly';
+    document.getElementById('recurDayGroup').style.display=isWeekly?'block':'none';
+    document.getElementById('recurDateGroup').style.display=isMonthly?'block':'none';
   });
 
+  var res=await sb.auth.getSession();
+  if(!res.data||!res.data.session){window.location.replace('index.html');return;}
+  currentUser=res.data.session.user;
+  sb.auth.onAuthStateChange(function(ev,s){if(ev==='SIGNED_OUT')window.location.replace('index.html');});
   await loadProfile();
   await loadStaff();
   await loadTasks();
 })();
 
-// ═══════════════════════════════════════
-// PROFILE
-// ═══════════════════════════════════════
-async function loadProfile() {
-  var res = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-  if (res.error || !res.data) { showToast('Грешка при вчитување профил.', 'error'); return; }
-  currentProfile = res.data;
-  applyRoleUI(res.data.role, res.data.full_name);
+async function loadProfile(){
+  var res=await sb.from('profiles').select('*').eq('id',currentUser.id).single();
+  if(res.error||!res.data){showToast('Грешка при вчитување профил.','error');return;}
+  currentProfile=res.data;
+  applyRoleUI(res.data.role,res.data.full_name);
 }
-
-function applyRoleUI(role, name) {
-  document.getElementById('sidebarUserName').textContent = name || currentUser.email;
-  document.getElementById('sidebarUserRole').textContent = role === 'doctor' ? 'Доктор' : 'Медицинска сестра';
-  document.getElementById('avatarInitial').textContent   = (name || '?')[0].toUpperCase();
-  document.getElementById('roleBadge').textContent       = role === 'doctor' ? 'Доктор' : 'Мед. сестра';
-  document.getElementById('tasksSub').textContent        = role === 'doctor'
-    ? 'Создавај и управувај со задачи за тимот'
-    : 'Ваши задачи доделени од докторот';
-
-  if (role === 'doctor') {
-    document.querySelectorAll('.doctor-only').forEach(function(el) {
-      el.style.display = el.classList.contains('nav-section-label') ? 'block' : 'flex';
-    });
-    // Show doctor-specific table columns
-    document.getElementById('colAssignee').style.display  = '';
-    document.getElementById('colCreator').style.display   = '';
-    document.getElementById('filterAssignee').style.display = 'block';
-    document.getElementById('archivedCard').style.display = 'block';
-    document.getElementById('createTaskCard').style.display = 'block';
+function applyRoleUI(role,name){
+  document.getElementById('sidebarUserName').textContent=name||currentUser.email;
+  document.getElementById('sidebarUserRole').textContent=role==='doctor'?'Доктор':'Медицинска сестра';
+  document.getElementById('avatarInitial').textContent=(name||'?')[0].toUpperCase();
+  document.getElementById('roleBadge').textContent=role==='doctor'?'Доктор':'Мед. сестра';
+  document.getElementById('tasksSub').textContent=role==='doctor'?'Создавај и управувај со задачи за тимот':'Ваши задачи доделени од докторот';
+  if(role==='doctor'){
+    document.querySelectorAll('.doctor-only').forEach(function(el){el.style.display=el.classList.contains('nav-section-label')?'block':'flex';});
+    document.getElementById('colAssignee').style.display='';
+    document.getElementById('colCreator').style.display='';
+    document.getElementById('filterAssignee').style.display='block';
+    document.getElementById('archivedCard').style.display='block';
+    document.getElementById('fabNewTask').style.display='flex';
   }
 }
 
-// ═══════════════════════════════════════
-// STAFF LIST
-// ═══════════════════════════════════════
-async function loadStaff() {
-  var res = await sb.from('profiles').select('id, full_name, role').order('full_name');
-  allStaff = res.data || [];
-  // Populate assignee dropdown in create form
-  var sel = document.getElementById('newAssignee');
-  allStaff.forEach(function(s) {
-    var opt = document.createElement('option');
-    opt.value = s.id;
-    opt.textContent = s.full_name + (s.role === 'doctor' ? ' (Д)' : '');
-    sel.appendChild(opt);
-  });
-  // Populate filter
-  var fsel = document.getElementById('filterAssignee');
-  allStaff.forEach(function(s) {
-    var opt = document.createElement('option');
-    opt.value = s.id;
-    opt.textContent = s.full_name;
-    fsel.appendChild(opt);
-  });
+async function loadStaff(){
+  var res=await sb.from('profiles').select('id,full_name,role').order('full_name');
+  allStaff=res.data||[];
+  var opts=allStaff.map(function(s){return '<option value="'+s.id+'">'+esc(s.full_name)+' ('+(s.role==='doctor'?'Д':'С')+')</option>';}).join('');
+  document.getElementById('newAssignee').innerHTML='<option value="">— Изберете —</option>'+opts;
+  document.getElementById('filterAssignee').innerHTML='<option value="">Сите вработени</option>'+opts;
 }
 
-function staffName(id) {
-  var s = allStaff.find(function(x){ return x.id === id; });
-  return s ? s.full_name : '–';
-}
-
-// ═══════════════════════════════════════
-// LOAD TASKS
-// ═══════════════════════════════════════
-async function loadTasks() {
-  var isDoc = currentProfile && currentProfile.role === 'doctor';
-
-  // Active tasks query
-  var q = sb.from('tasks').select('*')
-    .neq('status', 'archived')
-    .order('due_date', { ascending: true, nullsFirst: false });
-  if (!isDoc) q = q.eq('assignee_id', currentUser.id);
-  var res = await q;
-  if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); return; }
-  allTasks = res.data || [];
-  renderTasks();
-
+async function loadTasks(){
+  var isDoc=currentProfile&&currentProfile.role==='doctor';
+  var q=sb.from('tasks').select('*, assignee:profiles!tasks_assignee_id_fkey(full_name), creator:profiles!tasks_creator_id_fkey(full_name)').not('status','eq','archived').order('due_date',{ascending:true,nullsFirst:false});
+  if(!isDoc)q=q.eq('assignee_id',currentUser.id);
+  var res=await q;
+  if(res.error){showToast('Грешка: '+res.error.message,'error');return;}
+  allTasks=res.data||[];
   // Badge
-  var pending = allTasks.filter(function(t){ return t.status === 'pending' || t.status === 'in_progress'; }).length;
-  var badge = document.getElementById('tasksBadge');
-  badge.textContent = pending;
-  badge.style.display = pending > 0 ? '' : 'none';
-
-  // Archived (doctor only)
-  if (isDoc) {
-    var ar = await sb.from('tasks').select('*').eq('status', 'archived').order('updated_at', { ascending: false });
-    archivedTasks = ar.data || [];
-    renderArchived();
-  }
+  var active=allTasks.filter(function(t){return t.status==='pending'||t.status==='in_progress';}).length;
+  var badge=document.getElementById('tasksBadge');badge.textContent=active;badge.style.display=active>0?'':'none';
+  renderTasks();
+  if(isDoc)loadArchived();
 }
 
-// ═══════════════════════════════════════
-// RENDER TASKS TABLE
-// ═══════════════════════════════════════
-function renderTasks() {
-  var isDoc    = currentProfile && currentProfile.role === 'doctor';
-  var search   = document.getElementById('searchInput').value.trim().toLowerCase();
-  var stFilter = document.getElementById('filterStatus').value;
-  var asFilter = document.getElementById('filterAssignee').value;
+async function loadArchived(){
+  var res=await sb.from('tasks').select('*, assignee:profiles!tasks_assignee_id_fkey(full_name), creator:profiles!tasks_creator_id_fkey(full_name)').eq('status','archived').order('created_at',{ascending:false});
+  archivedTasks=res.data||[];
+  renderArchived();
+}
 
-  var list = allTasks.filter(function(t) {
-    if (stFilter !== 'all' && t.status !== stFilter) return false;
-    if (isDoc && asFilter && t.assignee_id !== asFilter) return false;
-    if (search && !t.title.toLowerCase().includes(search) && !(t.description||'').toLowerCase().includes(search)) return false;
+function renderTasks(){
+  var search=document.getElementById('searchInput').value.toLowerCase();
+  var status=document.getElementById('filterStatus').value;
+  var assignee=document.getElementById('filterAssignee').value;
+  var list=allTasks.filter(function(t){
+    if(status!=='all'&&t.status!==status)return false;
+    if(assignee&&t.assignee_id!==assignee)return false;
+    if(search&&!t.title.toLowerCase().includes(search)&&!(t.description||'').toLowerCase().includes(search))return false;
     return true;
   });
-
-  var tbody = document.getElementById('tasksBody');
-  if (!list.length) {
-    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24"><use href="#i-tasks"/></svg></div><p>Нема задачи за прикажување</p></div></td></tr>';
-    return;
-  }
-
-  tbody.innerHTML = list.map(function(t) {
-    var overdue = t.due_date && new Date(t.due_date) < new Date() && t.status !== 'completed' && t.status !== 'archived';
-    var dueStr  = t.due_date ? formatDateTime(t.due_date) : '–';
-    var dueCell = t.due_date
-      ? '<span class="'+(overdue?'pill pill-overdue':'')+'" style="'+(overdue?'':'color:var(--text-mid);font-size:.83rem')+'">'+(overdue?'⚠ ':'')+dueStr+'</span>'
-      : '<span style="color:var(--text-light)">–</span>';
-
-    return '<tr onclick="openTaskDetail(\''+t.id+'\')" style="cursor:pointer">' +
-      '<td class="td-title">' +
-        '<span class="title-text">' + esc(t.title) + '</span>' +
-        (t.description ? '<span class="desc-preview">' + esc(t.description.replace(/[#*`]/g,'').substring(0,60)) + '</span>' : '') +
-      '</td>' +
-      '<td><span class="pill pill-'+t.status+'">'+statusLabel(t.status)+'</span></td>' +
-      '<td class="td-nowrap">'+dueCell+'</td>' +
-      (isDoc ? '<td>' + esc(staffName(t.assignee_id)) + '</td>' : '') +
-      (isDoc ? '<td>' + esc(staffName(t.creator_id))  + '</td>' : '') +
-      '<td onclick="event.stopPropagation()" style="white-space:nowrap">' +
-        (isDoc ? '<button class="btn-secondary" style="padding:.3rem .6rem;margin-right:.3rem" onclick="openEditModal(\''+t.id+'\')" title="Уреди"><svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-edit"/></svg></button>' : '') +
-        (isDoc ? '<button class="btn-danger" style="padding:.3rem .6rem" onclick="archiveTask(\''+t.id+'\')" title="Архивирај"><svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-archive"/></svg></button>' : '') +
-        (!isDoc ? '<button class="btn-secondary" style="padding:.3rem .6rem" onclick="openStatusUpdate(\''+t.id+'\')" title="Ажурирај статус"><svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-check"/></svg></button>' : '') +
-      '</td>' +
+  var isDoc=currentProfile&&currentProfile.role==='doctor';
+  var tbody=document.getElementById('tasksBody');
+  if(!list.length){tbody.innerHTML='<tr><td colspan="6"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24"><use href="#i-tasks"/></svg></div><p>Нема задачи</p></div></td></tr>';return;}
+  tbody.innerHTML=list.map(function(t){
+    var overdue=t.due_date&&new Date(t.due_date)<new Date()&&t.status!=='completed';
+    var statusPill=overdue?'<span class="pill pill-overdue">Задоцнето</span>':'<span class="pill pill-'+t.status+'">'+statusLabel(t.status)+'</span>';
+    var recurHtml=t.recur_freq?'<div class="t-recur">↻ '+recurLabel(t.recur_freq,t.recur_day,t.recur_date)+'</div>':'';
+    return '<tr onclick="openTaskDetail(\''+t.id+'\')">'+
+      '<td class="td-title"><span class="t-name">'+esc(t.title)+'</span>'+(t.description?'<span class="t-desc">'+esc(t.description.slice(0,60))+'</span>':'')+recurHtml+'</td>'+
+      '<td>'+statusPill+'</td>'+
+      '<td class="td-nowrap">'+(t.due_date?formatDateTime(t.due_date):'–')+'</td>'+
+      (isDoc?'<td class="td-nowrap">'+(t.assignee&&t.assignee.full_name?esc(t.assignee.full_name):'–')+'</td>':'') +
+      (isDoc?'<td class="td-nowrap">'+(t.creator&&t.creator.full_name?esc(t.creator.full_name):'–')+'</td>':'') +
+      '<td onclick="event.stopPropagation()">'+
+        (isDoc?'<button class="btn-secondary" style="margin-right:4px" onclick="openEditModal(\''+t.id+'\')"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-edit"/></svg></button>':'') +
+        (isDoc?'<button class="btn-danger" onclick="archiveTask(\''+t.id+'\')"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-archive"/></svg></button>':'') +
+        (!isDoc?'<button class="btn-secondary" onclick="openTaskDetail(\''+t.id+'\')"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-check"/></svg></button>':'') +
+      '</td>'+
     '</tr>';
   }).join('');
 }
 
-// ═══════════════════════════════════════
-// RENDER ARCHIVED TABLE (doctor only)
-// ═══════════════════════════════════════
-function renderArchived() {
-  var tbody = document.getElementById('archivedBody');
-  if (!archivedTasks.length) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-light);padding:1.2rem;font-size:.85rem">Нема архивирани задачи</td></tr>';
-    return;
-  }
-  tbody.innerHTML = archivedTasks.map(function(t) {
-    return '<tr onclick="openTaskDetail(\''+t.id+'\')" style="cursor:pointer;opacity:.8">' +
-      '<td class="td-title"><span class="title-text">'+esc(t.title)+'</span></td>' +
-      '<td>'+esc(staffName(t.assignee_id))+'</td>' +
-      '<td>'+esc(staffName(t.creator_id))+'</td>' +
-      '<td class="td-nowrap">'+(t.completed_at ? formatDateTime(t.completed_at) : '–')+'</td>' +
-      '<td class="td-nowrap">'+formatDateTime(t.created_at)+'</td>' +
-      '<td onclick="event.stopPropagation()">' +
-        '<button class="btn-danger" style="padding:.3rem .6rem" onclick="deleteTask(\''+t.id+'\')" title="Избриши трајно"><svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-trash"/></svg></button>' +
-      '</td>' +
+function renderArchived(){
+  var tbody=document.getElementById('archivedBody');
+  if(!archivedTasks.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--text-light);padding:1.1rem">Нема архивирани задачи</td></tr>';return;}
+  tbody.innerHTML=archivedTasks.map(function(t){
+    return '<tr>'+
+      '<td class="td-title"><span class="t-name">'+esc(t.title)+'</span></td>'+
+      '<td>'+(t.assignee&&t.assignee.full_name?esc(t.assignee.full_name):'–')+'</td>'+
+      '<td>'+(t.creator&&t.creator.full_name?esc(t.creator.full_name):'–')+'</td>'+
+      '<td class="td-nowrap">'+(t.completed_at?formatDateTime(t.completed_at):'–')+'</td>'+
+      '<td class="td-nowrap">'+formatDateTime(t.created_at)+'</td>'+
+      '<td><button class="btn-danger" onclick="deleteTask(\''+t.id+'\')"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-trash"/></svg></button></td>'+
     '</tr>';
   }).join('');
 }
 
-function toggleArchive() {
-  var sec = document.getElementById('archivedSection');
-  var btn = document.getElementById('toggleArchiveBtn');
-  var visible = sec.style.display !== 'none';
-  sec.style.display = visible ? 'none' : 'block';
-  btn.textContent = visible ? 'Прикажи ▾' : 'Скриј ▴';
+function toggleArchive(){
+  var sec=document.getElementById('archivedSection');
+  var btn=document.getElementById('toggleArchiveBtn');
+  var open=sec.style.display==='block';
+  sec.style.display=open?'none':'block';
+  btn.textContent=open?'Прикажи ▾':'Скриј ▴';
 }
 
-// ═══════════════════════════════════════
-// CREATE TASK (doctor only)
-// ═══════════════════════════════════════
-async function createTask() {
-  var title      = document.getElementById('newTitle').value.trim();
-  var desc       = document.getElementById('newDescription').value.trim();
-  var assigneeId = document.getElementById('newAssignee').value;
-  var status     = document.getElementById('newStatus').value;
-  var due        = document.getElementById('newDueDate').value;
-
-  if (!title)      { showToast('Насловот е задолжителен.', 'error'); return; }
-  if (!assigneeId) { showToast('Изберете вработен за доделување.', 'error'); return; }
-
-  var btn = document.getElementById('createTaskBtn');
-  btn.disabled = true;
-
-  var payload = {
-    title:       title,
-    description: desc || null,
-    assignee_id: assigneeId,
+// ── CREATE ──
+async function createTask(){
+  var title=document.getElementById('newTitle').value.trim();
+  var desc=document.getElementById('newDescription').value.trim();
+  var assignee=document.getElementById('newAssignee').value;
+  var status=document.getElementById('newStatus').value;
+  var due=document.getElementById('newDueDate').value;
+  if(!title){showToast('Насловот е задолжителен.','error');return;}
+  if(!assignee){showToast('Изберете вработен.','error');return;}
+  var recurEnabled=document.getElementById('recurEnabled').checked;
+  var recurFreq=recurEnabled?document.getElementById('recurFreq').value:null;
+  var recurDay=recurEnabled&&recurFreq==='weekly'?parseInt(document.getElementById('recurDay').value):null;
+  var recurDate=recurEnabled&&recurFreq==='monthly'?parseInt(document.getElementById('recurDate').value):null;
+  var recurUntil=recurEnabled?document.getElementById('recurUntil').value||null:null;
+  var btn=document.getElementById('submitCreateTask');btn.disabled=true;
+  var payload={
+    user_id:     currentUser.id,
     creator_id:  currentUser.id,
-    status:      status,
-    due_date:    due || null
-  };
-
-  var res = await sb.from('tasks').insert(payload);
-  btn.disabled = false;
-  if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); return; }
-
-  document.getElementById('newTitle').value       = '';
-  document.getElementById('newDescription').value = '';
-  document.getElementById('newAssignee').value    = '';
-  document.getElementById('newStatus').value      = 'pending';
-  document.getElementById('newDueDate').value     = '';
-  showToast('Задачата е создадена!', 'success');
-  await loadTasks();
-}
-
-// ═══════════════════════════════════════
-// TASK DETAIL MODAL
-// ═══════════════════════════════════════
-function openTaskDetail(id) {
-  var t = allTasks.find(function(x){ return x.id === id; }) ||
-          archivedTasks.find(function(x){ return x.id === id; });
-  if (!t) return;
-  var isDoc = currentProfile && currentProfile.role === 'doctor';
-  var overdue = t.due_date && new Date(t.due_date) < new Date() && t.status !== 'completed' && t.status !== 'archived';
-
-  document.getElementById('taskModalTitle').textContent = t.title;
-
-  var mdHtml = t.description
-    ? '<div class="md-content">' + marked.parse(t.description) + '</div>'
-    : '<span style="color:var(--text-light);font-style:italic">Нема опис</span>';
-
-  var body = '<div class="detail-meta-grid">';
-  body += metaItem('Статус', '<span class="pill pill-'+t.status+'">'+statusLabel(t.status)+'</span>');
-  body += metaItem('Рок', t.due_date ? '<span class="'+(overdue?'pill pill-overdue':'')+'">'+(overdue?'⚠ ':'')+formatDateTime(t.due_date)+'</span>' : '–');
-  if (isDoc) {
-    body += metaItem('Доделено на', esc(staffName(t.assignee_id)));
-    body += metaItem('Создадено од', esc(staffName(t.creator_id)));
-    body += metaItem('Создадено на', formatDateTime(t.created_at));
-    body += metaItem('Последна измена', formatDateTime(t.updated_at));
-    if (t.completed_at) body += metaItem('Завршено на', formatDateTime(t.completed_at));
-  } else {
-    body += metaItem('Создадено на', formatDateTime(t.created_at));
-    if (t.completed_at) body += metaItem('Завршено на', formatDateTime(t.completed_at));
-  }
-  body += '</div>';
-  body += '<div class="detail-section"><div class="detail-label">Опис</div>' + mdHtml + '</div>';
-
-  // Status changer (nurse can change their own task status; doctor can too)
-  if (t.status !== 'archived') {
-    var statuses = isDoc
-      ? ['pending','in_progress','completed','archived']
-      : ['pending','in_progress','completed'];
-    body += '<div class="detail-section"><div class="detail-label">Промени статус</div><div class="status-changer">';
-    statuses.forEach(function(s) {
-      body += '<button type="button" class="status-btn s-'+s+(t.status===s?' active':'')
-        +'" onclick="quickStatusChange(\''+t.id+'\',\''+s+'\')">'+statusLabel(s)+'</button>';
-    });
-    body += '</div></div>';
-  }
-
-  document.getElementById('taskModalBody').innerHTML = body;
-
-  var footer = '<button class="btn-secondary" type="button" onclick="closeModal(\'taskModal\')">Затвори</button>';
-  if (isDoc && t.status !== 'archived') {
-    footer = '<button class="btn-secondary" type="button" onclick="openEditModal(\''+t.id+'\')">Уреди</button>' + footer;
-  }
-  document.getElementById('taskModalFooter').innerHTML = footer;
-
-  openModal('taskModal');
-}
-
-function metaItem(label, val) {
-  return '<div><div class="detail-label">'+label+'</div><div class="detail-value">'+val+'</div></div>';
-}
-
-// ═══════════════════════════════════════
-// EDIT MODAL (doctor only)
-// ═══════════════════════════════════════
-function openEditModal(id) {
-  closeModal('taskModal');
-  var t = allTasks.find(function(x){ return x.id === id; });
-  if (!t) return;
-  editingTaskId = id;
-
-  var staffOptions = allStaff.map(function(s) {
-    return '<option value="'+s.id+'"'+(t.assignee_id===s.id?' selected':'')+'>'+esc(s.full_name)+(s.role==='doctor'?' (Д)':'')+'</option>';
-  }).join('');
-
-  var dueVal = t.due_date ? t.due_date.slice(0,16) : '';
-
-  var body = '<div class="form-grid">' +
-    '<div class="f-group span-2"><label class="f-label">Наслов *</label><input id="editTitle" type="text" class="f-input" value="'+esc(t.title)+'"/></div>' +
-    '<div class="f-group span-2"><label class="f-label">Опис</label><textarea id="editDescription" class="f-textarea">'+esc(t.description||'')+'</textarea></div>' +
-    '<div class="f-group"><label class="f-label">Доделено на</label><select id="editAssignee" class="f-select">'+staffOptions+'</select></div>' +
-    '<div class="f-group"><label class="f-label">Статус</label><select id="editStatus" class="f-select">' +
-      ['pending','in_progress','completed','archived'].map(function(s){ return '<option value="'+s+'"'+(t.status===s?' selected':'')+'>'+statusLabel(s)+'</option>'; }).join('') +
-    '</select></div>' +
-    '<div class="f-group span-2"><label class="f-label">Рок</label><input id="editDueDate" type="datetime-local" class="f-input" value="'+dueVal+'"/></div>' +
-    '</div>';
-
-  document.getElementById('taskModalTitle').textContent = 'Уреди задача';
-  document.getElementById('taskModalBody').innerHTML = body;
-  document.getElementById('taskModalFooter').innerHTML =
-    '<button class="btn-danger" type="button" onclick="deleteTask(\''+id+'\')">Избриши</button>' +
-    '<button class="btn-secondary" type="button" onclick="closeModal(\'taskModal\')">Откажи</button>' +
-    '<button class="btn-primary" type="button" onclick="saveEdit()"><svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-check"/></svg>Зачувај</button>';
-
-  openModal('taskModal');
-}
-
-async function saveEdit() {
-  var title  = document.getElementById('editTitle').value.trim();
-  var desc   = document.getElementById('editDescription').value.trim();
-  var asn    = document.getElementById('editAssignee').value;
-  var status = document.getElementById('editStatus').value;
-  var due    = document.getElementById('editDueDate').value;
-
-  if (!title) { showToast('Насловот е задолжителен.', 'error'); return; }
-
-  var updates = {
+    assignee_id: assignee,
     title:       title,
-    description: desc || null,
-    assignee_id: asn,
+    description: desc||null,
     status:      status,
-    due_date:    due || null,
+    due_date:    due||null,
+    recur_freq:  recurFreq,
+    recur_day:   recurDay,
+    recur_date:  recurDate,
+    recur_until: recurUntil,
+    created_at:  new Date().toISOString(),
     updated_at:  new Date().toISOString()
   };
-  if (status === 'completed') updates.completed_at = new Date().toISOString();
+  var res=await sb.from('tasks').insert(payload);
+  btn.disabled=false;
+  if(res.error){showToast('Грешка: '+res.error.message,'error');return;}
+  showToast('Задачата е создадена!','success');
+  closeModal('createModal');
+  // reset form
+  ['newTitle','newDescription','newDueDate','recurUntil'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('newAssignee').value='';
+  document.getElementById('newStatus').value='pending';
+  document.getElementById('recurEnabled').checked=false;
+  document.getElementById('recurOptions').style.display='none';
+  await loadTasks();
+}
 
-  var res = await sb.from('tasks').update(updates).eq('id', editingTaskId);
-  if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); return; }
-  showToast('Зачувано!', 'success');
+// ── DETAIL VIEW ──
+function openTaskDetail(id){
+  var t=allTasks.find(function(x){return x.id===id;});
+  if(!t)return;
+  var isDoc=currentProfile&&currentProfile.role==='doctor';
+  var overdue=t.due_date&&new Date(t.due_date)<new Date()&&t.status!=='completed';
+  document.getElementById('taskModalTitle').textContent=t.title;
+  var html='';
+  html+='<div class="detail-grid">';
+  html+='<div class="detail-item"><div class="d-label">Статус</div><div class="d-val"><span class="pill pill-'+t.status+'">'+statusLabel(t.status)+'</span></div></div>';
+  html+='<div class="detail-item"><div class="d-label">Рок</div><div class="d-val '+(overdue?'style="color:var(--red);font-weight:700"':'')+'">'+(t.due_date?formatDateTime(t.due_date):'–')+'</div></div>';
+  if(isDoc){
+    html+='<div class="detail-item"><div class="d-label">Доделено на</div><div class="d-val">'+(t.assignee&&t.assignee.full_name?esc(t.assignee.full_name):'–')+'</div></div>';
+    html+='<div class="detail-item"><div class="d-label">Создадено од</div><div class="d-val">'+(t.creator&&t.creator.full_name?esc(t.creator.full_name):'–')+'</div></div>';
+    html+='<div class="detail-item"><div class="d-label">Создадено на</div><div class="d-val">'+formatDateTime(t.created_at)+'</div></div>';
+    html+='<div class="detail-item"><div class="d-label">Изменето на</div><div class="d-val">'+(t.updated_at?formatDateTime(t.updated_at):'–')+'</div></div>';
+  }
+  if(t.completed_at)html+='<div class="detail-item"><div class="d-label">Завршено на</div><div class="d-val">'+formatDateTime(t.completed_at)+'</div></div>';
+  if(t.recur_freq)html+='<div class="detail-item"><div class="d-label">Повторување</div><div class="d-val"><span class="recur-badge"><svg width="11" height="11" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-repeat"/></svg>'+recurLabel(t.recur_freq,t.recur_day,t.recur_date)+'</span>'+(t.recur_until?' до '+formatDate(t.recur_until):'')+'</div></div>';
+  html+='</div>';
+  if(t.description){html+='<div style="margin-bottom:1.2rem"><div class="d-label" style="font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-light);margin-bottom:.5rem">Опис</div><div class="md-content">'+marked.parse(t.description)+'</div></div>';}
+  if(!isDoc){
+    html+='<div><div class="d-label" style="font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-light);margin-bottom:.35rem">Промени статус</div>';
+    html+='<div class="status-changer">';
+    ['pending','in_progress','completed'].forEach(function(s){html+='<button class="st-btn'+(t.status===s?' active s-'+s:'')+'" onclick="quickStatusChange(\''+id+'\',\''+s+'\')">'+statusLabel(s)+'</button>';});
+    html+='</div></div>';
+  }
+  document.getElementById('taskModalBody').innerHTML=html;
+  var footer='';
+  if(isDoc)footer='<button class="btn-danger" onclick="archiveTask(\''+id+'\');closeModal(\'taskModal\')"><svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-archive"/></svg>Архивирај</button><button class="btn-primary" onclick="closeModal(\'taskModal\');openEditModal(\''+id+'\')"><svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-edit"/></svg>Уреди</button>';
+  document.getElementById('taskModalFooter').innerHTML=footer;
+  openModal('taskModal');
+}
+
+// ── EDIT MODAL ──
+function openEditModal(id){
+  var t=allTasks.find(function(x){return x.id===id;});
+  if(!t)return;
+  editingTaskId=id;
+  var staffOpts=allStaff.map(function(s){return '<option value="'+s.id+'"'+(t.assignee_id===s.id?' selected':'')+'>'+esc(s.full_name)+'</option>';}).join('');
+  var recurEnabled=!!t.recur_freq;
+  var body='<div class="form-grid">'+
+    '<div class="f-group span-2"><label class="f-label">Наслов</label><input id="editTitle" type="text" class="f-input" value="'+esc(t.title)+'"/></div>'+
+    '<div class="f-group span-2"><label class="f-label">Опис</label><textarea id="editDescription" class="f-textarea">'+esc(t.description||'')+'</textarea></div>'+
+    '<div class="f-group"><label class="f-label">Доделено на</label><select id="editAssignee" class="f-select"><option value="">—</option>'+staffOpts+'</select></div>'+
+    '<div class="f-group"><label class="f-label">Статус</label><select id="editStatus" class="f-select">'+
+      ['pending','in_progress','completed','archived'].map(function(s){return '<option value="'+s+'"'+(t.status===s?' selected':'')+'>'+statusLabel(s)+'</option>';}).join('')+
+    '</select></div>'+
+    '<div class="f-group span-2"><label class="f-label">Рок</label><input id="editDueDate" type="datetime-local" class="f-input" value="'+(t.due_date?t.due_date.slice(0,16):'')+'"/></div>'+
+    '</div>'+
+    '<div class="recur-section">'+
+      '<div class="r-title"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-repeat"/></svg> Повторување</div>'+
+      '<div class="toggle-row"><label class="toggle-switch"><input type="checkbox" id="editRecurEnabled"'+(recurEnabled?' checked':'')+'><span class="toggle-knob"></span></label><span class="toggle-label">Овозможи повторување</span></div>'+
+      '<div id="editRecurOptions" style="display:'+(recurEnabled?'block':'none')+'">'+
+        '<div class="recur-row">'+
+          '<div class="f-group"><label class="f-label">Фреквенција</label><select id="editRecurFreq" class="f-select"><option value="daily"'+(t.recur_freq==='daily'?' selected':'')+'>Секој ден</option><option value="weekly"'+(t.recur_freq==='weekly'?' selected':'')+'>Секоја недела</option><option value="monthly"'+(t.recur_freq==='monthly'?' selected':'')+'>Секој месец</option></select></div>'+
+          '<div class="f-group" id="editRecurDayGroup" style="display:'+(t.recur_freq==='weekly'?'block':'none')+'"><label class="f-label">Ден во неделата</label><select id="editRecurDay" class="f-select"><option value="1"'+(t.recur_day===1?' selected':'')+'>Понеделник</option><option value="2"'+(t.recur_day===2?' selected':'')+'>Вторник</option><option value="3"'+(t.recur_day===3?' selected':'')+'>Среда</option><option value="4"'+(t.recur_day===4?' selected':'')+'>Четврток</option><option value="5"'+(t.recur_day===5?' selected':'')+'>Петок</option><option value="6"'+(t.recur_day===6?' selected':'')+'>Сабота</option><option value="0"'+(t.recur_day===0?' selected':'')+'>Недела</option></select></div>'+
+          '<div class="f-group" id="editRecurDateGroup" style="display:'+(t.recur_freq==='monthly'?'block':'none')+'"><label class="f-label">Ден во месецот</label><input id="editRecurDate" type="number" class="f-input" min="1" max="31" value="'+(t.recur_date||1)+'"/></div>'+
+        '</div>'+
+        '<div class="f-group"><label class="f-label">Краен датум</label><input id="editRecurUntil" type="date" class="f-input" value="'+(t.recur_until||'')+'"/></div>'+
+      '</div>'+
+    '</div>';
+  document.getElementById('taskModalTitle').textContent='Уреди задача';
+  document.getElementById('taskModalBody').innerHTML=body;
+  document.getElementById('taskModalFooter').innerHTML='<button class="btn-secondary" onclick="closeModal(\'taskModal\')">Откажи</button><button class="btn-primary" onclick="saveEdit()"><svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-check"/></svg>Зачувај</button>';
+  // wire toggles
+  document.getElementById('editRecurEnabled').addEventListener('change',function(){document.getElementById('editRecurOptions').style.display=this.checked?'block':'none';});
+  document.getElementById('editRecurFreq').addEventListener('change',function(){document.getElementById('editRecurDayGroup').style.display=this.value==='weekly'?'block':'none';document.getElementById('editRecurDateGroup').style.display=this.value==='monthly'?'block':'none';});
+  openModal('taskModal');
+}
+
+async function saveEdit(){
+  var title=document.getElementById('editTitle').value.trim();
+  if(!title){showToast('Насловот е задолжителен.','error');return;}
+  var recurEnabled=document.getElementById('editRecurEnabled').checked;
+  var recurFreq=recurEnabled?document.getElementById('editRecurFreq').value:null;
+  var recurDay=recurEnabled&&recurFreq==='weekly'?parseInt(document.getElementById('editRecurDay').value):null;
+  var recurDate=recurEnabled&&recurFreq==='monthly'?parseInt(document.getElementById('editRecurDate').value):null;
+  var recurUntil=recurEnabled?document.getElementById('editRecurUntil').value||null:null;
+  var newStatus=document.getElementById('editStatus').value;
+  var updates={
+    title:       title,
+    description: document.getElementById('editDescription').value.trim()||null,
+    assignee_id: document.getElementById('editAssignee').value,
+    status:      newStatus,
+    due_date:    document.getElementById('editDueDate').value||null,
+    recur_freq:  recurFreq,
+    recur_day:   recurDay,
+    recur_date:  recurDate,
+    recur_until: recurUntil,
+    updated_at:  new Date().toISOString()
+  };
+  if(newStatus==='completed')updates.completed_at=new Date().toISOString();
+  var res=await sb.from('tasks').update(updates).eq('id',editingTaskId);
+  if(res.error){showToast('Грешка: '+res.error.message,'error');return;}
+  showToast('Зачувано!','success');
   closeModal('taskModal');
   await loadTasks();
 }
 
-// ═══════════════════════════════════════
-// STATUS QUICK CHANGE
-// ═══════════════════════════════════════
-async function quickStatusChange(id, newStatus) {
-  var updates = { status: newStatus, updated_at: new Date().toISOString() };
-  if (newStatus === 'completed') updates.completed_at = new Date().toISOString();
-  var res = await sb.from('tasks').update(updates).eq('id', id);
-  if (res.error) { showToast('Грешка.', 'error'); return; }
-  showToast('Статусот е ажуриран!', 'success');
+async function quickStatusChange(id,newStatus){
+  var updates={status:newStatus,updated_at:new Date().toISOString()};
+  if(newStatus==='completed')updates.completed_at=new Date().toISOString();
+  var res=await sb.from('tasks').update(updates).eq('id',id);
+  if(res.error){showToast('Грешка.','error');return;}
+  showToast('Статусот е ажуриран!','success');
   closeModal('taskModal');
   await loadTasks();
 }
 
-// Status change for nurses (from table action button)
-function openStatusUpdate(id) {
-  openTaskDetail(id);
-}
-
-// ═══════════════════════════════════════
-// ARCHIVE / DELETE
-// ═══════════════════════════════════════
-async function archiveTask(id) {
-  if (!confirm('Архивирај ја оваа задача?')) return;
-  var res = await sb.from('tasks').update({ status: 'archived', updated_at: new Date().toISOString() }).eq('id', id);
-  if (res.error) { showToast('Грешка.', 'error'); return; }
-  showToast('Архивирана.', 'success');
+async function archiveTask(id){
+  if(!confirm('Архивирај ја оваа задача?'))return;
+  var res=await sb.from('tasks').update({status:'archived',updated_at:new Date().toISOString()}).eq('id',id);
+  if(res.error){showToast('Грешка.','error');return;}
+  showToast('Архивирана.','success');
   await loadTasks();
 }
 
-async function deleteTask(id) {
-  if (!confirm('Трајно избришете ја оваа задача? Ова не може да се поврати.')) return;
-  closeModal('taskModal');
-  var res = await sb.from('tasks').delete().eq('id', id);
-  if (res.error) { showToast('Грешка.', 'error'); return; }
-  showToast('Избришана.', 'success');
+async function deleteTask(id){
+  if(!confirm('Трајно избришете ја оваа задача? Ова не може да се поврати.'))return;
+  var res=await sb.from('tasks').delete().eq('id',id);
+  if(res.error){showToast('Грешка.','error');return;}
+  showToast('Избришана.','success');
   await loadTasks();
 }
 
-// ═══════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════
-function statusLabel(s) {
-  return {pending:'Во чекање', in_progress:'Во тек', completed:'Завршена', archived:'Архивирана'}[s] || s;
+function statusLabel(s){return{pending:'Во чекање',in_progress:'Во тек',completed:'Завршена',archived:'Архивирана'}[s]||s;}
+
+function recurLabel(freq,day,date){
+  if(freq==='daily')return'Секој ден';
+  if(freq==='monthly')return'Секој месец (ден '+date+')';
+  var days=['Нед','Пон','Вто','Сре','Чет','Пет','Саб'];
+  return'Секоја недела ('+days[day!=null?day:1]+')';
 }
 
-function formatDateTime(d) {
-  if (!d) return '–';
-  return new Date(d).toLocaleString('mk-MK', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-}
+function formatDate(d){if(!d)return'–';var dt=new Date(d+'T00:00:00');return String(dt.getDate()).padStart(2,'0')+'.'+String(dt.getMonth()+1).padStart(2,'0')+'.'+dt.getFullYear();}
+function formatDateTime(d){if(!d)return'–';var dt=new Date(d);return String(dt.getDate()).padStart(2,'0')+'.'+String(dt.getMonth()+1).padStart(2,'0')+'.'+dt.getFullYear()+' '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');}
 
-function setTopbarDate() {
-  document.getElementById('topbarDate').textContent =
-    new Date().toLocaleDateString('mk-MK', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-}
-
-function esc(s) {
-  if (!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebarOverlay').classList.toggle('show');
-}
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('show');
-}
-
-async function handleLogout() {
-  var btn = document.getElementById('logoutBtn');
-  btn.disabled = true;
-  btn.textContent = 'Одјавување…';
-  try { await sb.auth.signOut(); } catch(e) {}
-  window.location.replace('index.html');
-}
-
-function showToast(msg, type) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className   = 'show' + (type ? ' '+type : '');
-  clearTimeout(t._tid);
-  t._tid = setTimeout(function(){ t.className = type||''; }, 3500);
-}
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show');}
+async function handleLogout(){var btn=document.getElementById('logoutBtn');btn.disabled=true;btn.textContent='Одјавување…';try{await sb.auth.signOut();}catch(e){}window.location.replace('index.html');}
+function showToast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className='show'+(type?' '+type:'');clearTimeout(t._tid);t._tid=setTimeout(function(){t.className=type||'';},3500);}
 </script>
 </body>
 </html>

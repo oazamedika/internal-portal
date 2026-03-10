@@ -16,232 +16,207 @@
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Lato',sans-serif;background:var(--cream);color:var(--text);line-height:1.6;display:flex;min-height:100vh}
     h1,h2,h3,h4{font-family:'Playfair Display',serif;line-height:1.2}
-
-    /* SIDEBAR */
-    .sidebar{width:var(--sidebar);background:linear-gradient(165deg,var(--teal-dark) 0%,var(--green) 70%,#0f3d1c 100%);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .3s ease;overflow-y:auto}
-    .sidebar-logo{padding:1.4rem 1.4rem 1rem;display:flex;align-items:center;gap:10px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08)}
-    .sidebar-logo img{height:42px;width:auto;filter:brightness(0) invert(1);opacity:.92}
-    .sidebar-logo-text{display:flex;flex-direction:column;line-height:1.15}
-    .sidebar-logo-text span:first-child{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fff}
-    .sidebar-logo-text span:last-child{font-size:.62rem;color:rgba(255,255,255,.55);letter-spacing:.09em;text-transform:uppercase}
-    .sidebar-user{margin:1rem 1rem .5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:.75rem 1rem;display:flex;align-items:center;gap:10px}
-    .user-avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fff;flex-shrink:0}
+    /* SIDEBAR – no overflow-y scroll, compact to fit */
+    .sidebar{width:var(--sidebar);background:linear-gradient(165deg,var(--teal-dark) 0%,var(--green) 70%,#0f3d1c 100%);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .3s ease;overflow:hidden}
+    .sidebar-logo{padding:1rem 1.1rem .85rem;display:flex;align-items:center;gap:9px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .sidebar-logo img{height:34px;width:auto;filter:brightness(0) invert(1);opacity:.92;flex-shrink:0}
+    .sidebar-logo-text{font-size:.6rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+    .sidebar-user{margin:.65rem .85rem .4rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:.6rem .8rem;display:flex;align-items:center;gap:8px;flex-shrink:0}
+    .user-avatar{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0}
     .user-info{flex:1;overflow:hidden}
-    .user-name{font-size:.82rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .user-role{font-size:.68rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.07em}
-    nav.sidebar-nav{flex:1;padding:.5rem 0}
-    .nav-section-label{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.35);padding:.8rem 1.4rem .3rem}
-    .nav-link{display:flex;align-items:center;gap:10px;padding:.65rem 1.4rem;text-decoration:none;font-size:.85rem;font-weight:600;color:rgba(255,255,255,.65);transition:all .2s;border-left:3px solid transparent;cursor:pointer;user-select:none}
-    .nav-link .nav-icon{width:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .nav-link .nav-icon svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+    .user-name{font-size:.78rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .user-role{font-size:.62rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em}
+    nav.sidebar-nav{flex:1;padding:.3rem 0;overflow:hidden}
+    .nav-section-label{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.33);padding:.55rem 1.1rem .2rem}
+    .nav-link{display:flex;align-items:center;gap:9px;padding:.56rem 1.1rem;text-decoration:none;font-size:.81rem;font-weight:600;color:rgba(255,255,255,.65);transition:all .2s;border-left:3px solid transparent;cursor:pointer;user-select:none;white-space:nowrap}
+    .nav-link .nav-icon{width:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .nav-link .nav-icon svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
     .nav-link:hover{color:#fff;background:rgba(255,255,255,.07)}
     .nav-link.active{color:#fff;background:rgba(255,255,255,.12);border-left-color:rgba(255,255,255,.6)}
-    .nav-link .badge{margin-left:auto;background:var(--amber);color:#fff;font-size:.65rem;font-weight:700;padding:.15rem .45rem;border-radius:50px;min-width:18px;text-align:center}
+    .nav-link .badge{margin-left:auto;background:var(--amber);color:#fff;font-size:.6rem;font-weight:700;padding:.1rem .38rem;border-radius:50px;min-width:16px;text-align:center}
     .doctor-only{display:none}
-    .sidebar-ext{padding:.75rem 1rem .25rem;border-top:1px solid rgba(255,255,255,.08)}
-    .ext-label{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.5rem;padding-left:.25rem}
-    .btn-ext{width:100%;padding:.6rem .9rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:rgba(255,255,255,.75);font-family:'Lato',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:9px;transition:all .2s;text-decoration:none;margin-bottom:.5rem}
-    .btn-ext:hover{background:rgba(255,255,255,.16);color:#fff}
-    .btn-ext-icon{width:24px;height:24px;flex-shrink:0;object-fit:contain;filter:brightness(0) invert(1);opacity:.85}
-    .btn-ext-arrow{margin-left:auto;display:flex;align-items:center;opacity:.4}
-    .btn-ext-arrow svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
-    .sidebar-bottom{padding:.75rem 1rem 1.2rem;border-top:1px solid rgba(255,255,255,.08)}
-    .btn-logout{width:100%;padding:.65rem 1rem;background:rgba(255,80,80,.15);border:1px solid rgba(255,100,100,.25);border-radius:10px;color:rgba(255,200,200,.9);font-family:'Lato',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .2s;letter-spacing:.02em}
+    .sidebar-ext{padding:.45rem .85rem .2rem;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .ext-label{font-size:.57rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:.38rem;padding-left:.18rem}
+    .btn-ext{width:100%;padding:.45rem .65rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:rgba(255,255,255,.72);font-family:'Lato',sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;text-decoration:none;margin-bottom:.35rem}
+    .btn-ext:hover{background:rgba(255,255,255,.15);color:#fff}
+    .btn-ext-icon{width:18px;height:18px;flex-shrink:0;object-fit:contain;filter:brightness(0) invert(1);opacity:.85}
+    .btn-ext-arrow{margin-left:auto;opacity:.4}.btn-ext-arrow svg{width:10px;height:10px;stroke:#fff;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    .sidebar-bottom{padding:.45rem .85rem .7rem;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .btn-logout{width:100%;padding:.52rem .85rem;background:rgba(255,80,80,.15);border:1px solid rgba(255,100,100,.25);border-radius:9px;color:rgba(255,200,200,.9);font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s}
     .btn-logout:hover{background:rgba(192,57,43,.6);color:#fff;border-color:rgba(255,100,100,.5)}
-    .btn-logout svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
-
+    .btn-logout svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
     /* TOPBAR */
-    .topbar{position:fixed;top:0;left:var(--sidebar);right:0;height:60px;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-bottom:1px solid rgba(42,122,122,.1);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;z-index:100}
-    .topbar-left{display:flex;align-items:center;gap:.8rem}
+    .topbar{position:fixed;top:0;left:var(--sidebar);right:0;height:56px;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-bottom:1px solid rgba(42,122,122,.1);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;z-index:100}
+    .topbar-left{display:flex;align-items:center;gap:.7rem}
     .hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;color:var(--teal)}
     .hamburger-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-width:2}
-    .topbar-title{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--text)}
-    .topbar-date{font-size:.8rem;color:var(--text-light);font-weight:300}
+    .topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--text)}
     .topbar-right{display:flex;align-items:center;gap:1rem}
-    .topbar-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green-light);color:var(--green);padding:.3rem .85rem;border-radius:50px;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
-    .topbar-badge svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
-
+    .topbar-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green);padding:.25rem .75rem;border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
     /* MAIN */
-    .main{margin-left:var(--sidebar);margin-top:60px;padding:2rem;flex:1;min-width:0}
+    .main{margin-left:var(--sidebar);margin-top:56px;padding:1.5rem;flex:1;min-width:0}
     .page-section{display:none}
     .page-section.active{display:block;animation:fadeIn .3s ease}
     @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-    .section-header{margin-bottom:1.8rem}
-    .section-label{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:.3rem}
-    .section-title{font-size:clamp(1.5rem,2.5vw,2rem);color:var(--text)}
-    .section-sub{font-size:.9rem;color:var(--text-light);font-weight:300;margin-top:.3rem}
-
+    .section-header{margin-bottom:1.4rem}
+    .section-label{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:.25rem}
+    .section-title{font-size:clamp(1.4rem,2.5vw,1.9rem);color:var(--text)}
+    .section-sub{font-size:.88rem;color:var(--text-light);font-weight:300;margin-top:.25rem}
     /* STAT CARDS */
-    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1.2rem;margin-bottom:2rem}
-    .stat-card{background:var(--white);border-radius:var(--radius);padding:1.4rem 1.5rem;border:1px solid rgba(42,122,122,.08);transition:all .3s;position:relative;overflow:hidden}
-    .stat-card::after{content:'';position:absolute;top:0;right:0;width:70px;height:70px;background:radial-gradient(ellipse at top right,var(--teal-light),transparent 70%)}
-    .stat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
-    .stat-icon{width:36px;height:36px;border-radius:10px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;margin-bottom:.8rem}
-    .stat-icon svg{width:18px;height:18px;stroke:var(--teal);fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
-    .stat-val{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--text);line-height:1}
-    .stat-label{font-size:.78rem;color:var(--text-light);font-weight:600;margin-top:.3rem;letter-spacing:.04em;text-transform:uppercase}
-    .stat-sub{font-size:.75rem;color:var(--teal);font-weight:600;margin-top:.4rem}
-
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem;margin-bottom:1.4rem}
+    .stat-card{background:var(--white);border-radius:var(--radius);padding:1.2rem 1.3rem;border:1px solid rgba(42,122,122,.08);transition:all .3s;position:relative;overflow:hidden}
+    .stat-card::after{content:'';position:absolute;top:0;right:0;width:60px;height:60px;background:radial-gradient(ellipse at top right,var(--teal-light),transparent 70%)}
+    .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+    .stat-icon{width:32px;height:32px;border-radius:9px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;margin-bottom:.7rem}
+    .stat-icon svg{width:16px;height:16px;stroke:var(--teal);fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+    .stat-val{font-family:'Playfair Display',serif;font-size:1.85rem;font-weight:700;color:var(--text);line-height:1}
+    .stat-label{font-size:.74rem;color:var(--text-light);font-weight:600;margin-top:.25rem;letter-spacing:.04em;text-transform:uppercase}
+    .stat-sub{font-size:.72rem;color:var(--teal);font-weight:600;margin-top:.3rem}
     /* CARD */
-    .card{background:var(--white);border-radius:var(--radius);border:1px solid rgba(42,122,122,.08);padding:1.5rem;margin-bottom:1.5rem}
-    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;padding-bottom:.9rem;border-bottom:1px solid rgba(42,122,122,.08)}
-    .card-title{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--text)}
-    .card-action{font-size:.78rem;color:var(--teal);font-weight:600;text-decoration:none;cursor:pointer;background:none;border:none;transition:color .2s;display:inline-flex;align-items:center;gap:5px}
-    .card-action:hover{color:var(--teal-dark);text-decoration:underline}
-    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
-
+    .card{background:var(--white);border-radius:var(--radius);border:1px solid rgba(42,122,122,.08);padding:1.3rem;margin-bottom:1.3rem}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid rgba(42,122,122,.08)}
+    .card-title{font-family:'Playfair Display',serif;font-size:1rem;color:var(--text)}
+    .card-action{font-size:.76rem;color:var(--teal);font-weight:600;text-decoration:none;cursor:pointer;background:none;border:none;transition:color .2s;display:inline-flex;align-items:center;gap:4px}
+    .card-action:hover{color:var(--teal-dark)}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.3rem}
     /* FORMS */
-    .f-group{margin-bottom:1.1rem}
-    .f-label{display:block;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);margin-bottom:.4rem}
-    .f-input{width:100%;padding:.75rem 1rem;border:2px solid rgba(42,122,122,.15);border-radius:10px;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text);background:var(--cream);outline:none;transition:border-color .2s}
+    .f-group{margin-bottom:1rem}
+    .f-label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);margin-bottom:.35rem}
+    .f-input{width:100%;padding:.68rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.88rem;color:var(--text);background:var(--cream);outline:none;transition:border-color .2s}
     .f-input:focus{border-color:var(--teal);background:var(--white)}
-    .f-select{width:100%;padding:.75rem 1rem;border:2px solid rgba(42,122,122,.15);border-radius:10px;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text);background:var(--cream);outline:none}
-    .btn-primary{padding:.75rem 1.5rem;background:var(--teal);color:#fff;border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+    .f-select{width:100%;padding:.68rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.88rem;color:var(--text);background:var(--cream);outline:none}
+    .btn-primary{padding:.68rem 1.3rem;background:var(--teal);color:#fff;border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.87rem;font-weight:700;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:7px}
     .btn-primary:hover{background:var(--teal-dark)}
     .btn-primary:disabled{background:#9bb8b8;cursor:not-allowed}
-    .btn-secondary{padding:.6rem 1rem;background:var(--teal-light);color:var(--teal);border:1px solid rgba(42,122,122,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+    .btn-secondary{padding:.52rem .85rem;background:var(--teal-light);color:var(--teal);border:1px solid rgba(42,122,122,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
     .btn-secondary:hover{background:var(--teal);color:#fff}
-
     /* CLOCK WIDGET */
-    .clock-widget{background:linear-gradient(135deg,var(--teal),var(--green));border-radius:var(--radius);padding:1.8rem;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
-    .clock-info h3{font-size:1rem;font-weight:600;color:rgba(255,255,255,.75);margin-bottom:.3rem;font-family:'Lato',sans-serif}
-    #liveTime{font-family:'Playfair Display',serif;font-size:2.6rem;color:#fff;line-height:1}
-    .clock-date{font-size:.82rem;color:rgba(255,255,255,.65);margin-top:.3rem}
-    .clock-status{display:flex;align-items:center;gap:8px;margin-top:.5rem;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.8)}
-    .status-dot{width:8px;height:8px;border-radius:50%;background:#6ee89a;animation:pulse 2s infinite;flex-shrink:0}
+    .clock-widget{background:linear-gradient(135deg,var(--teal),var(--green));border-radius:var(--radius);padding:1.3rem 1.5rem;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:1.2rem;margin-bottom:1.3rem;flex-wrap:wrap}
+    .clock-info h3{font-size:.85rem;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:.2rem;font-family:'Lato',sans-serif}
+    #liveTime{font-family:'Playfair Display',serif;font-size:2.2rem;color:#fff;line-height:1;letter-spacing:.03em}
+    .clock-date{font-size:.78rem;color:rgba(255,255,255,.65);margin-top:.25rem}
+    .clock-status{display:flex;align-items:center;gap:7px;margin-top:.35rem;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.8)}
+    .status-dot{width:7px;height:7px;border-radius:50%;background:#6ee89a;animation:pulse 2s infinite;flex-shrink:0}
     .status-dot.out{background:#f87171;animation:none}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
-    .clock-actions{display:flex;gap:.8rem;flex-wrap:wrap;align-items:center}
-    .btn-clock{padding:.7rem 1.4rem;border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:7px}
-    .btn-clock svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    .clock-actions{display:flex;gap:.65rem;flex-wrap:wrap;align-items:center}
+    .btn-clock{padding:.58rem 1.1rem;border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.84rem;font-weight:700;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:6px}
+    .btn-clock svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
     .btn-clock-in{background:#fff;color:var(--teal)}
     .btn-clock-in:hover:not(:disabled){background:var(--teal-light);transform:translateY(-1px)}
     .btn-clock-out{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff}
     .btn-clock-out:hover:not(:disabled){background:rgba(255,255,255,.28);transform:translateY(-1px)}
     .btn-clock:disabled{opacity:.45;cursor:not-allowed}
-    .leave-select{padding:.6rem 1rem;border-radius:50px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;font-family:'Lato',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer;outline:none}
+    .leave-select{padding:.52rem .85rem;border-radius:50px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;outline:none}
     .leave-select option{background:var(--teal-dark);color:#fff}
-
     /* TABLE */
-    .log-table-wrap{overflow-x:auto}
-    table{width:100%;border-collapse:collapse;font-size:.85rem}
-    thead th{text-align:left;padding:.6rem 1rem;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);border-bottom:2px solid rgba(42,122,122,.1)}
+    .log-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    table{width:100%;border-collapse:collapse;font-size:.83rem}
+    thead th{text-align:left;padding:.52rem .85rem;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);border-bottom:2px solid rgba(42,122,122,.1);white-space:nowrap}
     tbody tr{border-bottom:1px solid rgba(42,122,122,.06);transition:background .15s}
     tbody tr:hover{background:var(--cream)}
-    tbody td{padding:.7rem 1rem;color:var(--text-mid);vertical-align:middle}
-    .pill{display:inline-flex;align-items:center;padding:.2rem .7rem;border-radius:50px;font-size:.72rem;font-weight:700}
+    tbody td{padding:.62rem .85rem;color:var(--text-mid);vertical-align:middle}
+    .pill{display:inline-flex;align-items:center;padding:.18rem .62rem;border-radius:50px;font-size:.7rem;font-weight:700;white-space:nowrap}
     .pill-work{background:var(--teal-light);color:var(--teal)}
     .pill-sick{background:var(--red-light);color:var(--red)}
     .pill-holiday{background:var(--amber-light);color:var(--amber)}
-    .pill-done{background:var(--green-light);color:var(--green)}
+    .pill-done,.pill-completed{background:var(--green-light);color:var(--green)}
     .pill-pending{background:#f3f4f6;color:#6b7280}
-
-    /* TASKS */
-    .task-list{display:flex;flex-direction:column;gap:.7rem}
-    .task-item{display:flex;align-items:center;gap:1rem;padding:.9rem 1rem;background:var(--cream);border-radius:10px;border:1px solid rgba(42,122,122,.07);transition:all .2s}
+    .pill-in_progress{background:#eff6ff;color:#2563eb}
+    /* TASK PREVIEW */
+    .task-list{display:flex;flex-direction:column;gap:.55rem}
+    .task-item{display:flex;align-items:center;gap:.85rem;padding:.75rem .85rem;background:var(--cream);border-radius:9px;border:1px solid rgba(42,122,122,.07);transition:all .2s}
     .task-item:hover{border-color:rgba(42,122,122,.2)}
-    .task-check{width:20px;height:20px;border-radius:6px;border:2px solid rgba(42,122,122,.3);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
-    .task-check svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:3;display:none}
-    .task-check.checked{background:var(--teal);border-color:var(--teal)}
-    .task-check.checked svg{display:block}
-    .task-body{flex:1}
-    .task-title{font-size:.9rem;font-weight:600;color:var(--text)}
-    .task-title.done{text-decoration:line-through;color:var(--text-light)}
-    .task-due{font-size:.75rem;color:var(--text-light);margin-top:2px}
+    .task-body{flex:1;min-width:0}
+    .task-title{font-size:.86rem;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .task-due{font-size:.72rem;color:var(--text-light);margin-top:1px}
     .task-due.overdue{color:var(--red);font-weight:600}
-    .task-owner{font-size:.72rem;color:var(--teal);font-weight:600;white-space:nowrap}
-
     /* EMPTY STATE */
-    .empty-state{text-align:center;padding:2rem 1rem;color:var(--text-light)}
-    .empty-icon{width:44px;height:44px;margin:0 auto .7rem;background:var(--teal-light);border-radius:50%;display:flex;align-items:center;justify-content:center}
-    .empty-icon svg{width:20px;height:20px;stroke:var(--teal);fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
-
+    .empty-state{text-align:center;padding:1.6rem 1rem;color:var(--text-light)}
+    .empty-icon{width:38px;height:38px;margin:0 auto .55rem;background:var(--teal-light);border-radius:50%;display:flex;align-items:center;justify-content:center}
+    .empty-icon svg{width:17px;height:17px;stroke:var(--teal);fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
     /* STAFF */
-    .online-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#6ee89a;margin-right:5px}
-    .role-tag{display:inline-flex;align-items:center;gap:5px;font-size:.78rem;font-weight:600}
-    .role-tag svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
-
-    /* USER CARDS (admin) */
-    .user-card{background:var(--cream);border:1px solid rgba(42,122,122,.1);border-radius:var(--radius);padding:1rem 1.2rem;margin-bottom:.8rem;display:flex;align-items:flex-start;gap:1rem}
-    .user-card-avatar{width:40px;height:40px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#fff;flex-shrink:0}
-    .user-card-info{flex:1}
-    .user-card-name{font-size:.92rem;font-weight:700;color:var(--text)}
-    .user-card-meta{font-size:.76rem;color:var(--text-light);margin-top:2px}
-    .user-card-actions{display:flex;gap:.5rem;flex-shrink:0}
-
+    .online-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#6ee89a;margin-right:4px}
+    /* USER CARDS */
+    .user-card{background:var(--cream);border:1px solid rgba(42,122,122,.1);border-radius:var(--radius);padding:.85rem 1rem;margin-bottom:.65rem;display:flex;align-items:flex-start;gap:.85rem}
+    .user-card-avatar{width:36px;height:36px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:#fff;flex-shrink:0}
+    .user-card-info{flex:1;min-width:0}
+    .user-card-name{font-size:.88rem;font-weight:700;color:var(--text)}
+    .user-card-meta{font-size:.73rem;color:var(--text-light);margin-top:2px}
+    .user-card-actions{display:flex;gap:.4rem;flex-shrink:0}
     /* MODAL */
-    .modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1.5rem}
+    .modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem}
     .modal-overlay.open{display:flex}
-    .modal{background:var(--white);border-radius:20px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.2)}
-    .modal-header{padding:1.4rem 1.6rem 1rem;border-bottom:1px solid rgba(42,122,122,.08);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:1}
-    .modal-header h3{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--text)}
-    .modal-close{background:var(--teal-light);border:none;cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal);transition:background .2s}
+    .modal{background:var(--white);border-radius:18px;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.2)}
+    .modal-header{padding:1.15rem 1.3rem .85rem;border-bottom:1px solid rgba(42,122,122,.08);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:1}
+    .modal-header h3{font-family:'Playfair Display',serif;font-size:1.08rem;color:var(--text)}
+    .modal-close{background:var(--teal-light);border:none;cursor:pointer;width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal);transition:background .2s;flex-shrink:0}
     .modal-close:hover{background:var(--teal);color:#fff}
-    .modal-close svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
-    .modal-body{padding:1.4rem 1.6rem}
-    .modal-footer{padding:.8rem 1.6rem 1.4rem;border-top:1px solid rgba(42,122,122,.08);display:flex;gap:.8rem;justify-content:flex-end}
-
+    .modal-close svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    .modal-body{padding:1.15rem 1.3rem}
+    .modal-footer{padding:.65rem 1.3rem 1.15rem;border-top:1px solid rgba(42,122,122,.08);display:flex;gap:.65rem;justify-content:flex-end;flex-wrap:wrap}
     /* SKELETON */
-    .skeleton{background:linear-gradient(90deg,#e8eee9 25%,#d4ddd5 50%,#e8eee9 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;height:40px;margin-bottom:.5rem}
+    .skeleton{background:linear-gradient(90deg,#e8eee9 25%,#d4ddd5 50%,#e8eee9 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;height:36px;margin-bottom:.45rem}
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
     /* TOAST */
-    #toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;background:var(--text);color:#fff;padding:.85rem 1.4rem;border-radius:12px;font-size:.87rem;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.22,.68,0,1.1);max-width:340px;pointer-events:none}
+    #toast{position:fixed;bottom:1.2rem;right:1.2rem;z-index:9999;background:var(--text);color:#fff;padding:.78rem 1.2rem;border-radius:11px;font-size:.84rem;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.22,.68,0,1.1);max-width:300px;pointer-events:none}
     #toast.show{transform:translateY(0);opacity:1}
     #toast.success{background:var(--teal-dark)}
     #toast.error{background:var(--red)}
-
     /* MOBILE */
     .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:199;opacity:0;pointer-events:none;transition:opacity .3s}
     .sidebar-overlay.show{opacity:1;pointer-events:auto}
     @media(max-width:900px){
-      .sidebar{transform:translateX(-100%);display:flex}
+      .sidebar{width:260px;transform:translateX(-100%);display:flex}
       .sidebar.open{transform:translateX(0)}
       .sidebar-overlay{display:block}
       .topbar{left:0}
-      .main{margin-left:0;padding:1.2rem}
+      .main{margin-left:0;padding:1rem}
       .hamburger-btn{display:block}
       .two-col{grid-template-columns:1fr}
-      .clock-widget{flex-direction:column;align-items:flex-start}
+      .clock-widget{flex-direction:column;align-items:flex-start;gap:1rem}
+      .stats-grid{grid-template-columns:1fr 1fr}
     }
-    @media(max-width:480px){.stats-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:480px){
+      .main{padding:.8rem}
+      #liveTime{font-size:1.9rem}
+      tbody td,thead th{padding:.45rem .55rem;font-size:.77rem}
+      .stats-grid{grid-template-columns:1fr 1fr}
+    }
   </style>
 </head>
 <body>
-
-<!-- SVG SPRITE -->
 <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
-  <symbol id="i-home"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
-  <symbol id="i-clock"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
-  <symbol id="i-tasks"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
-  <symbol id="i-user"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
-  <symbol id="i-users"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
-  <symbol id="i-bar"      viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
-  <symbol id="i-gear"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
-  <symbol id="i-logout"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
-  <symbol id="i-play"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
-  <symbol id="i-stop"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></symbol>
-  <symbol id="i-cal"      viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
-  <symbol id="i-pulse"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
-  <symbol id="i-check"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
-  <symbol id="i-edit"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
-  <symbol id="i-trash"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></symbol>
-  <symbol id="i-plus"     viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
-  <symbol id="i-key"      viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></symbol>
-  <symbol id="i-print"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
-  <symbol id="i-ext"      viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
-  <symbol id="i-menu"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
-  <symbol id="i-x"        viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
-  <symbol id="i-refresh"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-4.43"/></symbol>
+  <symbol id="i-home"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+  <symbol id="i-clock"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-tasks"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
+  <symbol id="i-user"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-users"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-bar"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+  <symbol id="i-gear"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+  <symbol id="i-play"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
+  <symbol id="i-stop"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></symbol>
+  <symbol id="i-cal"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+  <symbol id="i-pulse"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+  <symbol id="i-check"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-edit"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+  <symbol id="i-trash"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></symbol>
+  <symbol id="i-plus"   viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="i-key"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></symbol>
+  <symbol id="i-print"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
+  <symbol id="i-ext"    viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+  <symbol id="i-menu"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+  <symbol id="i-x"      viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+  <symbol id="i-refresh"viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-4.43"/></symbol>
 </svg>
 
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
   <a href="https://oazamedika.mk" class="sidebar-logo">
     <img src="logo_header.png" alt="Оаза Медика" onerror="this.style.display='none'"/>
-    <div class="sidebar-logo-text"><span>Оаза Медика</span><span>Портал за вработени</span></div>
+    <span class="sidebar-logo-text">Портал за вработени</span>
   </a>
   <div class="sidebar-user">
     <div class="user-avatar" id="avatarInitial">–</div>
@@ -296,28 +271,23 @@
   </div>
 </aside>
 
-<!-- TOPBAR -->
 <header class="topbar">
   <div class="topbar-left">
     <button class="hamburger-btn" id="hamburgerBtn" type="button"><svg><use href="#i-menu"/></svg></button>
-    <div>
-      <div class="topbar-title" id="topbarTitle">Контролна табла</div>
-      <div class="topbar-date"  id="topbarDate"></div>
-    </div>
+    <div class="topbar-title" id="topbarTitle">Контролна табла</div>
   </div>
   <div class="topbar-right">
     <span class="topbar-badge" id="roleBadge">…</span>
   </div>
 </header>
 
-<!-- MAIN -->
 <main class="main">
 
   <!-- DASHBOARD -->
   <section class="page-section active" id="page-dashboard">
     <div class="clock-widget">
       <div class="clock-info">
-        <h3>Денешен датум и час</h3>
+        <h3>Датум и час</h3>
         <div id="liveTime">00:00:00</div>
         <div class="clock-date" id="clockDate"></div>
         <div class="clock-status">
@@ -340,8 +310,7 @@
       </div>
     </div>
     <div class="stats-grid" id="statsGrid">
-      <div class="skeleton"></div><div class="skeleton"></div>
-      <div class="skeleton"></div><div class="skeleton"></div>
+      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
     </div>
     <div class="stats-grid doctor-only" id="doctorStatsGrid" style="display:none"></div>
     <div class="two-col">
@@ -358,7 +327,7 @@
       <div class="card">
         <div class="card-header">
           <span class="card-title">Претстојни задачи</span>
-          <button class="card-action" type="button" onclick="navigate('tasks')">Сите →</button>
+          <button class="card-action" type="button" onclick="window.location.href='tasks.html'">Сите →</button>
         </div>
         <div class="task-list" id="upcomingTasksList"><div class="skeleton"></div></div>
       </div>
@@ -377,18 +346,13 @@
 
   <!-- WORK LOG -->
   <section class="page-section" id="page-worklog">
-    <div class="section-header">
-      <div class="section-label">Евиденција</div>
-      <h2 class="section-title">Работни часови</h2>
-    </div>
+    <div class="section-header"><div class="section-label">Евиденција</div><h2 class="section-title">Работни часови</h2></div>
     <div class="card">
       <div class="card-header">
         <span class="card-title">Историја</span>
-        <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
-          <input type="month" id="logMonthFilter" class="f-input" style="width:auto;padding:.35rem .7rem"/>
-          <select id="staffFilter" class="f-select doctor-only" style="display:none;width:auto;padding:.35rem .7rem">
-            <option value="">Сите вработени</option>
-          </select>
+        <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+          <input type="month" id="logMonthFilter" class="f-input" style="width:auto;padding:.3rem .6rem"/>
+          <select id="staffFilter" class="f-select doctor-only" style="display:none;width:auto;padding:.3rem .6rem"><option value="">Сите вработени</option></select>
         </div>
       </div>
       <div class="log-table-wrap">
@@ -397,68 +361,33 @@
           <tbody id="workLogsBody"><tr><td colspan="6"><div class="skeleton"></div></td></tr></tbody>
         </table>
       </div>
-      <div id="workLogTotals" style="display:none;padding:.8rem 1rem 0;font-size:.83rem;color:var(--text-mid);font-weight:600;border-top:2px solid rgba(42,122,122,.08);margin-top:.5rem">
+      <div id="workLogTotals" style="display:none;padding:.65rem .85rem 0;font-size:.81rem;color:var(--text-mid);font-weight:600;border-top:2px solid rgba(42,122,122,.08);margin-top:.45rem">
         Вкупно: <span id="totalHoursDisplay" style="color:var(--teal)">0 ч.</span> · <span id="totalDaysDisplay" style="color:var(--teal)">0</span> работни денови
       </div>
     </div>
   </section>
 
-  <!-- TASKS -->
-  <section class="page-section" id="page-tasks">
-    <div class="section-header">
-      <div class="section-label">Задачи</div>
-      <h2 class="section-title">Задачи</h2>
-      <p class="section-sub" id="tasksSub">Управувајте со задачите</p>
-    </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">Додај нова задача</span></div>
-      <div style="display:grid;grid-template-columns:1fr auto auto;gap:.8rem;align-items:end">
-        <div><label class="f-label">Наслов</label><input id="taskTitle" type="text" class="f-input" placeholder="Опис на задачата…"/></div>
-        <div><label class="f-label">Рок</label><input id="taskDueDate" type="date" class="f-input" style="width:auto"/></div>
-        <button class="btn-primary" type="button" id="addTaskBtn">
-          <svg width="14" height="14" stroke="#fff" fill="none" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><use href="#i-plus"/></svg>Додај
-        </button>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Листа на задачи</span>
-        <select id="taskStatusFilter" class="f-select" style="width:auto;padding:.3rem .7rem">
-          <option value="all">Сите</option><option value="pending">Во тек</option><option value="done">Завршени</option>
-        </select>
-      </div>
-      <div class="task-list" id="fullTaskList"><div class="skeleton"></div></div>
-    </div>
-  </section>
-
   <!-- MY PROFILE -->
   <section class="page-section" id="page-settings">
-    <div class="section-header">
-      <div class="section-label">Профил</div>
-      <h2 class="section-title">Мој профил</h2>
-    </div>
+    <div class="section-header"><div class="section-label">Профил</div><h2 class="section-title">Мој профил</h2></div>
     <div class="two-col">
       <div class="card">
         <div class="card-header"><span class="card-title">Лични податоци</span></div>
         <div class="f-group"><label class="f-label">Целосно ime</label><input type="text" id="pFullName" class="f-input"/></div>
         <div class="f-group"><label class="f-label">Е-пошта</label><input type="email" id="pEmail" class="f-input" disabled style="opacity:.55"/></div>
         <div class="f-group"><label class="f-label">Телефон</label><input type="tel" id="pPhone" class="f-input" placeholder="+389 70 000 000"/></div>
-        <div class="f-group"><label class="f-label">Позиција</label><input type="text" id="pJobTitle" class="f-input" placeholder="пр. Општа медицина"/></div>
+        <div class="f-group"><label class="f-label">Позиција</label><input type="text" id="pJobTitle" class="f-input"/></div>
         <div class="f-group"><label class="f-label">Датум на вработување</label><input type="date" id="pEmployedDate" class="f-input"/></div>
         <div class="f-group"><label class="f-label">Денови одмор</label><input type="number" id="pLeaveDays" class="f-input" min="0" max="60"/></div>
-        <button class="btn-primary" type="button" id="saveProfileBtn">
-          <svg width="14" height="14" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-check"/></svg>Зачувај
-        </button>
+        <button class="btn-primary" type="button" id="saveProfileBtn"><svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-check"/></svg>Зачувај</button>
       </div>
       <div class="card">
         <div class="card-header"><span class="card-title">Лозинка</span></div>
-        <p style="font-size:.88rem;color:var(--text-light);margin-bottom:1.2rem;line-height:1.6">Ќе добиете линк за ресетирање на вашата е-пошта.</p>
-        <button class="btn-primary" type="button" id="pwdResetBtn">
-          <svg width="14" height="14" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-key"/></svg>Испрати линк за ресетирање
-        </button>
-        <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(42,122,122,.08)">
-          <div style="font-family:'Playfair Display',serif;font-size:.95rem;color:var(--text);margin-bottom:.8rem">Информации</div>
-          <div style="font-size:.83rem;color:var(--text-mid);display:flex;flex-direction:column;gap:.5rem" id="accountInfo"></div>
+        <p style="font-size:.85rem;color:var(--text-light);margin-bottom:1rem;line-height:1.6">Ќе добиете линк за ресетирање на вашата е-пошта.</p>
+        <button class="btn-primary" type="button" id="pwdResetBtn"><svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-key"/></svg>Испрати линк</button>
+        <div style="margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid rgba(42,122,122,.08)">
+          <div style="font-family:'Playfair Display',serif;font-size:.92rem;color:var(--text);margin-bottom:.65rem">Информации</div>
+          <div style="font-size:.81rem;color:var(--text-mid);display:flex;flex-direction:column;gap:.4rem" id="accountInfo"></div>
         </div>
       </div>
     </div>
@@ -466,10 +395,7 @@
 
   <!-- STAFF -->
   <section class="page-section" id="page-staff">
-    <div class="section-header">
-      <div class="section-label">Тим</div>
-      <h2 class="section-title">Преглед на персоналот</h2>
-    </div>
+    <div class="section-header"><div class="section-label">Тим</div><h2 class="section-title">Преглед на персоналот</h2></div>
     <div class="card">
       <div class="card-header"><span class="card-title">Вработени овој месец</span></div>
       <div class="log-table-wrap">
@@ -481,18 +407,13 @@
 
   <!-- REPORTS -->
   <section class="page-section" id="page-reports">
-    <div class="section-header">
-      <div class="section-label">Извештаи</div>
-      <h2 class="section-title">Месечни извештаи</h2>
-    </div>
+    <div class="section-header"><div class="section-label">Извештаи</div><h2 class="section-title">Месечни извештаи</h2></div>
     <div class="card">
       <div class="card-header"><span class="card-title">Параметри</span></div>
-      <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end">
-        <div><label class="f-label">Вработен</label><select id="reportEmployee" class="f-select" style="min-width:200px"><option value="">Сите вработени</option></select></div>
+      <div style="display:flex;gap:.85rem;flex-wrap:wrap;align-items:flex-end">
+        <div><label class="f-label">Вработен</label><select id="reportEmployee" class="f-select" style="min-width:185px"><option value="">Сите вработени</option></select></div>
         <div><label class="f-label">Месец</label><input type="month" id="reportMonth" class="f-input" style="width:auto"/></div>
-        <button class="btn-primary" type="button" id="genReportBtn">
-          <svg width="15" height="15" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-bar"/></svg>Генерирај
-        </button>
+        <button class="btn-primary" type="button" id="genReportBtn"><svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-bar"/></svg>Генерирај</button>
       </div>
     </div>
     <div id="reportOutput" style="display:none">
@@ -500,9 +421,7 @@
       <div class="card">
         <div class="card-header">
           <span class="card-title" id="reportTableTitle">Детали</span>
-          <button class="card-action" type="button" onclick="window.print()">
-            <svg width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-print"/></svg>Печати
-          </button>
+          <button class="card-action" type="button" onclick="window.print()"><svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-print"/></svg>Печати</button>
         </div>
         <div class="log-table-wrap">
           <table><thead><tr><th>Датум</th><th>Вработен</th><th>Пријава</th><th>Одјава</th><th>Часови</th><th>Тип</th></tr></thead>
@@ -514,40 +433,30 @@
 
   <!-- ADMIN -->
   <section class="page-section" id="page-admin">
-    <div class="section-header">
-      <div class="section-label">Администрација</div>
-      <h2 class="section-title">Управување со тимот</h2>
-    </div>
+    <div class="section-header"><div class="section-label">Администрација</div><h2 class="section-title">Управување со тимот</h2></div>
     <div class="two-col">
       <div class="card">
         <div class="card-header"><span class="card-title">Додај нов вработен</span></div>
         <div class="f-group"><label class="f-label">Целосно ime *</label><input id="newName" type="text" class="f-input" placeholder="Ана Петровска"/></div>
         <div class="f-group"><label class="f-label">Е-пошта *</label><input id="newEmail" type="email" class="f-input" placeholder="ana@oazamedika.mk"/></div>
         <div class="f-group"><label class="f-label">Лозинка *</label><input id="newPassword" type="password" class="f-input" placeholder="Мин. 6 знаци"/></div>
-        <div class="f-group"><label class="f-label">Улога</label>
-          <select id="newRole" class="f-select"><option value="nurse">Медицинска сестра</option><option value="doctor">Доктор</option></select>
-        </div>
+        <div class="f-group"><label class="f-label">Улога</label><select id="newRole" class="f-select"><option value="nurse">Медицинска сестра</option><option value="doctor">Доктор</option></select></div>
         <div class="f-group"><label class="f-label">Телефон</label><input id="newPhone" type="tel" class="f-input" placeholder="+389 70 000 000"/></div>
         <div class="f-group"><label class="f-label">Позиција</label><input id="newJobTitle" type="text" class="f-input" placeholder="пр. Медицинска сестра"/></div>
         <div class="f-group"><label class="f-label">Датум на вработување</label><input id="newEmployedDate" type="date" class="f-input"/></div>
         <div class="f-group"><label class="f-label">Денови одмор</label><input id="newLeaveDays" type="number" class="f-input" value="20" min="0" max="60"/></div>
-        <button class="btn-primary" type="button" id="createEmpBtn">
-          <svg width="14" height="14" stroke="#fff" fill="none" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><use href="#i-plus"/></svg>Создај сметка
-        </button>
-        <p style="font-size:.75rem;color:var(--text-light);margin-top:.7rem;line-height:1.5">Вработениот ќе добие е-мејл за потврда на сметката.</p>
+        <button class="btn-primary" type="button" id="createEmpBtn"><svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><use href="#i-plus"/></svg>Создај сметка</button>
+        <p style="font-size:.72rem;color:var(--text-light);margin-top:.55rem;line-height:1.5">Вработениот ќе добие е-мејл за потврда.</p>
       </div>
       <div class="card">
         <div class="card-header">
           <span class="card-title">Постоечки вработени</span>
-          <button class="card-action" type="button" id="refreshUsersBtn">
-            <svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-refresh"/></svg>Освежи
-          </button>
+          <button class="card-action" type="button" id="refreshUsersBtn"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-refresh"/></svg>Освежи</button>
         </div>
         <div id="adminUserList"><div class="skeleton"></div><div class="skeleton"></div></div>
       </div>
     </div>
   </section>
-
 </main>
 
 <!-- EDIT USER MODAL -->
@@ -564,707 +473,307 @@
       <div class="f-group"><label class="f-label">Позиција</label><input type="text" id="editJobTitle" class="f-input"/></div>
       <div class="f-group"><label class="f-label">Датум на вработување</label><input type="date" id="editEmployedDate" class="f-input"/></div>
       <div class="f-group"><label class="f-label">Денови одмор</label><input type="number" id="editLeaveDays" class="f-input" min="0" max="60"/></div>
-      <div class="f-group"><label class="f-label">Улога</label>
-        <select id="editRole" class="f-select"><option value="nurse">Медицинска сестра</option><option value="doctor">Доктор</option></select>
-      </div>
+      <div class="f-group"><label class="f-label">Улога</label><select id="editRole" class="f-select"><option value="nurse">Медицинска сестра</option><option value="doctor">Доктор</option></select></div>
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" type="button" id="cancelEditModal">Откажи</button>
-      <button class="btn-primary" type="button" id="saveEditBtn">
-        <svg width="14" height="14" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-check"/></svg>Зачувај
-      </button>
+      <button class="btn-primary" type="button" id="saveEditBtn"><svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-check"/></svg>Зачувај</button>
     </div>
   </div>
 </div>
-
 <div id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════
-var currentUser    = null;
-var currentProfile = null;
-var allStaff       = [];
-var allTasks       = [];
-var activeClock    = null;
-var booted         = false;   // prevent double boot
+var currentUser=null,currentProfile=null,allStaff=[],activeClock=null;
 
-// ═══════════════════════════════════════
-// BOOT — single entry point
-// ═══════════════════════════════════════
-(async function init() {
-  // Set up date/clock immediately
-  setTopbarDate();
+(async function init(){
   startClock();
-
-  // Set default month values
-  var now = new Date();
-  var ym  = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
-  document.getElementById('logMonthFilter').value = ym;
-  document.getElementById('reportMonth').value    = ym;
-
-  // Wire all buttons via addEventListener (avoids any onclick race issues)
-  document.getElementById('logoutBtn').addEventListener('click', handleLogout);
-  document.getElementById('hamburgerBtn').addEventListener('click', toggleSidebar);
-  document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
-  document.getElementById('btnClockIn').addEventListener('click', clockIn);
-  document.getElementById('btnClockOut').addEventListener('click', clockOut);
-  document.getElementById('addTaskBtn').addEventListener('click', addTask);
-  document.getElementById('taskStatusFilter').addEventListener('change', renderTasks);
-  document.getElementById('logMonthFilter').addEventListener('change', loadWorkLogs);
-  document.getElementById('staffFilter').addEventListener('change', loadWorkLogs);
-  document.getElementById('saveProfileBtn').addEventListener('click', saveProfile);
-  document.getElementById('pwdResetBtn').addEventListener('click', sendPasswordReset);
-  document.getElementById('genReportBtn').addEventListener('click', generateReport);
-  document.getElementById('createEmpBtn').addEventListener('click', createEmployee);
-  document.getElementById('refreshUsersBtn').addEventListener('click', loadAdminUsers);
-  document.getElementById('closeEditModal').addEventListener('click', function(){ closeModal('editUserModal'); });
-  document.getElementById('cancelEditModal').addEventListener('click', function(){ closeModal('editUserModal'); });
-  document.getElementById('saveEditBtn').addEventListener('click', saveEditUser);
-  document.getElementById('editUserModal').addEventListener('click', function(e){
-    if (e.target === this) closeModal('editUserModal');
-  });
-
-  // Check session once — do NOT use onAuthStateChange for boot (causes double-fire issues)
-  var res = await sb.auth.getSession();
-  if (!res.data || !res.data.session) {
-    window.location.replace('index.html');
-    return;
-  }
-
-  currentUser = res.data.session.user;
-
-  // Only listen for SIGNED_OUT after boot
-  sb.auth.onAuthStateChange(function(event, session) {
-    if (event === 'SIGNED_OUT') {
-      window.location.replace('index.html');
-    }
-  });
-
+  var now=new Date(),ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  document.getElementById('logMonthFilter').value=ym;
+  document.getElementById('reportMonth').value=ym;
+  document.getElementById('logoutBtn').addEventListener('click',handleLogout);
+  document.getElementById('hamburgerBtn').addEventListener('click',toggleSidebar);
+  document.getElementById('sidebarOverlay').addEventListener('click',closeSidebar);
+  document.getElementById('btnClockIn').addEventListener('click',clockIn);
+  document.getElementById('btnClockOut').addEventListener('click',clockOut);
+  document.getElementById('logMonthFilter').addEventListener('change',loadWorkLogs);
+  document.getElementById('staffFilter').addEventListener('change',loadWorkLogs);
+  document.getElementById('saveProfileBtn').addEventListener('click',saveProfile);
+  document.getElementById('pwdResetBtn').addEventListener('click',sendPasswordReset);
+  document.getElementById('genReportBtn').addEventListener('click',generateReport);
+  document.getElementById('createEmpBtn').addEventListener('click',createEmployee);
+  document.getElementById('refreshUsersBtn').addEventListener('click',loadAdminUsers);
+  document.getElementById('closeEditModal').addEventListener('click',function(){closeModal('editUserModal');});
+  document.getElementById('cancelEditModal').addEventListener('click',function(){closeModal('editUserModal');});
+  document.getElementById('saveEditBtn').addEventListener('click',saveEditUser);
+  document.getElementById('editUserModal').addEventListener('click',function(e){if(e.target===this)closeModal('editUserModal');});
+  var res=await sb.auth.getSession();
+  if(!res.data||!res.data.session){window.location.replace('index.html');return;}
+  currentUser=res.data.session.user;
+  sb.auth.onAuthStateChange(function(ev,s){if(ev==='SIGNED_OUT')window.location.replace('index.html');});
   await loadProfile();
   await bootDashboard();
 })();
 
-// ═══════════════════════════════════════
-// PROFILE
-// ═══════════════════════════════════════
-async function loadProfile() {
-  var res = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-  if (res.error || !res.data) {
-    showToast('Грешка при вчитување: ' + (res.error?.message || ''), 'error');
-    return;
-  }
-  currentProfile = res.data;
-  applyRoleUI(res.data.role, res.data.full_name);
+async function loadProfile(){
+  var res=await sb.from('profiles').select('*').eq('id',currentUser.id).single();
+  if(res.error||!res.data){showToast('Грешка при вчитување: '+(res.error?res.error.message:''),'error');return;}
+  currentProfile=res.data;
+  applyRoleUI(res.data.role,res.data.full_name);
 }
-
-function applyRoleUI(role, name) {
-  document.getElementById('sidebarUserName').textContent = name || currentUser.email;
-  document.getElementById('sidebarUserRole').textContent = role === 'doctor' ? 'Доктор' : 'Медицинска сестра';
-  document.getElementById('avatarInitial').textContent   = (name || '?')[0].toUpperCase();
-  document.getElementById('roleBadge').textContent       = role === 'doctor' ? 'Доктор' : 'Мед. сестра';
-
-  if (role === 'doctor') {
-    document.querySelectorAll('.doctor-only').forEach(function(el) {
-      el.style.display = el.classList.contains('nav-section-label') ? 'block' : 'flex';
-    });
-    document.getElementById('teamOverviewCard').style.display = 'block';
-    document.getElementById('doctorStatsGrid').style.display  = 'grid';
-    document.getElementById('staffFilter').style.display      = 'block';
-    document.getElementById('logColEmployee').style.display   = '';
+function applyRoleUI(role,name){
+  document.getElementById('sidebarUserName').textContent=name||currentUser.email;
+  document.getElementById('sidebarUserRole').textContent=role==='doctor'?'Доктор':'Медицинска сестра';
+  document.getElementById('avatarInitial').textContent=(name||'?')[0].toUpperCase();
+  document.getElementById('roleBadge').textContent=role==='doctor'?'Доктор':'Мед. сестра';
+  if(role==='doctor'){
+    document.querySelectorAll('.doctor-only').forEach(function(el){el.style.display=el.classList.contains('nav-section-label')?'block':'flex';});
+    document.getElementById('teamOverviewCard').style.display='block';
+    document.getElementById('doctorStatsGrid').style.display='grid';
+    document.getElementById('staffFilter').style.display='block';
+    document.getElementById('logColEmployee').style.display='';
   }
 }
+async function bootDashboard(){
+  await Promise.all([loadStats(),loadRecentLogs(),loadUpcomingTasks(),checkTodayClock()]);
+  if(currentProfile&&currentProfile.role==='doctor'){await loadStaffList();await loadTeamToday();}
+}
 
-async function bootDashboard() {
-  await Promise.all([
-    loadStats(),
-    loadRecentLogs(),
-    loadUpcomingTasks(),
-    checkTodayClock()
-  ]);
-  if (currentProfile && currentProfile.role === 'doctor') {
-    await loadStaffList();
-    await loadTeamToday();
+/* ── CLOCK ── */
+function startClock(){
+  function tick(){
+    var n=new Date();
+    document.getElementById('liveTime').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
+    var days=['Недела','Понеделник','Вторник','Среда','Четврток','Петок','Сабота'];
+    var months=['јануари','февруари','март','април','мај','јуни','јули','август','септември','октомври','ноември','декември'];
+    var el=document.getElementById('clockDate');
+    if(el)el.textContent=days[n.getDay()]+', '+String(n.getDate()).padStart(2,'0')+'.'+String(n.getMonth()+1).padStart(2,'0')+'.'+n.getFullYear();
   }
+  tick();setInterval(tick,1000);
+}
+async function checkTodayClock(){
+  var today=new Date().toISOString().slice(0,10);
+  var res=await sb.from('work_logs').select('*').eq('user_id',currentUser.id).eq('date',today).is('end_time',null).maybeSingle();
+  if(res.data){activeClock=res.data.id;setClockedIn(true,res.data.log_type);}else setClockedIn(false);
+}
+function setClockedIn(on,type){
+  type=type||'work';
+  document.getElementById('clockDot').className='status-dot'+(on?'':' out');
+  document.getElementById('clockStatusText').textContent=on?'Пријавени сте ('+typeLabelMk(type)+')':'Не сте пријавени';
+  document.getElementById('btnClockIn').disabled=on;
+  document.getElementById('btnClockOut').disabled=!on;
+  document.getElementById('leaveType').disabled=on;
+  if(on)document.getElementById('leaveType').value=type;
+}
+async function clockIn(){
+  var type=document.getElementById('leaveType').value,today=new Date().toISOString().slice(0,10),now=new Date().toTimeString().slice(0,8);
+  document.getElementById('btnClockIn').disabled=true;
+  var res=await sb.from('work_logs').insert({user_id:currentUser.id,date:today,start_time:now,log_type:type}).select().single();
+  if(res.error){showToast('Грешка: '+res.error.message,'error');document.getElementById('btnClockIn').disabled=false;return;}
+  activeClock=res.data.id;setClockedIn(true,type);showToast('Успешно пријавени!','success');loadStats();loadRecentLogs();
+}
+async function clockOut(){
+  if(!activeClock)return;
+  var now=new Date().toTimeString().slice(0,8);
+  document.getElementById('btnClockOut').disabled=true;
+  var res=await sb.from('work_logs').update({end_time:now}).eq('id',activeClock);
+  if(res.error){showToast('Грешка: '+res.error.message,'error');document.getElementById('btnClockOut').disabled=false;return;}
+  activeClock=null;setClockedIn(false);showToast('Успешно одјавени!','success');loadStats();loadRecentLogs();
 }
 
-// ═══════════════════════════════════════
-// CLOCK WIDGET
-// ═══════════════════════════════════════
-function startClock() {
-  function tick() {
-    document.getElementById('liveTime').textContent =
-      new Date().toLocaleTimeString('mk-MK', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-  }
-  tick();
-  setInterval(tick, 1000);
-}
-function setTopbarDate() {
-  var str = new Date().toLocaleDateString('mk-MK', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-  document.getElementById('topbarDate').textContent = str;
-  document.getElementById('clockDate').textContent  = str;
-}
-
-async function checkTodayClock() {
-  var today = new Date().toISOString().slice(0,10);
-  var res = await sb.from('work_logs').select('*')
-    .eq('user_id', currentUser.id).eq('date', today).is('end_time', null)
-    .maybeSingle();
-  if (res.data) {
-    activeClock = res.data.id;
-    setClockedIn(true, res.data.log_type);
-  } else {
-    setClockedIn(false);
-  }
-}
-
-function setClockedIn(on, type) {
-  type = type || 'work';
-  document.getElementById('clockDot').className         = 'status-dot' + (on ? '' : ' out');
-  document.getElementById('clockStatusText').textContent = on ? 'Пријавени сте (' + typeLabelMk(type) + ')' : 'Не сте пријавени';
-  document.getElementById('btnClockIn').disabled         = on;
-  document.getElementById('btnClockOut').disabled        = !on;
-  document.getElementById('leaveType').disabled          = on;
-  if (on) document.getElementById('leaveType').value     = type;
-}
-
-async function clockIn() {
-  var type  = document.getElementById('leaveType').value;
-  var today = new Date().toISOString().slice(0,10);
-  var now   = new Date().toTimeString().slice(0,8);
-  document.getElementById('btnClockIn').disabled = true;
-  var res = await sb.from('work_logs')
-    .insert({user_id: currentUser.id, date: today, start_time: now, log_type: type})
-    .select().single();
-  if (res.error) {
-    showToast('Грешка: ' + res.error.message, 'error');
-    document.getElementById('btnClockIn').disabled = false;
-    return;
-  }
-  activeClock = res.data.id;
-  setClockedIn(true, type);
-  showToast('Успешно пријавени!', 'success');
-  loadStats();
-  loadRecentLogs();
-}
-
-async function clockOut() {
-  if (!activeClock) return;
-  var now = new Date().toTimeString().slice(0,8);
-  document.getElementById('btnClockOut').disabled = true;
-  var res = await sb.from('work_logs').update({end_time: now}).eq('id', activeClock);
-  if (res.error) {
-    showToast('Грешка: ' + res.error.message, 'error');
-    document.getElementById('btnClockOut').disabled = false;
-    return;
-  }
-  activeClock = null;
-  setClockedIn(false);
-  showToast('Успешно одјавени!', 'success');
-  loadStats();
-  loadRecentLogs();
-}
-
-// ═══════════════════════════════════════
-// STATS
-// ═══════════════════════════════════════
-async function loadStats() {
-  var now = new Date(), year = now.getFullYear(), month = now.getMonth()+1;
-  var from = year + '-' + String(month).padStart(2,'0') + '-01';
-  var to   = year + '-' + String(month).padStart(2,'0') + '-' + String(new Date(year,month,0).getDate()).padStart(2,'0');
-
-  var logsRes = await sb.from('work_logs').select('*').eq('user_id', currentUser.id).gte('date', from).lte('date', to);
-  var logs    = logsRes.data || [];
-  var workDays = logs.filter(function(l){ return l.log_type==='work' && l.end_time; }).length;
-  var sickDays = logs.filter(function(l){ return l.log_type==='sick'; }).length;
-  var totalHrs = logs.filter(function(l){ return l.end_time; }).reduce(function(a,l){ return a+calcHours(l.start_time,l.end_time); }, 0);
-
-  var taskRes = await sb.from('tasks').select('id', {count:'exact', head:true}).eq('user_id', currentUser.id).eq('status', 'pending');
-  var taskCount = taskRes.count || 0;
-
-  function si(id) { return '<div class="stat-icon"><svg viewBox="0 0 24 24"><use href="#i-'+id+'"/></svg></div>'; }
-  document.getElementById('statsGrid').innerHTML =
-    '<div class="stat-card">'+si('clock')+'<div class="stat-val">'+Math.round(totalHrs)+'</div><div class="stat-label">Работни часови</div><div class="stat-sub">овој месец</div></div>' +
-    '<div class="stat-card">'+si('cal')+'<div class="stat-val">'+workDays+'</div><div class="stat-label">Работни денови</div><div class="stat-sub">овој месец</div></div>' +
-    '<div class="stat-card">'+si('pulse')+'<div class="stat-val">'+sickDays+'</div><div class="stat-label">Боледување</div><div class="stat-sub">денови</div></div>' +
+/* ── STATS ── */
+async function loadStats(){
+  var now=new Date(),year=now.getFullYear(),month=now.getMonth()+1;
+  var from=year+'-'+String(month).padStart(2,'0')+'-01';
+  var to=year+'-'+String(month).padStart(2,'0')+'-'+String(new Date(year,month,0).getDate()).padStart(2,'0');
+  var logsRes=await sb.from('work_logs').select('*').eq('user_id',currentUser.id).gte('date',from).lte('date',to);
+  var logs=logsRes.data||[];
+  var workDays=logs.filter(function(l){return l.log_type==='work'&&l.end_time;}).length;
+  var sickDays=logs.filter(function(l){return l.log_type==='sick';}).length;
+  var totalHrs=logs.filter(function(l){return l.end_time;}).reduce(function(a,l){return a+calcHours(l.start_time,l.end_time);},0);
+  var taskRes=await sb.from('tasks').select('id',{count:'exact',head:true}).eq('assignee_id',currentUser.id).in('status',['pending','in_progress']);
+  var taskCount=taskRes.count||0;
+  function si(id){return '<div class="stat-icon"><svg viewBox="0 0 24 24"><use href="#i-'+id+'"/></svg></div>';}
+  document.getElementById('statsGrid').innerHTML=
+    '<div class="stat-card">'+si('clock')+'<div class="stat-val">'+Math.round(totalHrs)+'</div><div class="stat-label">Работни часови</div><div class="stat-sub">овој месец</div></div>'+
+    '<div class="stat-card">'+si('cal')+'<div class="stat-val">'+workDays+'</div><div class="stat-label">Работни денови</div><div class="stat-sub">овој месец</div></div>'+
+    '<div class="stat-card">'+si('pulse')+'<div class="stat-val">'+sickDays+'</div><div class="stat-label">Боледување</div><div class="stat-sub">денови</div></div>'+
     '<div class="stat-card">'+si('tasks')+'<div class="stat-val">'+taskCount+'</div><div class="stat-label">Активни задачи</div><div class="stat-sub">чекаат</div></div>';
-
-  var badge = document.getElementById('tasksBadge');
-  badge.textContent = taskCount;
-  badge.style.display = taskCount > 0 ? '' : 'none';
-
-  if (currentProfile && currentProfile.role === 'doctor') {
-    var allLogsRes = await sb.from('work_logs').select('user_id,end_time,date').gte('date', from).lte('date', to);
-    var today = new Date().toISOString().slice(0,10);
-    var onlineSet = {};
-    (allLogsRes.data || []).forEach(function(l){ if(!l.end_time && l.date===today) onlineSet[l.user_id]=1; });
-    var online = Object.keys(onlineSet).length;
-    var totRes = await sb.from('profiles').select('id', {count:'exact', head:true});
-    document.getElementById('doctorStatsGrid').innerHTML =
-      '<div class="stat-card">'+si('users')+'<div class="stat-val">'+(totRes.count||0)+'</div><div class="stat-label">Вкупно вработени</div></div>' +
+  var badge=document.getElementById('tasksBadge');badge.textContent=taskCount;badge.style.display=taskCount>0?'':'none';
+  if(currentProfile&&currentProfile.role==='doctor'){
+    var allLogsRes=await sb.from('work_logs').select('user_id,end_time,date').gte('date',from).lte('date',to);
+    var today=new Date().toISOString().slice(0,10);
+    var onlineSet={};(allLogsRes.data||[]).forEach(function(l){if(!l.end_time&&l.date===today)onlineSet[l.user_id]=1;});
+    var online=Object.keys(onlineSet).length;
+    var totRes=await sb.from('profiles').select('id',{count:'exact',head:true});
+    document.getElementById('doctorStatsGrid').innerHTML=
+      '<div class="stat-card">'+si('users')+'<div class="stat-val">'+(totRes.count||0)+'</div><div class="stat-label">Вкупно вработени</div></div>'+
       '<div class="stat-card">'+si('users')+'<div class="stat-val">'+online+'</div><div class="stat-label">Пријавени денес</div></div>';
   }
 }
+async function loadRecentLogs(){
+  var res=await sb.from('work_logs').select('*').eq('user_id',currentUser.id).order('date',{ascending:false}).limit(5);
+  var tbody=document.getElementById('recentLogsBody');
+  if(!res.data||!res.data.length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-light);padding:1rem;font-size:.82rem">Нема евиденции</td></tr>';return;}
+  tbody.innerHTML=res.data.map(function(l){return '<tr><td>'+formatDate(l.date)+'</td><td>'+(l.start_time?l.start_time.slice(0,5):'–')+'</td><td>'+(l.end_time?l.end_time.slice(0,5):'–')+'</td><td><span class="pill pill-'+l.log_type+'">'+typeLabelMk(l.log_type)+'</span></td></tr>';}).join('');
+}
 
-async function loadRecentLogs() {
-  var res = await sb.from('work_logs').select('*').eq('user_id', currentUser.id).order('date', {ascending:false}).limit(5);
-  var tbody = document.getElementById('recentLogsBody');
-  if (!res.data || !res.data.length) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-light);padding:1.2rem;font-size:.85rem">Нема евиденции</td></tr>';
-    return;
-  }
-  tbody.innerHTML = res.data.map(function(l){
-    return '<tr><td>'+formatDate(l.date)+'</td><td>'+(l.start_time?l.start_time.slice(0,5):'–')+'</td><td>'+(l.end_time?l.end_time.slice(0,5):'–')+'</td><td><span class="pill pill-'+l.log_type+'">'+typeLabelMk(l.log_type)+'</span></td></tr>';
+/* ── WORK LOG ── */
+async function loadWorkLogs(){
+  var month=document.getElementById('logMonthFilter').value,staffSel=document.getElementById('staffFilter').value;
+  if(!month)return;
+  var parts=month.split('-'),year=parts[0],mo=parts[1];
+  var from=month+'-01',to=month+'-'+String(new Date(parseInt(year),parseInt(mo),0).getDate()).padStart(2,'0');
+  var isDoc=currentProfile&&currentProfile.role==='doctor';
+  var query=sb.from('work_logs').select('*, profiles(full_name)').gte('date',from).lte('date',to).order('date',{ascending:false});
+  if(!isDoc)query=query.eq('user_id',currentUser.id);else if(staffSel)query=query.eq('user_id',staffSel);
+  var res=await query,data=res.data||[],tbody=document.getElementById('workLogsBody'),cols=isDoc?6:5;
+  if(!data.length){tbody.innerHTML='<tr><td colspan="'+cols+'" style="text-align:center;color:var(--text-light);padding:1.2rem;font-size:.82rem">Нема евиденции за избраниот месец</td></tr>';document.getElementById('workLogTotals').style.display='none';return;}
+  tbody.innerHTML=data.map(function(l){var hrs=(l.start_time&&l.end_time)?calcHours(l.start_time,l.end_time).toFixed(1):'–';return '<tr><td>'+formatDate(l.date)+'</td>'+(isDoc?'<td>'+(l.profiles&&l.profiles.full_name?esc(l.profiles.full_name):'–')+'</td>':'')+'<td>'+(l.start_time?l.start_time.slice(0,5):'–')+'</td><td>'+(l.end_time?l.end_time.slice(0,5):'–')+'</td><td>'+(hrs!=='–'?hrs+' ч.':'–')+'</td><td><span class="pill pill-'+l.log_type+'">'+typeLabelMk(l.log_type)+'</span></td></tr>';}).join('');
+  var completed=data.filter(function(l){return l.end_time&&l.log_type==='work';});
+  var totHrs=completed.reduce(function(a,l){return a+calcHours(l.start_time,l.end_time);},0);
+  document.getElementById('totalHoursDisplay').textContent=totHrs.toFixed(1)+' ч.';
+  document.getElementById('totalDaysDisplay').textContent=completed.length;
+  document.getElementById('workLogTotals').style.display='block';
+}
+
+/* ── UPCOMING TASKS (preview) ── */
+async function loadUpcomingTasks(){
+  var isDoc=currentProfile&&currentProfile.role==='doctor';
+  var q=sb.from('tasks').select('*').in('status',['pending','in_progress']).order('due_date',{ascending:true,nullsFirst:false}).limit(4);
+  if(!isDoc)q=q.eq('assignee_id',currentUser.id);
+  var res=await q,tasks=res.data||[];
+  var el=document.getElementById('upcomingTasksList');
+  if(!tasks.length){el.innerHTML='<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24"><use href="#i-tasks"/></svg></div><p>Нема активни задачи</p></div>';return;}
+  el.innerHTML=tasks.map(function(t){
+    var overdue=t.due_date&&new Date(t.due_date)<new Date();
+    return '<div class="task-item"><div class="task-body"><div class="task-title">'+esc(t.title)+'</div>'+(t.due_date?'<div class="task-due'+(overdue?' overdue':'')+'">'+(overdue?'⚠ Задоцнето: ':'Рок: ')+formatDate(t.due_date)+'</div>':'')+'</div><span class="pill pill-'+t.status+'" style="flex-shrink:0">'+statusLabel(t.status)+'</span></div>';
   }).join('');
 }
+function statusLabel(s){return{pending:'Во чекање',in_progress:'Во тек',completed:'Завршена',archived:'Архивирана'}[s]||s;}
 
-// ═══════════════════════════════════════
-// WORK LOG FULL TABLE
-// ═══════════════════════════════════════
-async function loadWorkLogs() {
-  var month    = document.getElementById('logMonthFilter').value;
-  var staffSel = document.getElementById('staffFilter').value;
-  if (!month) return;
-  var parts = month.split('-');
-  var year = parts[0], mo = parts[1];
-  var from = month + '-01';
-  var to   = month + '-' + String(new Date(parseInt(year), parseInt(mo), 0).getDate()).padStart(2,'0');
-
-  var isDoc = currentProfile && currentProfile.role === 'doctor';
-  var query = sb.from('work_logs').select('*, profiles(full_name)').gte('date', from).lte('date', to).order('date', {ascending:false});
-  if (!isDoc) query = query.eq('user_id', currentUser.id);
-  else if (staffSel) query = query.eq('user_id', staffSel);
-
-  var res   = await query;
-  var data  = res.data || [];
-  var tbody = document.getElementById('workLogsBody');
-  var cols  = isDoc ? 6 : 5;
-
-  if (!data.length) {
-    tbody.innerHTML = '<tr><td colspan="'+cols+'" style="text-align:center;color:var(--text-light);padding:1.5rem;font-size:.85rem">Нема евиденции за избраниот месец</td></tr>';
-    document.getElementById('workLogTotals').style.display = 'none';
-    return;
-  }
-
-  tbody.innerHTML = data.map(function(l){
-    var hrs = (l.start_time && l.end_time) ? calcHours(l.start_time, l.end_time).toFixed(1) : '–';
-    return '<tr>' +
-      '<td>'+formatDate(l.date)+'</td>' +
-      (isDoc ? '<td>'+(l.profiles&&l.profiles.full_name ? esc(l.profiles.full_name) : '–')+'</td>' : '') +
-      '<td>'+(l.start_time?l.start_time.slice(0,5):'–')+'</td>' +
-      '<td>'+(l.end_time?l.end_time.slice(0,5):'–')+'</td>' +
-      '<td>'+(hrs!=='–'?hrs+' ч.':'–')+'</td>' +
-      '<td><span class="pill pill-'+l.log_type+'">'+typeLabelMk(l.log_type)+'</span></td>' +
-      '</tr>';
-  }).join('');
-
-  var completed = data.filter(function(l){ return l.end_time && l.log_type==='work'; });
-  var totHrs    = completed.reduce(function(a,l){ return a+calcHours(l.start_time,l.end_time); }, 0);
-  document.getElementById('totalHoursDisplay').textContent = totHrs.toFixed(1)+' ч.';
-  document.getElementById('totalDaysDisplay').textContent  = completed.length;
-  document.getElementById('workLogTotals').style.display   = 'block';
+/* ── SETTINGS ── */
+function loadSettingsPage(){
+  if(!currentProfile)return;
+  var p=currentProfile;
+  document.getElementById('pFullName').value=p.full_name||'';
+  document.getElementById('pEmail').value=currentUser.email||'';
+  document.getElementById('pPhone').value=p.phone||'';
+  document.getElementById('pJobTitle').value=p.job_title||'';
+  document.getElementById('pEmployedDate').value=p.employed_date||'';
+  document.getElementById('pLeaveDays').value=p.leave_days!=null?p.leave_days:20;
+  document.getElementById('accountInfo').innerHTML='<div>Улога: <strong>'+(p.role==='doctor'?'Доктор':'Медицинска сестра')+'</strong></div><div>Вработен/а од: <strong>'+(p.employed_date?formatDate(p.employed_date):'–')+'</strong></div><div>Денови одмор: <strong>'+((p.leave_days!=null?p.leave_days:20))+' денови</strong></div>';
+}
+async function saveProfile(){
+  var btn=document.getElementById('saveProfileBtn');btn.disabled=true;
+  var updates={full_name:document.getElementById('pFullName').value.trim(),phone:document.getElementById('pPhone').value.trim(),job_title:document.getElementById('pJobTitle').value.trim(),employed_date:document.getElementById('pEmployedDate').value||null,leave_days:parseInt(document.getElementById('pLeaveDays').value)||20};
+  var res=await sb.from('profiles').update(updates).eq('id',currentUser.id);btn.disabled=false;
+  if(res.error){showToast('Грешка: '+res.error.message,'error');return;}
+  currentProfile=Object.assign({},currentProfile,updates);applyRoleUI(currentProfile.role,currentProfile.full_name);loadSettingsPage();showToast('Зачувано!','success');
+}
+async function sendPasswordReset(){
+  var btn=document.getElementById('pwdResetBtn');btn.disabled=true;
+  var res=await sb.auth.resetPasswordForEmail(currentUser.email);btn.disabled=false;
+  if(res.error){showToast('Грешка: '+res.error.message,'error');return;}showToast('Линкот е испратен!','success');
 }
 
-// ═══════════════════════════════════════
-// TASKS
-// ═══════════════════════════════════════
-async function loadTasks() {
-  var isDoc = currentProfile && currentProfile.role === 'doctor';
-  var query = sb.from('tasks').select('*, profiles(full_name)').order('due_date', {ascending:true});
-  if (!isDoc) query = query.eq('user_id', currentUser.id);
-  var res = await query;
-  if (res.error) { showToast('Грешка: '+res.error.message,'error'); return; }
-  allTasks = res.data || [];
-  renderTasks();
-  renderUpcoming();
+/* ── STAFF ── */
+async function loadStaffList(){
+  var res=await sb.from('profiles').select('*').order('full_name');allStaff=res.data||[];
+  var opts=allStaff.map(function(s){return '<option value="'+s.id+'">'+esc(s.full_name)+' ('+(s.role==='doctor'?'Доктор':'Сестра')+')</option>';}).join('');
+  document.getElementById('staffFilter').innerHTML='<option value="">Сите вработени</option>'+opts;
+  document.getElementById('reportEmployee').innerHTML='<option value="">Сите вработени</option>'+opts;
 }
-async function loadUpcomingTasks() { await loadTasks(); }
-
-function renderUpcoming() {
-  var upcoming = allTasks.filter(function(t){ return t.status==='pending'; }).slice(0,4);
-  var el = document.getElementById('upcomingTasksList');
-  if (!upcoming.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24"><use href="#i-tasks"/></svg></div><p>Нема активни задачи</p></div>';
-    return;
-  }
-  el.innerHTML = upcoming.map(function(t){ return taskHTML(t, false); }).join('');
+async function loadTeamToday(){
+  var today=new Date().toISOString().slice(0,10);
+  var res=await sb.from('work_logs').select('*, profiles(full_name,role)').eq('date',today);
+  var tbody=document.getElementById('teamTodayBody'),data=res.data||[];
+  if(!data.length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-light);padding:1rem;font-size:.82rem">Нема активности денес</td></tr>';return;}
+  tbody.innerHTML=data.map(function(l){return '<tr><td><strong>'+(l.profiles?esc(l.profiles.full_name):'–')+'</strong></td><td>'+(l.profiles&&l.profiles.role==='doctor'?'Доктор':'Сестра')+'</td><td><span class="pill pill-'+l.log_type+'">'+typeLabelMk(l.log_type)+'</span></td><td>'+(l.end_time?'Одјавен/а '+l.end_time.slice(0,5):'<span style="color:var(--green);font-weight:600">Активен/а</span>')+'</td></tr>';}).join('');
+}
+async function loadStaffTable(){
+  var now=new Date(),year=now.getFullYear(),month=now.getMonth()+1;
+  var from=year+'-'+String(month).padStart(2,'0')+'-01',to=year+'-'+String(month).padStart(2,'0')+'-'+String(new Date(year,month,0).getDate()).padStart(2,'0');
+  var logsRes=await sb.from('work_logs').select('*').gte('date',from).lte('date',to);
+  var staffRes=await sb.from('profiles').select('*').order('full_name');
+  var logs=logsRes.data||[],staff=staffRes.data||[],today=new Date().toISOString().slice(0,10);
+  document.getElementById('staffTableBody').innerHTML=staff.map(function(s){var sl=logs.filter(function(l){return l.user_id===s.id;});var hrs=sl.filter(function(l){return l.end_time&&l.log_type==='work';}).reduce(function(a,l){return a+calcHours(l.start_time,l.end_time);},0);var sick=sl.filter(function(l){return l.log_type==='sick';}).length;var hols=sl.filter(function(l){return l.log_type==='holiday';}).length;var on=sl.some(function(l){return!l.end_time&&l.date===today;});return '<tr><td>'+esc(s.full_name)+'</td><td>'+(s.role==='doctor'?'Доктор':'Сестра')+'</td><td>'+Math.round(hrs)+' ч.</td><td>'+sick+'</td><td>'+hols+'</td><td>'+(on?'<span class="online-dot"></span>Пријавен/а':'<span style="color:var(--text-light)">Одјавен/а</span>')+'</td></tr>';}).join('');
 }
 
-function renderTasks() {
-  var filter = document.getElementById('taskStatusFilter').value;
-  var list   = filter==='all' ? allTasks : allTasks.filter(function(t){ return t.status===filter; });
-  var el     = document.getElementById('fullTaskList');
-  if (!list.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24"><use href="#i-tasks"/></svg></div><p>Нема задачи</p></div>';
-    return;
-  }
-  el.innerHTML = list.map(function(t){ return taskHTML(t, true); }).join('');
+/* ── REPORTS ── */
+async function generateReport(){
+  var empId=document.getElementById('reportEmployee').value,month=document.getElementById('reportMonth').value;
+  if(!month){showToast('Изберете месец.','error');return;}
+  var parts=month.split('-'),year=parts[0],mo=parts[1];
+  var from=month+'-01',to=month+'-'+String(new Date(parseInt(year),parseInt(mo),0).getDate()).padStart(2,'0');
+  var query=sb.from('work_logs').select('*, profiles(full_name)').gte('date',from).lte('date',to).order('date');
+  if(empId)query=query.eq('user_id',empId);
+  var res=await query,logs=res.data||[];
+  var wl=logs.filter(function(l){return l.log_type==='work'&&l.end_time;}),hrs=wl.reduce(function(a,l){return a+calcHours(l.start_time,l.end_time);},0);
+  var sd=logs.filter(function(l){return l.log_type==='sick';}).length,hd=logs.filter(function(l){return l.log_type==='holiday';}).length;
+  function si(id){return '<div class="stat-icon"><svg viewBox="0 0 24 24"><use href="#i-'+id+'"/></svg></div>';}
+  document.getElementById('reportStats').innerHTML='<div class="stat-card">'+si('clock')+'<div class="stat-val">'+Math.round(hrs)+'</div><div class="stat-label">Вкупно часови</div></div><div class="stat-card">'+si('cal')+'<div class="stat-val">'+wl.length+'</div><div class="stat-label">Работни денови</div></div><div class="stat-card">'+si('pulse')+'<div class="stat-val">'+sd+'</div><div class="stat-label">Боледување</div></div><div class="stat-card">'+si('bar')+'<div class="stat-val">'+hd+'</div><div class="stat-label">Одмор</div></div>';
+  document.getElementById('reportTableTitle').textContent='Детали – '+month+(empId?'':' (сите)');
+  document.getElementById('reportTableBody').innerHTML=logs.map(function(l){return '<tr><td>'+formatDate(l.date)+'</td><td>'+(l.profiles?esc(l.profiles.full_name):'–')+'</td><td>'+(l.start_time?l.start_time.slice(0,5):'–')+'</td><td>'+(l.end_time?l.end_time.slice(0,5):'–')+'</td><td>'+((l.start_time&&l.end_time)?calcHours(l.start_time,l.end_time).toFixed(1)+' ч.':'–')+'</td><td><span class="pill pill-'+l.log_type+'">'+typeLabelMk(l.log_type)+'</span></td></tr>';}).join('');
+  document.getElementById('reportOutput').style.display='block';showToast('Извештајот е генериран!','success');
 }
 
-function taskHTML(t, showControls) {
-  var overdue = t.due_date && new Date(t.due_date) < new Date() && t.status!=='done';
-  var isDoc   = currentProfile && currentProfile.role==='doctor';
-  return '<div class="task-item" id="task-'+t.id+'">' +
-    (showControls ? '<div class="task-check'+(t.status==='done'?' checked':'')+'" onclick="toggleTask(\''+t.id+'\',\''+t.status+'\')"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg></div>' : '') +
-    '<div class="task-body">' +
-      '<div class="task-title'+(t.status==='done'?' done':'')+'">'+esc(t.title)+'</div>' +
-      (t.due_date ? '<div class="task-due'+(overdue?' overdue':'')+'">'+( overdue?'Задоцнето: ':'Рок: ')+formatDate(t.due_date)+'</div>' : '') +
-    '</div>' +
-    (isDoc && t.profiles && t.profiles.full_name ? '<div class="task-owner">'+esc(t.profiles.full_name)+'</div>' : '') +
-    '<span class="pill '+(t.status==='done'?'pill-done':'pill-pending')+'">'+(t.status==='done'?'Завршена':'Во тек')+'</span>' +
-    (showControls ? '<button type="button" onclick="deleteTask(\''+t.id+'\')" style="background:none;border:none;cursor:pointer;color:var(--text-light);padding:4px;border-radius:6px;display:flex;align-items:center"><svg width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-trash"/></svg></button>' : '') +
-  '</div>';
+/* ── ADMIN ── */
+async function loadAdminUsers(){
+  var res=await sb.from('profiles').select('*').order('full_name');var el=document.getElementById('adminUserList'),data=res.data||[];
+  if(!data.length){el.innerHTML='<p style="color:var(--text-light);font-size:.82rem">Нема вработени.</p>';return;}
+  el.innerHTML=data.map(function(s){return '<div class="user-card"><div class="user-card-avatar">'+(s.full_name||'?')[0].toUpperCase()+'</div><div class="user-card-info"><div class="user-card-name">'+esc(s.full_name||'–')+'</div><div class="user-card-meta">'+(s.role==='doctor'?'Доктор':'Мед. сестра')+(s.job_title?' · '+esc(s.job_title):'')+(s.employed_date?' · од '+formatDate(s.employed_date):'')+'</div><div class="user-card-meta">'+(s.leave_days!=null?s.leave_days:20)+' денови одмор'+(s.phone?' · '+esc(s.phone):'')+'</div></div><div class="user-card-actions"><button class="btn-secondary" type="button" onclick="openEditUser(\''+s.id+'\')"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-edit"/></svg></button></div></div>';}).join('');
+  allStaff=data;
 }
-
-async function addTask() {
-  var title = document.getElementById('taskTitle').value.trim();
-  var due   = document.getElementById('taskDueDate').value;
-  if (!title) { showToast('Внесете наслов.', 'error'); return; }
-  document.getElementById('addTaskBtn').disabled = true;
-  var res = await sb.from('tasks').insert({user_id: currentUser.id, title: title, due_date: due||null, status:'pending'});
-  document.getElementById('addTaskBtn').disabled = false;
-  if (res.error) { showToast('Грешка: '+res.error.message, 'error'); return; }
-  document.getElementById('taskTitle').value   = '';
-  document.getElementById('taskDueDate').value = '';
-  showToast('Задачата е додадена!', 'success');
-  await loadTasks();
-  loadStats();
-}
-
-async function toggleTask(id, currentStatus) {
-  var newStatus = currentStatus==='done' ? 'pending' : 'done';
-  var res = await sb.from('tasks').update({status: newStatus}).eq('id', id);
-  if (res.error) { showToast('Грешка.', 'error'); return; }
-  allTasks = allTasks.map(function(t){ return t.id===id ? Object.assign({},t,{status:newStatus}) : t; });
-  renderTasks(); renderUpcoming(); loadStats();
-}
-
-async function deleteTask(id) {
-  if (!confirm('Да се избрише задачата?')) return;
-  var res = await sb.from('tasks').delete().eq('id', id);
-  if (res.error) { showToast('Грешка.', 'error'); return; }
-  allTasks = allTasks.filter(function(t){ return t.id!==id; });
-  renderTasks(); renderUpcoming(); loadStats();
-  showToast('Избришана.', 'success');
-}
-
-// ═══════════════════════════════════════
-// MY PROFILE / SETTINGS
-// ═══════════════════════════════════════
-function loadSettingsPage() {
-  if (!currentProfile) return;
-  var p = currentProfile;
-  document.getElementById('pFullName').value     = p.full_name     || '';
-  document.getElementById('pEmail').value        = currentUser.email || '';
-  document.getElementById('pPhone').value        = p.phone         || '';
-  document.getElementById('pJobTitle').value     = p.job_title     || '';
-  document.getElementById('pEmployedDate').value = p.employed_date || '';
-  document.getElementById('pLeaveDays').value    = p.leave_days    != null ? p.leave_days : 20;
-  document.getElementById('accountInfo').innerHTML =
-    '<div>Улога: <strong>'+(p.role==='doctor'?'Доктор':'Медицинска сестра')+'</strong></div>' +
-    '<div>Вработен/а од: <strong>'+(p.employed_date ? formatDate(p.employed_date) : '–')+'</strong></div>' +
-    '<div>Денови одмор: <strong>'+((p.leave_days!=null?p.leave_days:20))+' денови</strong></div>';
-}
-
-async function saveProfile() {
-  var btn = document.getElementById('saveProfileBtn');
-  btn.disabled = true;
-  var updates = {
-    full_name:     document.getElementById('pFullName').value.trim(),
-    phone:         document.getElementById('pPhone').value.trim(),
-    job_title:     document.getElementById('pJobTitle').value.trim(),
-    employed_date: document.getElementById('pEmployedDate').value || null,
-    leave_days:    parseInt(document.getElementById('pLeaveDays').value) || 20
-  };
-  var res = await sb.from('profiles').update(updates).eq('id', currentUser.id);
-  btn.disabled = false;
-  if (res.error) { showToast('Грешка: '+res.error.message, 'error'); return; }
-  currentProfile = Object.assign({}, currentProfile, updates);
-  applyRoleUI(currentProfile.role, currentProfile.full_name);
-  loadSettingsPage();
-  showToast('Зачувано!', 'success');
-}
-
-async function sendPasswordReset() {
-  var btn = document.getElementById('pwdResetBtn');
-  btn.disabled = true;
-  var res = await sb.auth.resetPasswordForEmail(currentUser.email);
-  btn.disabled = false;
-  if (res.error) { showToast('Грешка: '+res.error.message, 'error'); return; }
-  showToast('Линкот е испратен!', 'success');
-}
-
-// ═══════════════════════════════════════
-// STAFF (DOCTOR)
-// ═══════════════════════════════════════
-async function loadStaffList() {
-  var res = await sb.from('profiles').select('*').order('full_name');
-  allStaff = res.data || [];
-  var opts = allStaff.map(function(s){
-    return '<option value="'+s.id+'">'+esc(s.full_name)+' ('+(s.role==='doctor'?'Доктор':'Сестра')+')</option>';
-  }).join('');
-  document.getElementById('staffFilter').innerHTML    = '<option value="">Сите вработени</option>' + opts;
-  document.getElementById('reportEmployee').innerHTML = '<option value="">Сите вработени</option>' + opts;
-}
-
-async function loadTeamToday() {
-  var today = new Date().toISOString().slice(0,10);
-  var res   = await sb.from('work_logs').select('*, profiles(full_name,role)').eq('date', today);
-  var tbody = document.getElementById('teamTodayBody');
-  var data  = res.data || [];
-  if (!data.length) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-light);padding:1.2rem;font-size:.85rem">Нема активности денес</td></tr>';
-    return;
-  }
-  tbody.innerHTML = data.map(function(l){
-    var role = l.profiles && l.profiles.role === 'doctor' ? 'Доктор' : 'Сестра';
-    return '<tr>' +
-      '<td><strong>'+(l.profiles?esc(l.profiles.full_name):'–')+'</strong></td>' +
-      '<td><span class="role-tag">'+role+'</span></td>' +
-      '<td><span class="pill pill-'+l.log_type+'">'+typeLabelMk(l.log_type)+'</span></td>' +
-      '<td>'+(l.end_time ? 'Одјавен/а '+l.end_time.slice(0,5) : '<span style="color:var(--green);font-weight:600">Активен/а</span>')+'</td>' +
-      '</tr>';
-  }).join('');
-}
-
-async function loadStaffTable() {
-  var now = new Date(), year = now.getFullYear(), month = now.getMonth()+1;
-  var from = year+'-'+String(month).padStart(2,'0')+'-01';
-  var to   = year+'-'+String(month).padStart(2,'0')+'-'+String(new Date(year,month,0).getDate()).padStart(2,'0');
-  var logsRes  = await sb.from('work_logs').select('*').gte('date',from).lte('date',to);
-  var staffRes = await sb.from('profiles').select('*').order('full_name');
-  var logs  = logsRes.data  || [];
-  var staff = staffRes.data || [];
-  var today = new Date().toISOString().slice(0,10);
-  document.getElementById('staffTableBody').innerHTML = staff.map(function(s){
-    var sl   = logs.filter(function(l){ return l.user_id===s.id; });
-    var hrs  = sl.filter(function(l){ return l.end_time && l.log_type==='work'; }).reduce(function(a,l){ return a+calcHours(l.start_time,l.end_time); },0);
-    var sick = sl.filter(function(l){ return l.log_type==='sick'; }).length;
-    var hols = sl.filter(function(l){ return l.log_type==='holiday'; }).length;
-    var on   = sl.some(function(l){ return !l.end_time && l.date===today; });
-    return '<tr><td>'+esc(s.full_name)+'</td><td>'+(s.role==='doctor'?'Доктор':'Сестра')+'</td><td>'+Math.round(hrs)+' ч.</td><td>'+sick+'</td><td>'+hols+'</td>' +
-      '<td>'+(on?'<span class="online-dot"></span>Пријавен/а':'<span style="color:var(--text-light)">Одјавен/а</span>')+'</td></tr>';
-  }).join('');
-}
-
-// ═══════════════════════════════════════
-// REPORTS
-// ═══════════════════════════════════════
-async function generateReport() {
-  var empId = document.getElementById('reportEmployee').value;
-  var month = document.getElementById('reportMonth').value;
-  if (!month) { showToast('Изберете месец.', 'error'); return; }
-  var parts = month.split('-'), year = parts[0], mo = parts[1];
-  var from  = month+'-01';
-  var to    = month+'-'+String(new Date(parseInt(year),parseInt(mo),0).getDate()).padStart(2,'0');
-  var query = sb.from('work_logs').select('*, profiles(full_name)').gte('date',from).lte('date',to).order('date');
-  if (empId) query = query.eq('user_id', empId);
-  var res  = await query;
-  var logs = res.data || [];
-  var wl   = logs.filter(function(l){ return l.log_type==='work' && l.end_time; });
-  var hrs  = wl.reduce(function(a,l){ return a+calcHours(l.start_time,l.end_time); },0);
-  var sd   = logs.filter(function(l){ return l.log_type==='sick'; }).length;
-  var hd   = logs.filter(function(l){ return l.log_type==='holiday'; }).length;
-  function si(id){ return '<div class="stat-icon"><svg viewBox="0 0 24 24"><use href="#i-'+id+'"/></svg></div>'; }
-  document.getElementById('reportStats').innerHTML =
-    '<div class="stat-card">'+si('clock')+'<div class="stat-val">'+Math.round(hrs)+'</div><div class="stat-label">Вкупно часови</div></div>'+
-    '<div class="stat-card">'+si('cal')+'<div class="stat-val">'+wl.length+'</div><div class="stat-label">Работни денови</div></div>'+
-    '<div class="stat-card">'+si('pulse')+'<div class="stat-val">'+sd+'</div><div class="stat-label">Боледување</div></div>'+
-    '<div class="stat-card">'+si('bar')+'<div class="stat-val">'+hd+'</div><div class="stat-label">Одмор</div></div>';
-  document.getElementById('reportTableTitle').textContent = 'Детали – '+month+(empId?'':' (сите)');
-  document.getElementById('reportTableBody').innerHTML = logs.map(function(l){
-    var h = (l.start_time&&l.end_time) ? calcHours(l.start_time,l.end_time).toFixed(1)+' ч.' : '–';
-    return '<tr><td>'+formatDate(l.date)+'</td><td>'+(l.profiles?esc(l.profiles.full_name):'–')+'</td><td>'+(l.start_time?l.start_time.slice(0,5):'–')+'</td><td>'+(l.end_time?l.end_time.slice(0,5):'–')+'</td><td>'+h+'</td><td><span class="pill pill-'+l.log_type+'">'+typeLabelMk(l.log_type)+'</span></td></tr>';
-  }).join('');
-  document.getElementById('reportOutput').style.display = 'block';
-  showToast('Извештајот е генериран!', 'success');
-}
-
-// ═══════════════════════════════════════
-// ADMIN
-// ═══════════════════════════════════════
-async function loadAdminUsers() {
-  var res = await sb.from('profiles').select('*').order('full_name');
-  var el  = document.getElementById('adminUserList');
-  var data = res.data || [];
-  if (!data.length) { el.innerHTML = '<p style="color:var(--text-light);font-size:.85rem">Нема вработени.</p>'; return; }
-  el.innerHTML = data.map(function(s){
-    return '<div class="user-card">' +
-      '<div class="user-card-avatar">'+(s.full_name||'?')[0].toUpperCase()+'</div>' +
-      '<div class="user-card-info">' +
-        '<div class="user-card-name">'+esc(s.full_name||'–')+'</div>' +
-        '<div class="user-card-meta">'+(s.role==='doctor'?'Доктор':'Мед. сестра')+(s.job_title?' · '+esc(s.job_title):'')+(s.employed_date?' · од '+formatDate(s.employed_date):'')+'</div>' +
-        '<div class="user-card-meta">'+(s.leave_days!=null?s.leave_days:20)+' денови одмор'+(s.phone?' · '+esc(s.phone):'')+'</div>' +
-      '</div>' +
-      '<div class="user-card-actions">' +
-        '<button class="btn-secondary" type="button" onclick="openEditUser(\''+s.id+'\')"><svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-edit"/></svg></button>' +
-      '</div></div>';
-  }).join('');
-  // keep allStaff in sync for the edit modal
-  allStaff = data;
-}
-
-function openEditUser(id) {
-  var s = allStaff.find(function(u){ return u.id===id; });
-  if (!s) { loadAdminUsers(); showToast('Освежете ја листата.', 'error'); return; }
-  document.getElementById('editUserId').value       = s.id;
-  document.getElementById('editFullName').value     = s.full_name     || '';
-  document.getElementById('editPhone').value        = s.phone         || '';
-  document.getElementById('editJobTitle').value     = s.job_title     || '';
-  document.getElementById('editEmployedDate').value = s.employed_date || '';
-  document.getElementById('editLeaveDays').value    = s.leave_days    != null ? s.leave_days : 20;
-  document.getElementById('editRole').value         = s.role          || 'nurse';
+function openEditUser(id){
+  var s=allStaff.find(function(u){return u.id===id;});if(!s){loadAdminUsers();showToast('Освежете ја листата.','error');return;}
+  document.getElementById('editUserId').value=s.id;document.getElementById('editFullName').value=s.full_name||'';document.getElementById('editPhone').value=s.phone||'';document.getElementById('editJobTitle').value=s.job_title||'';document.getElementById('editEmployedDate').value=s.employed_date||'';document.getElementById('editLeaveDays').value=s.leave_days!=null?s.leave_days:20;document.getElementById('editRole').value=s.role||'nurse';
   openModal('editUserModal');
 }
-
-async function saveEditUser() {
-  var id  = document.getElementById('editUserId').value;
-  var btn = document.getElementById('saveEditBtn');
-  btn.disabled = true;
-  var updates = {
-    full_name:     document.getElementById('editFullName').value.trim(),
-    phone:         document.getElementById('editPhone').value.trim(),
-    job_title:     document.getElementById('editJobTitle').value.trim(),
-    employed_date: document.getElementById('editEmployedDate').value || null,
-    leave_days:    parseInt(document.getElementById('editLeaveDays').value) || 20,
-    role:          document.getElementById('editRole').value
-  };
-  var res = await sb.from('profiles').update(updates).eq('id', id);
-  btn.disabled = false;
-  if (res.error) { showToast('Грешка: '+res.error.message, 'error'); return; }
-  allStaff = allStaff.map(function(s){ return s.id===id ? Object.assign({},s,updates) : s; });
-  closeModal('editUserModal');
-  loadAdminUsers();
-  await loadStaffList();
-  showToast('Зачувано!', 'success');
+async function saveEditUser(){
+  var id=document.getElementById('editUserId').value,btn=document.getElementById('saveEditBtn');btn.disabled=true;
+  var updates={full_name:document.getElementById('editFullName').value.trim(),phone:document.getElementById('editPhone').value.trim(),job_title:document.getElementById('editJobTitle').value.trim(),employed_date:document.getElementById('editEmployedDate').value||null,leave_days:parseInt(document.getElementById('editLeaveDays').value)||20,role:document.getElementById('editRole').value};
+  var res=await sb.from('profiles').update(updates).eq('id',id);btn.disabled=false;
+  if(res.error){showToast('Грешка: '+res.error.message,'error');return;}
+  allStaff=allStaff.map(function(s){return s.id===id?Object.assign({},s,updates):s;});closeModal('editUserModal');loadAdminUsers();await loadStaffList();showToast('Зачувано!','success');
+}
+async function createEmployee(){
+  var name=document.getElementById('newName').value.trim(),email=document.getElementById('newEmail').value.trim(),password=document.getElementById('newPassword').value,role=document.getElementById('newRole').value,phone=document.getElementById('newPhone').value.trim(),jobTitle=document.getElementById('newJobTitle').value.trim(),empDate=document.getElementById('newEmployedDate').value,leaveDays=parseInt(document.getElementById('newLeaveDays').value)||20;
+  if(!name||!email||!password){showToast('Пополнете ги задолжителните полиња (*).','error');return;}if(password.length<6){showToast('Лозинката мора да има мин. 6 знаци.','error');return;}
+  var btn=document.getElementById('createEmpBtn');btn.disabled=true;
+  var authRes=await sb.auth.signUp({email,password,options:{data:{full_name:name,role}}});
+  if(authRes.error){showToast('Грешка: '+authRes.error.message,'error');btn.disabled=false;return;}
+  if(authRes.data&&authRes.data.user)await sb.from('profiles').update({phone,job_title:jobTitle,employed_date:empDate||null,leave_days:leaveDays}).eq('id',authRes.data.user.id);
+  btn.disabled=false;showToast('Сметката за '+name+' е создадена!','success');
+  ['newName','newEmail','newPassword','newPhone','newJobTitle','newEmployedDate'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('newLeaveDays').value=20;
+  await loadAdminUsers();await loadStaffList();
 }
 
-async function createEmployee() {
-  var name      = document.getElementById('newName').value.trim();
-  var email     = document.getElementById('newEmail').value.trim();
-  var password  = document.getElementById('newPassword').value;
-  var role      = document.getElementById('newRole').value;
-  var phone     = document.getElementById('newPhone').value.trim();
-  var jobTitle  = document.getElementById('newJobTitle').value.trim();
-  var empDate   = document.getElementById('newEmployedDate').value;
-  var leaveDays = parseInt(document.getElementById('newLeaveDays').value) || 20;
-
-  if (!name || !email || !password) { showToast('Пополнете ги задолжителните полиња (*).', 'error'); return; }
-  if (password.length < 6)          { showToast('Лозинката мора да има мин. 6 знаци.', 'error'); return; }
-
-  var btn = document.getElementById('createEmpBtn');
-  btn.disabled = true;
-
-  var authRes = await sb.auth.signUp({
-    email: email,
-    password: password,
-    options: { data: { full_name: name, role: role } }
-  });
-
-  if (authRes.error) {
-    showToast('Грешка: '+authRes.error.message, 'error');
-    btn.disabled = false;
-    return;
-  }
-
-  if (authRes.data && authRes.data.user) {
-    await sb.from('profiles').update({
-      phone: phone,
-      job_title: jobTitle,
-      employed_date: empDate || null,
-      leave_days: leaveDays
-    }).eq('id', authRes.data.user.id);
-  }
-
-  btn.disabled = false;
-  showToast('Сметката за '+name+' е создадена!', 'success');
-  ['newName','newEmail','newPassword','newPhone','newJobTitle','newEmployedDate'].forEach(function(id){
-    document.getElementById(id).value = '';
-  });
-  document.getElementById('newLeaveDays').value = 20;
-  await loadAdminUsers();
-  await loadStaffList();
-}
-
-// ═══════════════════════════════════════
-// NAVIGATION
-// ═══════════════════════════════════════
-var PAGE_TITLES = {
-  dashboard:'Контролна табла', worklog:'Работни часови', tasks:'Задачи',
-  settings:'Мој профил', staff:'Тим – преглед', reports:'Месечни извештаи', admin:'Управување со тим'
-};
-function navigate(page) {
-  if (['staff','reports','admin'].includes(page) && (!currentProfile || currentProfile.role !== 'doctor')) return;
-  document.querySelectorAll('.page-section').forEach(function(s){ s.classList.remove('active'); });
+/* ── NAVIGATION ── */
+var PAGE_TITLES={dashboard:'Контролна табла',worklog:'Работни часови',settings:'Мој профил',staff:'Тим – преглед',reports:'Месечни извештаи',admin:'Управување со тим'};
+function navigate(page){
+  if(['staff','reports','admin'].includes(page)&&(!currentProfile||currentProfile.role!=='doctor'))return;
+  document.querySelectorAll('.page-section').forEach(function(s){s.classList.remove('active');});
   document.getElementById('page-'+page).classList.add('active');
-  document.querySelectorAll('.nav-link').forEach(function(l){ l.classList.remove('active'); });
-  var link = document.querySelector('.nav-link[data-page="'+page+'"]');
-  if (link) link.classList.add('active');
-  document.getElementById('topbarTitle').textContent = PAGE_TITLES[page] || page;
-  if (page==='worklog')  loadWorkLogs();
-  if (page==='tasks')    loadTasks();
-  if (page==='settings') loadSettingsPage();
-  if (page==='staff')    loadStaffTable();
-  if (page==='admin')    loadAdminUsers();
+  document.querySelectorAll('.nav-link[data-page]').forEach(function(l){l.classList.remove('active');});
+  var link=document.querySelector('.nav-link[data-page="'+page+'"]');if(link)link.classList.add('active');
+  document.getElementById('topbarTitle').textContent=PAGE_TITLES[page]||page;
+  if(page==='worklog')loadWorkLogs();if(page==='settings')loadSettingsPage();if(page==='staff')loadStaffTable();if(page==='admin')loadAdminUsers();
   closeSidebar();
 }
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebarOverlay').classList.toggle('show');
-}
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('show');
-}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show');}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+async function handleLogout(){var btn=document.getElementById('logoutBtn');btn.disabled=true;btn.textContent='Одјавување…';try{await sb.auth.signOut();}catch(e){}window.location.replace('index.html');}
 
-// ═══════════════════════════════════════
-// MODAL
-// ═══════════════════════════════════════
-function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-// ═══════════════════════════════════════
-// LOGOUT — most critical fix
-// ═══════════════════════════════════════
-async function handleLogout() {
-  var btn = document.getElementById('logoutBtn');
-  btn.disabled = true;
-  btn.textContent = 'Одјавување…';
-  try {
-    await sb.auth.signOut();
-  } catch(e) {
-    // ignore errors — still redirect
-  }
-  window.location.replace('index.html');
-}
-
-// ═══════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════
-function calcHours(start, end) {
-  if (!start || !end) return 0;
-  var sp = start.split(':'), ep = end.split(':');
-  return ((parseInt(ep[0])*60+parseInt(ep[1])) - (parseInt(sp[0])*60+parseInt(sp[1]))) / 60;
-}
-function formatDate(d) {
-  if (!d) return '–';
-  return new Date(d+'T00:00:00').toLocaleDateString('mk-MK', {day:'2-digit', month:'2-digit', year:'numeric'});
-}
-function typeLabelMk(t) {
-  return {work:'Работа', sick:'Боледување', holiday:'Одмор'}[t] || t;
-}
-function esc(s) {
-  if (!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function showToast(msg, type) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className   = 'show' + (type ? ' '+type : '');
-  clearTimeout(t._tid);
-  t._tid = setTimeout(function(){ t.className = type||''; }, 3500);
-}
+/* ── HELPERS ── */
+function calcHours(start,end){if(!start||!end)return 0;var sp=start.split(':'),ep=end.split(':');return((parseInt(ep[0])*60+parseInt(ep[1]))-(parseInt(sp[0])*60+parseInt(sp[1])))/60;}
+function formatDate(d){if(!d)return'–';var dt=new Date(d+'T00:00:00');return String(dt.getDate()).padStart(2,'0')+'.'+String(dt.getMonth()+1).padStart(2,'0')+'.'+dt.getFullYear();}
+function formatDateTime(d){if(!d)return'–';var dt=new Date(d);return String(dt.getDate()).padStart(2,'0')+'.'+String(dt.getMonth()+1).padStart(2,'0')+'.'+dt.getFullYear()+' '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');}
+function typeLabelMk(t){return{work:'Работа',sick:'Боледување',holiday:'Одмор'}[t]||t;}
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function showToast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className='show'+(type?' '+type:'');clearTimeout(t._tid);t._tid=setTimeout(function(){t.className=type||'';},3500);}
 </script>
 </body>
 </html>
