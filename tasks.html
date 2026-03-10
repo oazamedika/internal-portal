@@ -79,6 +79,8 @@
     .btn-secondary:hover{background:var(--teal);color:#fff}
     .btn-danger{padding:.5rem .85rem;background:var(--red-light);color:var(--red);border:1px solid rgba(192,57,43,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.79rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
     .btn-danger:hover{background:var(--red);color:#fff}
+    .btn-complete{padding:.5rem .85rem;background:var(--green-light);color:var(--green);border:1px solid rgba(26,92,42,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.79rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+    .btn-complete:hover{background:var(--green);color:#fff}
     .fab{position:fixed;bottom:1.5rem;right:1.5rem;z-index:150;width:52px;height:52px;border-radius:50%;background:var(--teal);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(42,122,122,.4);transition:all .2s}
     .fab:hover{background:var(--teal-dark);transform:scale(1.07)}
     .fab svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
@@ -515,10 +517,10 @@ function renderTasks(){
       '<td class="td-nowrap">'+(t.due_date?formatDateTime(t.due_date):'–')+'</td>'+
       (isDoc?'<td class="td-nowrap">'+esc(staffName(t.assignee_id))+'</td>':'') +
       (isDoc?'<td class="td-nowrap">'+esc(staffName(t.creator_id))+'</td>':'') +
-      '<td onclick="event.stopPropagation()">'+
+      '<td onclick="event.stopPropagation()" style="white-space:nowrap">'+
+        (t.status!=='completed'?'<button class="btn-complete" style="margin-right:4px" title="Означи како завршена" onclick="quickComplete(\''+t.id+'\')"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-check"/></svg>Завршена</button>':'') +
         (isDoc?'<button class="btn-secondary" style="margin-right:4px" onclick="openEditModal(\''+t.id+'\')"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-edit"/></svg></button>':'') +
         (isDoc?'<button class="btn-danger" onclick="archiveTask(\''+t.id+'\')"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-archive"/></svg></button>':'') +
-        (!isDoc?'<button class="btn-secondary" onclick="openTaskDetail(\''+t.id+'\')"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-check"/></svg></button>':'') +
       '</td>'+
     '</tr>';
   }).join('');
@@ -698,6 +700,13 @@ async function quickStatusChange(id,newStatus){
   if(res.error){showToast('Грешка.','error');return;}
   showToast('Статусот е ажуриран!','success');
   closeModal('taskModal');
+  await loadTasks();
+}
+
+async function quickComplete(id){
+  var res=await sb.from('tasks').update({status:'completed',completed_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);
+  if(res.error){showToast('Грешка.','error');return;}
+  showToast('Задачата е означена како завршена!','success');
   await loadTasks();
 }
 
