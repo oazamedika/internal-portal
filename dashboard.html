@@ -487,6 +487,16 @@
 var currentUser=null,currentProfile=null,allStaff=[],activeClock=null;
 
 (async function init(){
+  // Immediately switch to the requested section before any network calls — prevents flash
+  (function(){
+    var hashMap={dashboard:'dashboard',workhours:'worklog',worklog:'worklog',profile:'settings',team:'staff',reports:'reports',settings:'admin',admin:'admin'};
+    var hash=(window.location.hash||'').replace('#','');
+    var page=hashMap[hash]||'dashboard';
+    document.querySelectorAll('.page-section').forEach(function(s){s.classList.remove('active');});
+    var sec=document.getElementById('page-'+page);if(sec)sec.classList.add('active');
+    document.querySelectorAll('.nav-link[data-page]').forEach(function(l){l.classList.remove('active');});
+    var lnk=document.querySelector('.nav-link[data-page="'+page+'"]');if(lnk)lnk.classList.add('active');
+  })();
   startClock();
   var now=new Date(),ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
   document.getElementById('logMonthFilter').value=ym;
@@ -512,11 +522,11 @@ var currentUser=null,currentProfile=null,allStaff=[],activeClock=null;
   currentUser=res.data.session.user;
   sb.auth.onAuthStateChange(function(ev,s){if(ev==='SIGNED_OUT')window.location.replace('index.html');});
   await loadProfile();
-  await bootDashboard();
-  // Navigate to section if arriving from another page via hash (e.g. tasks.html links)
+  // Navigate to correct section immediately (before data loads) to prevent flash
   var hashMap={dashboard:'dashboard',workhours:'worklog',worklog:'worklog',profile:'settings',team:'staff',reports:'reports',settings:'admin',admin:'admin'};
   var hash=(window.location.hash||'').replace('#','');
   if(hash&&hashMap[hash])navigate(hashMap[hash]);
+  await bootDashboard();
 })();
 
 async function loadProfile(){
