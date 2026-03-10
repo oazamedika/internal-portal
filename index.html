@@ -105,11 +105,13 @@
     .remember-wrap { display:flex; align-items:center; gap:8px; cursor:pointer; }
     .remember-wrap input[type="checkbox"] { width:16px; height:16px; accent-color:var(--teal); cursor:pointer; }
     .remember-wrap span { font-size:.83rem; color:var(--text-mid); font-weight:600; }
-    .forgot-link { font-size:.83rem; color:var(--teal); text-decoration:none; font-weight:600; transition:color .2s; }
+    .forgot-link { font-size:.83rem; color:var(--teal); text-decoration:none; font-weight:600; transition:color .2s; background:none; border:none; cursor:pointer; font-family:'Lato',sans-serif; padding:0; }
     .forgot-link:hover { color:var(--teal-dark); text-decoration:underline; }
 
-    .login-error { background:var(--error-light); border:1px solid rgba(192,57,43,0.2); border-left:3px solid var(--error); border-radius:0 8px 8px 0; padding:.75rem 1rem; font-size:.85rem; color:var(--error); margin-bottom:1.2rem; display:none; animation:shake .4s ease; }
+    .login-error { border-left:3px solid var(--error); border-radius:0 8px 8px 0; padding:.75rem 1rem; font-size:.85rem; margin-bottom:1.2rem; display:none; }
     .login-error.show { display:block; }
+    .login-error.is-error { background:var(--error-light); border:1px solid rgba(192,57,43,0.2); border-left:3px solid var(--error); color:var(--error); animation:shake .4s ease; }
+    .login-error.is-success { background:var(--green-light); border:1px solid rgba(46,125,66,0.2); border-left:3px solid var(--green-mid); color:var(--green); }
     @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
 
     .btn-login { width:100%; padding:.95rem 1.5rem; background:var(--teal); color:var(--white); border:none; border-radius:50px; font-family:'Lato',sans-serif; font-size:.98rem; font-weight:700; cursor:pointer; transition:all .25s; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 4px 18px rgba(42,122,122,0.28); letter-spacing:.03em; }
@@ -250,8 +252,8 @@
         </button>
       </div>
 
-      <!-- ERROR -->
-      <div class="login-error" id="loginError">Погрешна е-пошта или лозинка. Обидете се повторно.</div>
+      <!-- MESSAGE BAR (used for both errors and forgot-password confirmation) -->
+      <div class="login-error" id="loginError"></div>
 
       <!-- EMAIL -->
       <div class="field">
@@ -286,7 +288,7 @@
           <input type="checkbox" id="remember" />
           <span>Запомни ме</span>
         </label>
-        <a href="#" class="forgot-link">Заборавена лозинка?</a>
+        <button class="forgot-link" onclick="handleForgotPassword()">Заборавена лозинка?</button>
       </div>
 
       <!-- SUBMIT -->
@@ -345,8 +347,18 @@
     }
   }
 
+  function showMessage(text, type) {
+    // type: 'error' or 'success'
+    var el = document.getElementById('loginError');
+    el.textContent = text;
+    el.classList.remove('is-error', 'is-success');
+    el.classList.add(type === 'success' ? 'is-success' : 'is-error');
+    el.classList.add('show');
+  }
+
   function clearErrors() {
-    document.getElementById('loginError').classList.remove('show');
+    var el = document.getElementById('loginError');
+    el.classList.remove('show', 'is-error', 'is-success');
     document.getElementById('email').classList.remove('error');
     document.getElementById('password').classList.remove('error');
     document.getElementById('emailHint').classList.remove('show');
@@ -382,12 +394,28 @@
     if (error || !data.session) {
       btn.classList.remove('loading');
       btn.disabled = false;
-      document.getElementById('loginError').classList.add('show');
+      showMessage('Погрешна е-пошта или лозинка. Обидете се повторно.', 'error');
       document.getElementById('email').classList.add('error');
       document.getElementById('password').classList.add('error');
       return;
     }
     window.location.href = 'dashboard.html';
+  }
+
+  async function handleForgotPassword() {
+    clearErrors();
+    var email = document.getElementById('email').value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      document.getElementById('email').classList.add('error');
+      document.getElementById('emailHint').classList.add('show');
+      document.getElementById('emailHint').textContent = 'Внесете е-пошта за ресетирање на лозинката.';
+      return;
+    }
+    await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://oazamedika.github.io/internal-portal/reset-password.html'
+    });
+    // Always show success regardless — don't reveal whether the email exists
+    showMessage('Доколку сметката постои, ќе добиете е-пошта со линк за ресетирање на лозинката.', 'success');
   }
 
   document.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleLogin(); });
