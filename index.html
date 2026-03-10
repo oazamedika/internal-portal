@@ -7,6 +7,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    // Detect if Supabase redirected here with auth tokens in the URL hash
+    // and forward to the correct page before anything else loads
+    (function() {
+      var hash   = window.location.hash;
+      var params = new URLSearchParams(hash.replace('#', ''));
+      var type   = params.get('type');
+      if (type === 'recovery') {
+        window.location.replace('reset-password.html' + hash);
+      } else if (type === 'signup' || type === 'email_change') {
+        window.location.replace('confirm-email.html' + hash);
+      }
+    })();
+
     const SUPABASE_URL  = 'https://pmolxspputemoyvilzyq.supabase.co';
     const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtb2x4c3BwdXRlbW95dmlsenlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwNjI0OTUsImV4cCI6MjA4ODYzODQ5NX0.f4t9wIzvhnrMeh_O4aesS94qyv71LUO1LA3lcyY7i8o';
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
