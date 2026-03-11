@@ -547,7 +547,9 @@ var pendingDeleteFn = null;
   if (!prof.data || prof.data.role !== 'doctor') { window.location.replace('work-hours.html'); return; }
   var name = prof.data.full_name || currentUser.email;
   document.getElementById('sidebarUserName').textContent = name;
-  document.getElementById('avatarInitial').textContent   = (name||'?')[0].toUpperCase();
+  var _av=document.getElementById('avatarInitial');
+  if(prof.data.avatar_url){_av.innerHTML='<img src="'+prof.data.avatar_url+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>';}
+  else{_av.textContent=(name||'?')[0].toUpperCase();}
   document.getElementById('sidebarUserRole').textContent = 'Доктор';
 
   await Promise.all([loadShifts(), loadStaff(), loadHolidays()]);

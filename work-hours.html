@@ -544,7 +544,9 @@ async function loadProfile() {
   var name = res.data.full_name || currentUser.email;
   document.getElementById('sidebarUserName').textContent = name;
   document.getElementById('sidebarUserRole').textContent = res.data.role === 'doctor' ? 'Доктор' : 'Медицинска сестра';
-  document.getElementById('avatarInitial').textContent   = (name || '?')[0].toUpperCase();
+  var _av=document.getElementById('avatarInitial');
+  if(res.data.avatar_url){_av.innerHTML='<img src="'+res.data.avatar_url+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>';}
+  else{_av.textContent=(name||'?')[0].toUpperCase();}
   document.getElementById('roleBadge').textContent       = res.data.role === 'doctor' ? 'Доктор' : 'Мед. сестра';
 
   if (res.data.role === 'doctor') {
