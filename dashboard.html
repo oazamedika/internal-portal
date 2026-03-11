@@ -878,8 +878,9 @@ async function saveEditUser(){
     prior_staz_years:parseInt(document.getElementById('editPriorYears').value)||0,
     prior_staz_months:parseInt(document.getElementById('editPriorMonths').value)||0
   };
-  var res=await sb.from('profiles').update(updates).eq('id',id);btn.disabled=false;
+  var res=await sb.from('profiles').update(updates).eq('id',id).select();btn.disabled=false;
   if(res.error){showToast('Грешка: '+res.error.message,'error');return;}
+  if(!res.data||res.data.length===0){showToast('Немате дозвола да ги уредувате овие податоци.','error');return;}
   allStaff=allStaff.map(function(s){return s.id===id?Object.assign({},s,updates):s;});
   closeModal('editUserModal');loadAdminUsers();await loadStaffList();showToast('Зачувано!','success');
 }
