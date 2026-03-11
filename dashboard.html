@@ -627,7 +627,7 @@ function showAlreadyLoggedBanner(log){
   if(banner){
     banner.style.display='flex';
     document.getElementById('alreadyLoggedDetail').textContent=
-      'Работната смена за денес е веќе логирана ('+log.start_time.slice(0,5)+' – '+endStr+'). Доколку има грешка, обратете се до одговорното лице.';
+      'Работната смена за денес е веќе запишана ('+log.start_time.slice(0,5)+' – '+endStr+'). Доколку има грешка, обратете се до одговорното лице.';
   }
 }
 function setClockedIn(on,type){
