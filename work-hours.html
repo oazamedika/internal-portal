@@ -403,6 +403,12 @@
           <div class="f-group"><label class="f-label">Пријава</label><input type="time" id="backlogStart" class="f-input"/></div>
           <div class="f-group"><label class="f-label">Одјава</label><input type="time" id="backlogEnd" class="f-input"/></div>
         </div>
+        <div class="f-group">
+          <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--text-mid)">
+            <input type="checkbox" id="backlogOvernight" style="width:16px;height:16px;accent-color:var(--teal)"/>
+            Ноќна смена (одјавата е следниот ден)
+          </label>
+        </div>
         <div class="f-group"><label class="f-label">Тип</label>
           <select id="backlogType" class="f-select"><option value="work">Работа</option><option value="sick">Боледување</option><option value="holiday">Годишен одмор</option></select>
         </div>
@@ -460,6 +466,12 @@
       <div class="form-row">
         <div class="f-group"><label class="f-label">Пријава</label><input type="time" id="modalEditStart" class="f-input"/></div>
         <div class="f-group"><label class="f-label">Одјава</label><input type="time" id="modalEditEnd" class="f-input"/></div>
+      </div>
+      <div class="f-group">
+        <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--text-mid)">
+          <input type="checkbox" id="modalEditOvernight" style="width:16px;height:16px;accent-color:var(--teal)"/>
+          Ноќна смена (одјавата е следниот ден)
+        </label>
       </div>
       <div class="f-group"><label class="f-label">Тип</label>
         <select id="modalEditType" class="f-select"><option value="work">Работа</option><option value="sick">Боледување</option><option value="holiday">Годишен одмор</option></select>
@@ -571,11 +583,23 @@ async function loadStaff() {
 
 // ── TODAY STATUS ──
 async function checkTodayStatus() {
-  var today = new Date().toISOString().slice(0, 10);
+  var today     = new Date().toISOString().slice(0, 10);
+  var yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+
+  // Check today's logs
   var res   = await sb.from('work_logs').select('*').eq('user_id', currentUser.id).eq('date', today);
   var logs  = res.data || [];
 
   var openLog = logs.find(function(l){ return l.log_type === 'work' && !l.end_time; });
+
+  // If no open log today, check for an overnight log from yesterday (clocked in yesterday, still open)
+  if (!openLog) {
+    var yRes = await sb.from('work_logs').select('*').eq('user_id', currentUser.id).eq('date', yesterday);
+    var yLogs = yRes.data || [];
+    var yOpen = yLogs.find(function(l){ return l.log_type === 'work' && !l.end_time && !l.end_date; });
+    if (yOpen) { openLog = yOpen; }
+  }
+
   var sickLog = logs.find(function(l){ return l.log_type === 'sick'; });
   var holLog  = logs.find(function(l){ return l.log_type === 'holiday'; });
 
@@ -590,7 +614,6 @@ async function checkTodayStatus() {
       todayLeave.log_type === 'sick'
         ? 'Денес сте евидентирани на боледување. Не можете да логирате работни часови.'
         : 'Денес сте на одобрен годишен одмор. Не можете да логирате работни часови.';
-    // hide clock widget for non-doctors
     if (!currentProfile || currentProfile.role !== 'doctor') {
       document.getElementById('clockWidgetWrap').style.display = 'none';
     }
@@ -682,14 +705,23 @@ async function clockIn() {
 
 async function clockOut() {
   if (!activeClock) return;
-  // Auto-log current time as clock-out
   var nowTime = new Date().toTimeString().slice(0, 8);
+  var today   = new Date().toISOString().slice(0, 10);
   document.getElementById('btnClockOut').disabled = true;
-  var res = await sb.from('work_logs').update({ end_time: nowTime }).eq('id', activeClock);
+
+  // Fetch the open log to check if it started on a previous day (overnight shift)
+  var logRes = await sb.from('work_logs').select('date').eq('id', activeClock).single();
+  var logDate = logRes.data ? logRes.data.date : today;
+  var isOvernight = (logDate !== today);
+
+  var updatePayload = { end_time: nowTime };
+  if (isOvernight) updatePayload.end_date = today;
+
+  var res = await sb.from('work_logs').update(updatePayload).eq('id', activeClock);
   if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); document.getElementById('btnClockOut').disabled = false; return; }
   activeClock = null;
   setClockedIn(false);
-  showToast('Одјавени во ' + nowTime.slice(0,5) + '.', 'success');
+  showToast('Одјавени во ' + nowTime.slice(0,5) + (isOvernight ? ' (ноќна смена)' : '') + '.', 'success');
   loadMyLogs();
 }
 
@@ -714,17 +746,19 @@ async function loadMyLogs() {
     document.getElementById('myLogTotals').style.display = 'none'; return;
   }
   tbody.innerHTML = data.map(function(l) {
-    var hrs = (l.start_time && l.end_time) ? calcHours(l.start_time, l.end_time).toFixed(1) : '–';
+    var overnight = !!(l.end_date && l.end_date !== l.date);
+    var hrs = (l.start_time && l.end_time) ? calcHours(l.start_time, l.end_time, overnight).toFixed(1) : '–';
+    var endDisplay = l.end_time ? l.end_time.slice(0,5) + (overnight ? '<span class="pill pill-backdated" title="Завршува '+formatDate(l.end_date)+'">+1</span>' : '') : '–';
     return '<tr>' +
       '<td>' + formatDate(l.date) + (l.is_backdated ? '<span class="pill pill-backdated">+</span>' : '') + '</td>' +
       '<td>' + (l.start_time ? l.start_time.slice(0,5) : '–') + '</td>' +
-      '<td>' + (l.end_time   ? l.end_time.slice(0,5)   : '–') + '</td>' +
-      '<td>' + (hrs !== '–'  ? hrs + ' ч.' : '–') + '</td>' +
+      '<td>' + endDisplay + '</td>' +
+      '<td>' + (hrs !== '–' ? hrs + ' ч.' : '–') + '</td>' +
       '<td><span class="pill pill-' + l.log_type + '">' + typeLabelMk(l.log_type) + '</span></td>' +
     '</tr>';
   }).join('');
   var worked = data.filter(function(l){ return l.end_time && l.log_type==='work'; });
-  var totHrs = worked.reduce(function(a,l){ return a + calcHours(l.start_time,l.end_time); }, 0);
+  var totHrs = worked.reduce(function(a,l){ return a + calcHours(l.start_time,l.end_time,!!(l.end_date&&l.end_date!==l.date)); }, 0);
   document.getElementById('myTotalHours').textContent = totHrs.toFixed(1) + ' ч.';
   document.getElementById('myTotalDays').textContent  = worked.length;
   document.getElementById('myLogTotals').style.display = 'block';
@@ -743,18 +777,20 @@ async function loadTeamLogs() {
   var tbody = document.getElementById('teamLogsBody');
   if (!data.length) { tbody.innerHTML = emptyRow(6, 'Нема евиденции'); document.getElementById('teamLogTotals').style.display='none'; return; }
   tbody.innerHTML = data.map(function(l) {
-    var hrs = (l.start_time && l.end_time) ? calcHours(l.start_time, l.end_time).toFixed(1) : '–';
+    var overnight = !!(l.end_date && l.end_date !== l.date);
+    var hrs = (l.start_time && l.end_time) ? calcHours(l.start_time, l.end_time, overnight).toFixed(1) : '–';
+    var endDisplay = l.end_time ? l.end_time.slice(0,5) + (overnight ? '<span class="pill pill-backdated" title="Завршува '+formatDate(l.end_date)+'">+1</span>' : '') : '–';
     return '<tr>' +
       '<td>' + formatDate(l.date) + (l.is_backdated ? '<span class="pill pill-backdated">+</span>' : '') + '</td>' +
       '<td>' + esc((l.profiles && l.profiles.full_name) || '–') + '</td>' +
       '<td>' + (l.start_time ? l.start_time.slice(0,5) : '–') + '</td>' +
-      '<td>' + (l.end_time   ? l.end_time.slice(0,5)   : '–') + '</td>' +
-      '<td>' + (hrs !== '–'  ? hrs + ' ч.' : '–') + '</td>' +
+      '<td>' + endDisplay + '</td>' +
+      '<td>' + (hrs !== '–' ? hrs + ' ч.' : '–') + '</td>' +
       '<td><span class="pill pill-' + l.log_type + '">' + typeLabelMk(l.log_type) + '</span></td>' +
     '</tr>';
   }).join('');
   var worked = data.filter(function(l){ return l.end_time && l.log_type==='work'; });
-  var totHrs = worked.reduce(function(a,l){ return a + calcHours(l.start_time,l.end_time); }, 0);
+  var totHrs = worked.reduce(function(a,l){ return a + calcHours(l.start_time,l.end_time,!!(l.end_date&&l.end_date!==l.date)); }, 0);
   document.getElementById('teamTotalHours').textContent = totHrs.toFixed(1) + ' ч.';
   document.getElementById('teamTotalDays').textContent  = worked.length;
   document.getElementById('teamLogTotals').style.display = 'block';
@@ -810,15 +846,24 @@ async function loadLeaveList() {
 
 // ── BACKLOG / EDIT ──
 async function saveBacklog() {
-  var editId = document.getElementById('editLogId').value;
-  var worker = document.getElementById('backlogWorker').value;
-  var date   = document.getElementById('backlogDate').value;
-  var start  = document.getElementById('backlogStart').value;
-  var end    = document.getElementById('backlogEnd').value;
-  var type   = document.getElementById('backlogType').value;
+  var editId    = document.getElementById('editLogId').value;
+  var worker    = document.getElementById('backlogWorker').value;
+  var date      = document.getElementById('backlogDate').value;
+  var start     = document.getElementById('backlogStart').value;
+  var end       = document.getElementById('backlogEnd').value;
+  var type      = document.getElementById('backlogType').value;
+  var overnight = document.getElementById('backlogOvernight').checked;
   if (!worker || !date) { showToast('Изберете вработен и датум.', 'error'); return; }
 
-  var payload = { user_id: worker, date: date, start_time: start ? start+':00' : null, end_time: end ? end+':00' : null, log_type: type, is_backdated: true, edited_by: currentUser.id, edited_at: new Date().toISOString() };
+  // Compute end_date: if overnight, next calendar day after date
+  var endDate = null;
+  if (overnight && date) {
+    var d = new Date(date + 'T00:00:00');
+    d.setDate(d.getDate() + 1);
+    endDate = d.toISOString().slice(0, 10);
+  }
+
+  var payload = { user_id: worker, date: date, start_time: start ? start+':00' : null, end_time: end ? end+':00' : null, end_date: endDate, log_type: type, is_backdated: true, edited_by: currentUser.id, edited_at: new Date().toISOString() };
   var res = editId
     ? await sb.from('work_logs').update(payload).eq('id', editId)
     : await sb.from('work_logs').insert(payload);
@@ -836,6 +881,7 @@ function resetBacklogForm() {
   document.getElementById('backlogStart').value = '';
   document.getElementById('backlogEnd').value   = '';
   document.getElementById('backlogType').value  = 'work';
+  document.getElementById('backlogOvernight').checked = false;
   if (allStaff.length) document.getElementById('backlogWorker').value = allStaff[0].id;
   document.getElementById('backlogFormTitle').textContent     = 'Додај евиденција';
   document.getElementById('cancelBacklogBtn').style.display   = 'none';
@@ -853,16 +899,16 @@ async function loadBacklogList() {
   var data = res.data || [];
   if (!data.length) { tbody.innerHTML = emptyRow(6, 'Нема евиденции'); return; }
   tbody.innerHTML = data.map(function(l) {
-    // Serialize l safely for inline onclick
-    var lJson = JSON.stringify(l).replace(/'/g, '&#39;');
+    var overnight = !!(l.end_date && l.end_date !== l.date);
+    var endDisplay = l.end_time ? l.end_time.slice(0,5) + (overnight ? '<span class="pill pill-backdated">+1</span>' : '') : '–';
     return '<tr>' +
       '<td>' + formatDate(l.date) + '</td>' +
       '<td>' + esc((l.profiles && l.profiles.full_name) || '–') + '</td>' +
       '<td>' + (l.start_time ? l.start_time.slice(0,5) : '–') + '</td>' +
-      '<td>' + (l.end_time   ? l.end_time.slice(0,5)   : '–') + '</td>' +
+      '<td>' + endDisplay + '</td>' +
       '<td><span class="pill pill-' + l.log_type + '">' + typeLabelMk(l.log_type) + '</span></td>' +
       '<td><div class="action-btns">' +
-        '<button class="btn-edit-log" onclick="openEditLog(\'' + l.id + '\',\'' + l.date + '\',\'' + (l.start_time||'').slice(0,5) + '\',\'' + (l.end_time||'').slice(0,5) + '\',\'' + l.log_type + '\')" title="Уреди">' +
+        '<button class="btn-edit-log" onclick="openEditLog(\'' + l.id + '\',\'' + l.date + '\',\'' + (l.start_time||'').slice(0,5) + '\',\'' + (l.end_time||'').slice(0,5) + '\',\'' + l.log_type + '\',\'' + (l.end_date||'') + '\')" title="Уреди">' +
           '<svg><use href="#i-edit"/></svg></button>' +
         '<button class="btn-del-log" onclick="deleteLog(\'' + l.id + '\')" title="Избриши">' +
           '<svg><use href="#i-trash"/></svg></button>' +
@@ -871,22 +917,41 @@ async function loadBacklogList() {
   }).join('');
 }
 
-function openEditLog(id, date, start, end, type) {
+function openEditLog(id, date, start, end, type, endDate) {
   document.getElementById('modalEditId').value    = id;
   document.getElementById('modalEditDate').value  = date;
   document.getElementById('modalEditStart').value = start;
   document.getElementById('modalEditEnd').value   = end;
   document.getElementById('modalEditType').value  = type;
+  // Set overnight checkbox: true if end_date exists and differs from date
+  document.getElementById('modalEditOvernight').checked = !!(endDate && endDate !== date);
   openModal('editLogModal');
 }
 
 async function saveEditLog() {
-  var id    = document.getElementById('modalEditId').value;
-  var date  = document.getElementById('modalEditDate').value;
-  var start = document.getElementById('modalEditStart').value;
-  var end   = document.getElementById('modalEditEnd').value;
-  var type  = document.getElementById('modalEditType').value;
-  var res = await sb.from('work_logs').update({ date: date, start_time: start ? start+':00' : null, end_time: end ? end+':00' : null, log_type: type, edited_by: currentUser.id, edited_at: new Date().toISOString() }).eq('id', id);
+  var id        = document.getElementById('modalEditId').value;
+  var date      = document.getElementById('modalEditDate').value;
+  var start     = document.getElementById('modalEditStart').value;
+  var end       = document.getElementById('modalEditEnd').value;
+  var type      = document.getElementById('modalEditType').value;
+  var overnight = document.getElementById('modalEditOvernight').checked;
+
+  var endDate = null;
+  if (overnight && date) {
+    var d = new Date(date + 'T00:00:00');
+    d.setDate(d.getDate() + 1);
+    endDate = d.toISOString().slice(0, 10);
+  }
+
+  var res = await sb.from('work_logs').update({
+    date: date,
+    start_time: start ? start+':00' : null,
+    end_time:   end   ? end  +':00' : null,
+    end_date:   endDate,
+    log_type:   type,
+    edited_by:  currentUser.id,
+    edited_at:  new Date().toISOString()
+  }).eq('id', id);
   if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); return; }
   closeModal('editLogModal');
   showToast('Зачувано!', 'success');
@@ -933,7 +998,7 @@ function monthRange(m) {
   var p = m.split('-'), yr = parseInt(p[0]), mo = parseInt(p[1]);
   return { from: m+'-01', to: m+'-'+pad(new Date(yr,mo,0).getDate()) };
 }
-function calcHours(s,e){ if(!s||!e)return 0; var sp=s.split(':'),ep=e.split(':'); return((parseInt(ep[0])*60+parseInt(ep[1]))-(parseInt(sp[0])*60+parseInt(sp[1])))/60; }
+function calcHours(s,e,overnight){ if(!s||!e)return 0; var sp=s.split(':'),ep=e.split(':'); var mins=(parseInt(ep[0])*60+parseInt(ep[1]))-(parseInt(sp[0])*60+parseInt(sp[1])); if(overnight||mins<0) mins+=1440; return mins/60; }
 function formatDate(d){ if(!d)return'–'; var dt=new Date(d+'T00:00:00'); return pad(dt.getDate())+'.'+pad(dt.getMonth()+1)+'.'+dt.getFullYear(); }
 function pad(n){ return String(n).padStart(2,'0'); }
 function typeLabelMk(t){ return{work:'Работа',sick:'Боледување',holiday:'Одмор'}[t]||t; }
