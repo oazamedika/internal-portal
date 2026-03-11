@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Работни часови – Оаза Медика</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{
+      --teal:#2a7a7a;--teal-dark:#1d5e5e;--green:#1a5c2a;--green-light:#e8f5ec;
+      --teal-light:#e4f2f2;--cream:#f9faf8;--text:#1c2a22;--text-mid:#3d5046;
+      --text-light:#6b8070;--white:#fff;--shadow:0 4px 32px rgba(26,92,42,.10);
+      --radius:14px;--sidebar:240px;--amber:#f59e0b;--amber-light:#fef9ec;
+      --red:#c0392b;--red-light:#fdf0ee
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Lato',sans-serif;background:var(--cream);color:var(--text);line-height:1.6;display:flex;min-height:100vh}
+    h1,h2,h3,h4{font-family:'Playfair Display',serif;line-height:1.2}
+
+    /* SIDEBAR */
+    .sidebar{width:var(--sidebar);background:linear-gradient(165deg,var(--teal-dark) 0%,var(--green) 70%,#0f3d1c 100%);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .3s ease;overflow:hidden}
+    .sidebar-logo{padding:1rem 1.1rem .85rem;display:flex;align-items:center;gap:9px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .sidebar-logo img{height:34px;width:auto;filter:brightness(0) invert(1);opacity:.92;flex-shrink:0}
+    .sidebar-logo-text{font-size:.6rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+    .sidebar-user{margin:.65rem .85rem .4rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:.6rem .8rem;display:flex;align-items:center;gap:8px;flex-shrink:0}
+    .user-avatar{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0}
+    .user-info{flex:1;overflow:hidden}
+    .user-name{font-size:.78rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .user-role{font-size:.62rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em}
+    nav.sidebar-nav{flex:1;padding:.3rem 0;overflow:hidden}
+    .nav-section-label{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.33);padding:.55rem 1.1rem .2rem}
+    .nav-link{display:flex;align-items:center;gap:9px;padding:.56rem 1.1rem;text-decoration:none;font-size:.81rem;font-weight:600;color:rgba(255,255,255,.65);transition:all .2s;border-left:3px solid transparent;cursor:pointer;user-select:none;white-space:nowrap}
+    .nav-link .nav-icon{width:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .nav-link .nav-icon svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+    .nav-link:hover{color:#fff;background:rgba(255,255,255,.07)}
+    .nav-link.active{color:#fff;background:rgba(255,255,255,.12);border-left-color:rgba(255,255,255,.6)}
+    .nav-link .badge{margin-left:auto;background:var(--amber);color:#fff;font-size:.6rem;font-weight:700;padding:.1rem .38rem;border-radius:50px;min-width:16px;text-align:center}
+    .doctor-only{display:none}
+    .sidebar-ext{padding:.45rem .85rem .2rem;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .ext-label{font-size:.57rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:.38rem;padding-left:.18rem}
+    .btn-ext{width:100%;padding:.45rem .65rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:rgba(255,255,255,.72);font-family:'Lato',sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;text-decoration:none;margin-bottom:.35rem}
+    .btn-ext:hover{background:rgba(255,255,255,.15);color:#fff}
+    .btn-ext-icon{width:18px;height:18px;flex-shrink:0;object-fit:contain;filter:brightness(0) invert(1);opacity:.85}
+    .btn-ext-arrow{margin-left:auto;opacity:.4}.btn-ext-arrow svg{width:10px;height:10px;stroke:#fff;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    .sidebar-bottom{padding:.45rem .85rem .7rem;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .btn-logout{width:100%;padding:.52rem .85rem;background:rgba(255,80,80,.15);border:1px solid rgba(255,100,100,.25);border-radius:9px;color:rgba(255,200,200,.9);font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s}
+    .btn-logout:hover{background:rgba(192,57,43,.6);color:#fff;border-color:rgba(255,100,100,.5)}
+    .btn-logout svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+
+    /* TOPBAR */
+    .topbar{position:fixed;top:0;left:var(--sidebar);right:0;height:56px;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-bottom:1px solid rgba(42,122,122,.1);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;z-index:100}
+    .topbar-left{display:flex;align-items:center;gap:.7rem}
+    .hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;color:var(--teal)}
+    .hamburger-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-width:2}
+    .topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--text)}
+    .topbar-right{display:flex;align-items:center;gap:1rem}
+    .topbar-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green);padding:.25rem .75rem;border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+
+    /* MAIN */
+    .main{margin-left:var(--sidebar);margin-top:56px;padding:1.5rem;flex:1;min-width:0}
+    .section-header{margin-bottom:1.4rem}
+    .section-label{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:.25rem}
+    .section-title{font-size:clamp(1.4rem,2.5vw,1.9rem);color:var(--text)}
+    .section-sub{font-size:.88rem;color:var(--text-light);font-weight:300;margin-top:.25rem}
+
+    /* CLOCK WIDGET */
+    .clock-widget{background:linear-gradient(135deg,var(--teal),var(--green));border-radius:var(--radius);padding:1.3rem 1.5rem;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:1.2rem;margin-bottom:1.3rem;flex-wrap:wrap}
+    .clock-info h3{font-size:.85rem;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:.2rem;font-family:'Lato',sans-serif}
+    #liveTime{font-family:'Playfair Display',serif;font-size:2.2rem;color:#fff;line-height:1;letter-spacing:.03em}
+    .clock-date{font-size:.78rem;color:rgba(255,255,255,.65);margin-top:.25rem}
+    .clock-status{display:flex;align-items:center;gap:7px;margin-top:.35rem;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.8)}
+    .status-dot{width:7px;height:7px;border-radius:50%;background:#6ee89a;animation:pulse 2s infinite;flex-shrink:0}
+    .status-dot.out{background:#f87171;animation:none}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+    .clock-actions{display:flex;gap:.65rem;flex-wrap:wrap;align-items:center}
+    .btn-clock{padding:.58rem 1.1rem;border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.84rem;font-weight:700;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:6px}
+    .btn-clock svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    .btn-clock-in{background:#fff;color:var(--teal)}
+    .btn-clock-in:hover:not(:disabled){background:var(--teal-light);transform:translateY(-1px)}
+    .btn-clock-out{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff}
+    .btn-clock-out:hover:not(:disabled){background:rgba(255,255,255,.28);transform:translateY(-1px)}
+    .btn-clock:disabled{opacity:.45;cursor:not-allowed}
+    .leave-select{padding:.52rem .85rem;border-radius:50px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;outline:none}
+    .leave-select option{background:var(--teal-dark);color:#fff}
+
+    /* CARD */
+    .card{background:var(--white);border-radius:var(--radius);border:1px solid rgba(42,122,122,.08);padding:1.3rem;margin-bottom:1.3rem}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid rgba(42,122,122,.08);flex-wrap:wrap;gap:.5rem}
+    .card-title{font-family:'Playfair Display',serif;font-size:1rem;color:var(--text)}
+
+    /* FORMS */
+    .f-input{width:100%;padding:.68rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.88rem;color:var(--text);background:var(--cream);outline:none;transition:border-color .2s}
+    .f-input:focus{border-color:var(--teal);background:var(--white)}
+    .f-select{width:100%;padding:.68rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.88rem;color:var(--text);background:var(--cream);outline:none}
+    .f-label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);margin-bottom:.35rem}
+
+    /* TABLE */
+    .log-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    table{width:100%;border-collapse:collapse;font-size:.83rem}
+    thead th{text-align:left;padding:.52rem .85rem;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);border-bottom:2px solid rgba(42,122,122,.1);white-space:nowrap}
+    tbody tr{border-bottom:1px solid rgba(42,122,122,.06);transition:background .15s}
+    tbody tr:hover{background:var(--cream)}
+    tbody td{padding:.62rem .85rem;color:var(--text-mid);vertical-align:middle}
+    .pill{display:inline-flex;align-items:center;padding:.18rem .62rem;border-radius:50px;font-size:.7rem;font-weight:700;white-space:nowrap}
+    .pill-work{background:var(--teal-light);color:var(--teal)}
+    .pill-sick{background:var(--red-light);color:var(--red)}
+    .pill-holiday{background:var(--amber-light);color:var(--amber)}
+
+    /* SKELETON */
+    .skeleton{background:linear-gradient(90deg,#e8eee9 25%,#d4ddd5 50%,#e8eee9 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;height:36px;margin-bottom:.45rem}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    /* TOAST */
+    #toast{position:fixed;bottom:1.2rem;right:1.2rem;z-index:9999;background:var(--text);color:#fff;padding:.78rem 1.2rem;border-radius:11px;font-size:.84rem;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.22,.68,0,1.1);max-width:300px;pointer-events:none}
+    #toast.show{transform:translateY(0);opacity:1}
+    #toast.success{background:var(--teal-dark)}
+    #toast.error{background:var(--red)}
+
+    /* SIDEBAR MOBILE */
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:199;opacity:0;pointer-events:none;transition:opacity .3s}
+    .sidebar-overlay.show{opacity:1;pointer-events:auto}
+
+    @media(max-width:900px){
+      .sidebar{width:260px;transform:translateX(-100%);display:flex}
+      .sidebar.open{transform:translateX(0)}
+      .sidebar-overlay{display:block}
+      .topbar{left:0}
+      .main{margin-left:0;padding:1rem}
+      .hamburger-btn{display:block}
+      .clock-widget{flex-direction:column;align-items:flex-start;gap:1rem}
+    }
+    @media(max-width:480px){
+      .main{padding:.8rem}
+      #liveTime{font-size:1.9rem}
+      tbody td,thead th{padding:.45rem .55rem;font-size:.77rem}
+      .clock-actions{flex-wrap:wrap;gap:.5rem}
+    }
+  </style>
+</head>
+<body>
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-home"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+  <symbol id="i-clock"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-tasks"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
+  <symbol id="i-user"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-users"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-bar"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+  <symbol id="i-gear"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+  <symbol id="i-play"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
+  <symbol id="i-stop"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></symbol>
+  <symbol id="i-ext"    viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+  <symbol id="i-menu"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+</svg>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <a href="dashboard.html" class="sidebar-logo">
+    <img src="logo_header.png" alt="Оаза Медика" onerror="this.style.display='none'"/>
+    <span class="sidebar-logo-text">Портал за вработени</span>
+  </a>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="avatarInitial">–</div>
+    <div class="user-info">
+      <div class="user-name" id="sidebarUserName">…</div>
+      <div class="user-role" id="sidebarUserRole">…</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Мени</div>
+    <a class="nav-link" href="dashboard.html">
+      <span class="nav-icon"><svg><use href="#i-home"/></svg></span>Контролна табла
+    </a>
+    <a class="nav-link active" href="work-hours.html">
+      <span class="nav-icon"><svg><use href="#i-clock"/></svg></span>Работни часови
+    </a>
+    <a class="nav-link" href="tasks.html">
+      <span class="nav-icon"><svg><use href="#i-tasks"/></svg></span>Задачи
+      <span class="badge" id="tasksBadge" style="display:none">0</span>
+    </a>
+    <a class="nav-link" href="dashboard.html#profile">
+      <span class="nav-icon"><svg><use href="#i-user"/></svg></span>Мој профил
+    </a>
+    <div class="nav-section-label doctor-only">Доктор</div>
+    <a class="nav-link doctor-only" href="dashboard.html#team">
+      <span class="nav-icon"><svg><use href="#i-users"/></svg></span>Тим – преглед
+    </a>
+    <a class="nav-link doctor-only" href="reports.html">
+      <span class="nav-icon"><svg><use href="#i-bar"/></svg></span>Извештаи
+    </a>
+    <a class="nav-link doctor-only" href="dashboard.html#admin">
+      <span class="nav-icon"><svg><use href="#i-gear"/></svg></span>Управување со тим
+    </a>
+  </nav>
+  <div class="sidebar-ext">
+    <div class="ext-label">Надворешни портали</div>
+    <a class="btn-ext" href="https://portal.fzo.org.mk/" target="_blank" rel="noopener">
+      <img class="btn-ext-icon" src="fzom.png" alt="" onerror="this.style.display='none'"/>
+      Портал на ФЗОМ
+      <span class="btn-ext-arrow"><svg><use href="#i-ext"/></svg></span>
+    </a>
+    <a class="btn-ext" href="https://app.helio.mk/" target="_blank" rel="noopener">
+      <img class="btn-ext-icon" src="helio.png" alt="" onerror="this.style.display='none'"/>
+      Хелио Пациенти
+      <span class="btn-ext-arrow"><svg><use href="#i-ext"/></svg></span>
+    </a>
+  </div>
+  <div class="sidebar-bottom">
+    <button class="btn-logout" id="logoutBtn" type="button">
+      <svg><use href="#i-logout"/></svg>Одјавете се
+    </button>
+  </div>
+</aside>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="hamburger-btn" id="hamburgerBtn" type="button"><svg><use href="#i-menu"/></svg></button>
+    <div class="topbar-title">Работни часови</div>
+  </div>
+  <div class="topbar-right">
+    <span class="topbar-badge" id="roleBadge">…</span>
+  </div>
+</header>
+
+<main class="main">
+  <div class="section-header">
+    <div class="section-label">Евиденција</div>
+    <h2 class="section-title">Работни часови</h2>
+    <p class="section-sub">Пријавете се, одјавете се и прегледајте ја историјата на вашите часови</p>
+  </div>
+
+  <!-- CLOCK WIDGET -->
+  <div class="clock-widget">
+    <div class="clock-info">
+      <h3>Датум и час</h3>
+      <div id="liveTime">00:00:00</div>
+      <div class="clock-date" id="clockDate"></div>
+      <div class="clock-status">
+        <span class="status-dot out" id="clockDot"></span>
+        <span id="clockStatusText">Не сте пријавени</span>
+      </div>
+    </div>
+    <div class="clock-actions">
+      <select class="leave-select" id="leaveType">
+        <option value="work">Работен ден</option>
+        <option value="sick">Боледување</option>
+        <option value="holiday">Годишен одмор</option>
+      </select>
+      <button class="btn-clock btn-clock-in" id="btnClockIn" type="button">
+        <svg><use href="#i-play"/></svg>Пријави се
+      </button>
+      <button class="btn-clock btn-clock-out" id="btnClockOut" type="button" disabled>
+        <svg><use href="#i-stop"/></svg>Одјави се
+      </button>
+    </div>
+  </div>
+
+  <!-- WORK LOG HISTORY -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Историја</span>
+      <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+        <input type="month" id="logMonthFilter" class="f-input" style="width:auto;padding:.3rem .6rem"/>
+        <select id="staffFilter" class="f-select doctor-only" style="display:none;width:auto;padding:.3rem .6rem">
+          <option value="">Сите вработени</option>
+        </select>
+      </div>
+    </div>
+    <div class="log-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Датум</th>
+            <th class="doctor-only" id="logColEmployee" style="display:none">Вработен</th>
+            <th>Пријава</th>
+            <th>Одјава</th>
+            <th>Часови</th>
+            <th>Тип</th>
+          </tr>
+        </thead>
+        <tbody id="workLogsBody">
+          <tr><td colspan="6"><div class="skeleton"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="workLogTotals" style="display:none;padding:.65rem .85rem 0;font-size:.81rem;color:var(--text-mid);font-weight:600;border-top:2px solid rgba(42,122,122,.08);margin-top:.45rem">
+      Вкупно: <span id="totalHoursDisplay" style="color:var(--teal)">0 ч.</span> · <span id="totalDaysDisplay" style="color:var(--teal)">0</span> работни денови
+    </div>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+var currentUser = null, currentProfile = null, allStaff = [], activeClock = null;
+
+(async function init() {
+  var now = new Date();
+  var ym = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  document.getElementById('logMonthFilter').value = ym;
+
+  startClock();
+
+  document.getElementById('hamburgerBtn').addEventListener('click', toggleSidebar);
+  document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+  document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+  document.getElementById('btnClockIn').addEventListener('click', clockIn);
+  document.getElementById('btnClockOut').addEventListener('click', clockOut);
+  document.getElementById('logMonthFilter').addEventListener('change', loadWorkLogs);
+  document.getElementById('staffFilter').addEventListener('change', loadWorkLogs);
+
+  var res = await sb.auth.getSession();
+  if (!res.data || !res.data.session) { window.location.replace('index.html'); return; }
+  currentUser = res.data.session.user;
+  sb.auth.onAuthStateChange(function(ev, s) { if (ev === 'SIGNED_OUT') window.location.replace('index.html'); });
+
+  await loadProfile();
+  await checkTodayClock();
+  await loadWorkLogs();
+  if (currentProfile && currentProfile.role === 'doctor') await loadStaffForFilter();
+})();
+
+async function loadProfile() {
+  var res = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  if (res.error || !res.data) return;
+  currentProfile = res.data;
+  var name = res.data.full_name || currentUser.email;
+  document.getElementById('sidebarUserName').textContent = name;
+  document.getElementById('sidebarUserRole').textContent = res.data.role === 'doctor' ? 'Доктор' : 'Медицинска сестра';
+  document.getElementById('avatarInitial').textContent = (name || '?')[0].toUpperCase();
+  document.getElementById('roleBadge').textContent = res.data.role === 'doctor' ? 'Доктор' : 'Мед. сестра';
+  if (res.data.role === 'doctor') {
+    document.querySelectorAll('.doctor-only').forEach(function(el) {
+      el.style.display = el.classList.contains('nav-section-label') ? 'block' : 'flex';
+    });
+    document.getElementById('staffFilter').style.display = 'block';
+    document.getElementById('logColEmployee').style.display = '';
+  }
+}
+
+async function loadStaffForFilter() {
+  var res = await sb.from('profiles').select('id,full_name,role').order('full_name');
+  allStaff = res.data || [];
+  var opts = allStaff.map(function(s) {
+    return '<option value="' + s.id + '">' + esc(s.full_name) + ' (' + (s.role === 'doctor' ? 'Доктор' : 'Сестра') + ')</option>';
+  }).join('');
+  document.getElementById('staffFilter').innerHTML = '<option value="">Сите вработени</option>' + opts;
+}
+
+/* ── CLOCK ── */
+function startClock() {
+  function tick() {
+    var n = new Date();
+    document.getElementById('liveTime').textContent =
+      String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0') + ':' + String(n.getSeconds()).padStart(2,'0');
+    var days = ['Недела','Понеделник','Вторник','Среда','Четврток','Петок','Сабота'];
+    var el = document.getElementById('clockDate');
+    if (el) el.textContent = days[n.getDay()] + ', ' + String(n.getDate()).padStart(2,'0') + '.' + String(n.getMonth()+1).padStart(2,'0') + '.' + n.getFullYear();
+  }
+  tick(); setInterval(tick, 1000);
+}
+
+async function checkTodayClock() {
+  var today = new Date().toISOString().slice(0, 10);
+  var res = await sb.from('work_logs').select('*').eq('user_id', currentUser.id).eq('date', today).is('end_time', null).maybeSingle();
+  if (res.data) { activeClock = res.data.id; setClockedIn(true, res.data.log_type); }
+  else setClockedIn(false);
+}
+
+function setClockedIn(on, type) {
+  type = type || 'work';
+  document.getElementById('clockDot').className = 'status-dot' + (on ? '' : ' out');
+  document.getElementById('clockStatusText').textContent = on ? 'Пријавени сте (' + typeLabelMk(type) + ')' : 'Не сте пријавени';
+  document.getElementById('btnClockIn').disabled = on;
+  document.getElementById('btnClockOut').disabled = !on;
+  document.getElementById('leaveType').disabled = on;
+  if (on) document.getElementById('leaveType').value = type;
+}
+
+async function clockIn() {
+  var type = document.getElementById('leaveType').value;
+  var today = new Date().toISOString().slice(0, 10);
+  var now = new Date().toTimeString().slice(0, 8);
+  document.getElementById('btnClockIn').disabled = true;
+  var res = await sb.from('work_logs').insert({ user_id: currentUser.id, date: today, start_time: now, log_type: type }).select().single();
+  if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); document.getElementById('btnClockIn').disabled = false; return; }
+  activeClock = res.data.id; setClockedIn(true, type); showToast('Успешно пријавени!', 'success'); loadWorkLogs();
+}
+
+async function clockOut() {
+  if (!activeClock) return;
+  var now = new Date().toTimeString().slice(0, 8);
+  document.getElementById('btnClockOut').disabled = true;
+  var res = await sb.from('work_logs').update({ end_time: now }).eq('id', activeClock);
+  if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); document.getElementById('btnClockOut').disabled = false; return; }
+  activeClock = null; setClockedIn(false); showToast('Успешно одјавени!', 'success'); loadWorkLogs();
+}
+
+/* ── WORK LOG ── */
+async function loadWorkLogs() {
+  var month = document.getElementById('logMonthFilter').value;
+  var staffSel = document.getElementById('staffFilter').value;
+  if (!month) return;
+  var parts = month.split('-'), year = parts[0], mo = parts[1];
+  var from = month + '-01';
+  var to = month + '-' + String(new Date(parseInt(year), parseInt(mo), 0).getDate()).padStart(2, '0');
+  var isDoc = currentProfile && currentProfile.role === 'doctor';
+  var query = sb.from('work_logs').select('*, profiles(full_name)').gte('date', from).lte('date', to).order('date', { ascending: false });
+  if (!isDoc) query = query.eq('user_id', currentUser.id);
+  else if (staffSel) query = query.eq('user_id', staffSel);
+  var res = await query, data = res.data || [];
+  var tbody = document.getElementById('workLogsBody');
+  var cols = isDoc ? 6 : 5;
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="' + cols + '" style="text-align:center;color:var(--text-light);padding:1.2rem;font-size:.82rem">Нема евиденции за избраниот месец</td></tr>';
+    document.getElementById('workLogTotals').style.display = 'none';
+    return;
+  }
+  tbody.innerHTML = data.map(function(l) {
+    var hrs = (l.start_time && l.end_time) ? calcHours(l.start_time, l.end_time).toFixed(1) : '–';
+    return '<tr>' +
+      '<td>' + formatDate(l.date) + '</td>' +
+      (isDoc ? '<td>' + (l.profiles && l.profiles.full_name ? esc(l.profiles.full_name) : '–') + '</td>' : '') +
+      '<td>' + (l.start_time ? l.start_time.slice(0, 5) : '–') + '</td>' +
+      '<td>' + (l.end_time ? l.end_time.slice(0, 5) : '–') + '</td>' +
+      '<td>' + (hrs !== '–' ? hrs + ' ч.' : '–') + '</td>' +
+      '<td><span class="pill pill-' + l.log_type + '">' + typeLabelMk(l.log_type) + '</span></td>' +
+    '</tr>';
+  }).join('');
+  var completed = data.filter(function(l) { return l.end_time && l.log_type === 'work'; });
+  var totHrs = completed.reduce(function(a, l) { return a + calcHours(l.start_time, l.end_time); }, 0);
+  document.getElementById('totalHoursDisplay').textContent = totHrs.toFixed(1) + ' ч.';
+  document.getElementById('totalDaysDisplay').textContent = completed.length;
+  document.getElementById('workLogTotals').style.display = 'block';
+}
+
+/* ── HELPERS ── */
+function calcHours(start, end) {
+  if (!start || !end) return 0;
+  var sp = start.split(':'), ep = end.split(':');
+  return ((parseInt(ep[0]) * 60 + parseInt(ep[1])) - (parseInt(sp[0]) * 60 + parseInt(sp[1]))) / 60;
+}
+function formatDate(d) {
+  if (!d) return '–';
+  var dt = new Date(d + 'T00:00:00');
+  return String(dt.getDate()).padStart(2,'0') + '.' + String(dt.getMonth()+1).padStart(2,'0') + '.' + dt.getFullYear();
+}
+function typeLabelMk(t) { return { work: 'Работа', sick: 'Боледување', holiday: 'Одмор' }[t] || t; }
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function showToast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show' + (type ? ' ' + type : '');
+  clearTimeout(t._tid); t._tid = setTimeout(function() { t.className = type || ''; }, 3500);
+}
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('show'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('show'); }
+async function handleLogout() {
+  document.getElementById('logoutBtn').disabled = true;
+  try { await sb.auth.signOut(); } catch(e) {}
+  window.location.replace('index.html');
+}
+</script>
+</body>
+</html>

@@ -230,7 +230,7 @@
     <a class="nav-link active" data-page="dashboard" onclick="navigate('dashboard')">
       <span class="nav-icon"><svg><use href="#i-home"/></svg></span>Контролна табла
     </a>
-    <a class="nav-link" data-page="worklog" onclick="navigate('worklog')">
+    <a class="nav-link" href="work-hours.html">
       <span class="nav-icon"><svg><use href="#i-clock"/></svg></span>Работни часови
     </a>
     <a class="nav-link" href="tasks.html">
@@ -244,7 +244,7 @@
     <a class="nav-link doctor-only" data-page="staff" onclick="navigate('staff')">
       <span class="nav-icon"><svg><use href="#i-users"/></svg></span>Тим – преглед
     </a>
-    <a class="nav-link doctor-only" data-page="reports" onclick="navigate('reports')">
+    <a class="nav-link doctor-only" href="reports.html">
       <span class="nav-icon"><svg><use href="#i-bar"/></svg></span>Извештаи
     </a>
     <a class="nav-link doctor-only" data-page="admin" onclick="navigate('admin')">
@@ -317,7 +317,7 @@
       <div class="card">
         <div class="card-header">
           <span class="card-title">Последни евиденции</span>
-          <button class="card-action" type="button" onclick="navigate('worklog')">Сите →</button>
+          <a class="card-action" href="work-hours.html">Сите →</a>
         </div>
         <div class="log-table-wrap">
           <table><thead><tr><th>Датум</th><th>Пријава</th><th>Одјава</th><th>Тип</th></tr></thead>
@@ -344,28 +344,7 @@
     </div>
   </section>
 
-  <!-- WORK LOG -->
-  <section class="page-section" id="page-worklog">
-    <div class="section-header"><div class="section-label">Евиденција</div><h2 class="section-title">Работни часови</h2></div>
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Историја</span>
-        <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-          <input type="month" id="logMonthFilter" class="f-input" style="width:auto;padding:.3rem .6rem"/>
-          <select id="staffFilter" class="f-select doctor-only" style="display:none;width:auto;padding:.3rem .6rem"><option value="">Сите вработени</option></select>
-        </div>
-      </div>
-      <div class="log-table-wrap">
-        <table>
-          <thead><tr><th>Датум</th><th class="doctor-only" id="logColEmployee" style="display:none">Вработен</th><th>Пријава</th><th>Одјава</th><th>Часови</th><th>Тип</th></tr></thead>
-          <tbody id="workLogsBody"><tr><td colspan="6"><div class="skeleton"></div></td></tr></tbody>
-        </table>
-      </div>
-      <div id="workLogTotals" style="display:none;padding:.65rem .85rem 0;font-size:.81rem;color:var(--text-mid);font-weight:600;border-top:2px solid rgba(42,122,122,.08);margin-top:.45rem">
-        Вкупно: <span id="totalHoursDisplay" style="color:var(--teal)">0 ч.</span> · <span id="totalDaysDisplay" style="color:var(--teal)">0</span> работни денови
-      </div>
-    </div>
-  </section>
+
 
   <!-- MY PROFILE -->
   <section class="page-section" id="page-settings">
@@ -405,31 +384,7 @@
     </div>
   </section>
 
-  <!-- REPORTS -->
-  <section class="page-section" id="page-reports">
-    <div class="section-header"><div class="section-label">Извештаи</div><h2 class="section-title">Месечни извештаи</h2></div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">Параметри</span></div>
-      <div style="display:flex;gap:.85rem;flex-wrap:wrap;align-items:flex-end">
-        <div><label class="f-label">Вработен</label><select id="reportEmployee" class="f-select" style="min-width:185px"><option value="">Сите вработени</option></select></div>
-        <div><label class="f-label">Месец</label><input type="month" id="reportMonth" class="f-input" style="width:auto"/></div>
-        <button class="btn-primary" type="button" id="genReportBtn"><svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-bar"/></svg>Генерирај</button>
-      </div>
-    </div>
-    <div id="reportOutput" style="display:none">
-      <div class="stats-grid" id="reportStats"></div>
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title" id="reportTableTitle">Детали</span>
-          <button class="card-action" type="button" onclick="window.print()"><svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-print"/></svg>Печати</button>
-        </div>
-        <div class="log-table-wrap">
-          <table><thead><tr><th>Датум</th><th>Вработен</th><th>Пријава</th><th>Одјава</th><th>Часови</th><th>Тип</th></tr></thead>
-          <tbody id="reportTableBody"></tbody></table>
-        </div>
-      </div>
-    </div>
-  </section>
+
 
   <!-- ADMIN -->
   <section class="page-section" id="page-admin">
@@ -489,7 +444,7 @@ var currentUser=null,currentProfile=null,allStaff=[],activeClock=null;
 (async function init(){
   // Immediately switch to the requested section before any network calls — prevents flash
   (function(){
-    var hashMap={dashboard:'dashboard',workhours:'worklog',worklog:'worklog',profile:'settings',team:'staff',reports:'reports',settings:'admin',admin:'admin'};
+    var hashMap={dashboard:'dashboard',profile:'settings',settings:'settings',team:'staff',admin:'admin'};
     var hash=(window.location.hash||'').replace('#','');
     var page=hashMap[hash]||'dashboard';
     document.querySelectorAll('.page-section').forEach(function(s){s.classList.remove('active');});
@@ -498,19 +453,13 @@ var currentUser=null,currentProfile=null,allStaff=[],activeClock=null;
     var lnk=document.querySelector('.nav-link[data-page="'+page+'"]');if(lnk)lnk.classList.add('active');
   })();
   startClock();
-  var now=new Date(),ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-  document.getElementById('logMonthFilter').value=ym;
-  document.getElementById('reportMonth').value=ym;
   document.getElementById('logoutBtn').addEventListener('click',handleLogout);
   document.getElementById('hamburgerBtn').addEventListener('click',toggleSidebar);
   document.getElementById('sidebarOverlay').addEventListener('click',closeSidebar);
   document.getElementById('btnClockIn').addEventListener('click',clockIn);
   document.getElementById('btnClockOut').addEventListener('click',clockOut);
-  document.getElementById('logMonthFilter').addEventListener('change',loadWorkLogs);
-  document.getElementById('staffFilter').addEventListener('change',loadWorkLogs);
   document.getElementById('saveProfileBtn').addEventListener('click',saveProfile);
   document.getElementById('pwdResetBtn').addEventListener('click',sendPasswordReset);
-  document.getElementById('genReportBtn').addEventListener('click',generateReport);
   document.getElementById('createEmpBtn').addEventListener('click',createEmployee);
   document.getElementById('refreshUsersBtn').addEventListener('click',loadAdminUsers);
   document.getElementById('closeEditModal').addEventListener('click',function(){closeModal('editUserModal');});
@@ -523,7 +472,7 @@ var currentUser=null,currentProfile=null,allStaff=[],activeClock=null;
   sb.auth.onAuthStateChange(function(ev,s){if(ev==='SIGNED_OUT')window.location.replace('index.html');});
   await loadProfile();
   // Navigate to correct section immediately (before data loads) to prevent flash
-  var hashMap={dashboard:'dashboard',workhours:'worklog',worklog:'worklog',profile:'settings',team:'staff',reports:'reports',settings:'admin',admin:'admin'};
+  var hashMap={dashboard:'dashboard',profile:'settings',settings:'settings',team:'staff',admin:'admin'};
   var hash=(window.location.hash||'').replace('#','');
   if(hash&&hashMap[hash])navigate(hashMap[hash]);
   await bootDashboard();
@@ -544,8 +493,6 @@ function applyRoleUI(role,name){
     document.querySelectorAll('.doctor-only').forEach(function(el){el.style.display=el.classList.contains('nav-section-label')?'block':'flex';});
     document.getElementById('teamOverviewCard').style.display='block';
     document.getElementById('doctorStatsGrid').style.display='grid';
-    document.getElementById('staffFilter').style.display='block';
-    document.getElementById('logColEmployee').style.display='';
   }
 }
 async function bootDashboard(){
@@ -632,25 +579,6 @@ async function loadRecentLogs(){
   tbody.innerHTML=res.data.map(function(l){return '<tr><td>'+formatDate(l.date)+'</td><td>'+(l.start_time?l.start_time.slice(0,5):'–')+'</td><td>'+(l.end_time?l.end_time.slice(0,5):'–')+'</td><td><span class="pill pill-'+l.log_type+'">'+typeLabelMk(l.log_type)+'</span></td></tr>';}).join('');
 }
 
-/* ── WORK LOG ── */
-async function loadWorkLogs(){
-  var month=document.getElementById('logMonthFilter').value,staffSel=document.getElementById('staffFilter').value;
-  if(!month)return;
-  var parts=month.split('-'),year=parts[0],mo=parts[1];
-  var from=month+'-01',to=month+'-'+String(new Date(parseInt(year),parseInt(mo),0).getDate()).padStart(2,'0');
-  var isDoc=currentProfile&&currentProfile.role==='doctor';
-  var query=sb.from('work_logs').select('*, profiles(full_name)').gte('date',from).lte('date',to).order('date',{ascending:false});
-  if(!isDoc)query=query.eq('user_id',currentUser.id);else if(staffSel)query=query.eq('user_id',staffSel);
-  var res=await query,data=res.data||[],tbody=document.getElementById('workLogsBody'),cols=isDoc?6:5;
-  if(!data.length){tbody.innerHTML='<tr><td colspan="'+cols+'" style="text-align:center;color:var(--text-light);padding:1.2rem;font-size:.82rem">Нема евиденции за избраниот месец</td></tr>';document.getElementById('workLogTotals').style.display='none';return;}
-  tbody.innerHTML=data.map(function(l){var hrs=(l.start_time&&l.end_time)?calcHours(l.start_time,l.end_time).toFixed(1):'–';return '<tr><td>'+formatDate(l.date)+'</td>'+(isDoc?'<td>'+(l.profiles&&l.profiles.full_name?esc(l.profiles.full_name):'–')+'</td>':'')+'<td>'+(l.start_time?l.start_time.slice(0,5):'–')+'</td><td>'+(l.end_time?l.end_time.slice(0,5):'–')+'</td><td>'+(hrs!=='–'?hrs+' ч.':'–')+'</td><td><span class="pill pill-'+l.log_type+'">'+typeLabelMk(l.log_type)+'</span></td></tr>';}).join('');
-  var completed=data.filter(function(l){return l.end_time&&l.log_type==='work';});
-  var totHrs=completed.reduce(function(a,l){return a+calcHours(l.start_time,l.end_time);},0);
-  document.getElementById('totalHoursDisplay').textContent=totHrs.toFixed(1)+' ч.';
-  document.getElementById('totalDaysDisplay').textContent=completed.length;
-  document.getElementById('workLogTotals').style.display='block';
-}
-
 /* ── UPCOMING TASKS (preview) ── */
 async function loadUpcomingTasks(){
   var isDoc=currentProfile&&currentProfile.role==='doctor';
@@ -694,9 +622,6 @@ async function sendPasswordReset(){
 /* ── STAFF ── */
 async function loadStaffList(){
   var res=await sb.from('profiles').select('*').order('full_name');allStaff=res.data||[];
-  var opts=allStaff.map(function(s){return '<option value="'+s.id+'">'+esc(s.full_name)+' ('+(s.role==='doctor'?'Доктор':'Сестра')+')</option>';}).join('');
-  document.getElementById('staffFilter').innerHTML='<option value="">Сите вработени</option>'+opts;
-  document.getElementById('reportEmployee').innerHTML='<option value="">Сите вработени</option>'+opts;
 }
 async function loadTeamToday(){
   var today=new Date().toISOString().slice(0,10);
@@ -712,24 +637,6 @@ async function loadStaffTable(){
   var staffRes=await sb.from('profiles').select('*').order('full_name');
   var logs=logsRes.data||[],staff=staffRes.data||[],today=new Date().toISOString().slice(0,10);
   document.getElementById('staffTableBody').innerHTML=staff.map(function(s){var sl=logs.filter(function(l){return l.user_id===s.id;});var hrs=sl.filter(function(l){return l.end_time&&l.log_type==='work';}).reduce(function(a,l){return a+calcHours(l.start_time,l.end_time);},0);var sick=sl.filter(function(l){return l.log_type==='sick';}).length;var hols=sl.filter(function(l){return l.log_type==='holiday';}).length;var on=sl.some(function(l){return!l.end_time&&l.date===today;});return '<tr><td>'+esc(s.full_name)+'</td><td>'+(s.role==='doctor'?'Доктор':'Сестра')+'</td><td>'+Math.round(hrs)+' ч.</td><td>'+sick+'</td><td>'+hols+'</td><td>'+(on?'<span class="online-dot"></span>Пријавен/а':'<span style="color:var(--text-light)">Одјавен/а</span>')+'</td></tr>';}).join('');
-}
-
-/* ── REPORTS ── */
-async function generateReport(){
-  var empId=document.getElementById('reportEmployee').value,month=document.getElementById('reportMonth').value;
-  if(!month){showToast('Изберете месец.','error');return;}
-  var parts=month.split('-'),year=parts[0],mo=parts[1];
-  var from=month+'-01',to=month+'-'+String(new Date(parseInt(year),parseInt(mo),0).getDate()).padStart(2,'0');
-  var query=sb.from('work_logs').select('*, profiles(full_name)').gte('date',from).lte('date',to).order('date');
-  if(empId)query=query.eq('user_id',empId);
-  var res=await query,logs=res.data||[];
-  var wl=logs.filter(function(l){return l.log_type==='work'&&l.end_time;}),hrs=wl.reduce(function(a,l){return a+calcHours(l.start_time,l.end_time);},0);
-  var sd=logs.filter(function(l){return l.log_type==='sick';}).length,hd=logs.filter(function(l){return l.log_type==='holiday';}).length;
-  function si(id){return '<div class="stat-icon"><svg viewBox="0 0 24 24"><use href="#i-'+id+'"/></svg></div>';}
-  document.getElementById('reportStats').innerHTML='<div class="stat-card">'+si('clock')+'<div class="stat-val">'+Math.round(hrs)+'</div><div class="stat-label">Вкупно часови</div></div><div class="stat-card">'+si('cal')+'<div class="stat-val">'+wl.length+'</div><div class="stat-label">Работни денови</div></div><div class="stat-card">'+si('pulse')+'<div class="stat-val">'+sd+'</div><div class="stat-label">Боледување</div></div><div class="stat-card">'+si('bar')+'<div class="stat-val">'+hd+'</div><div class="stat-label">Одмор</div></div>';
-  document.getElementById('reportTableTitle').textContent='Детали – '+month+(empId?'':' (сите)');
-  document.getElementById('reportTableBody').innerHTML=logs.map(function(l){return '<tr><td>'+formatDate(l.date)+'</td><td>'+(l.profiles?esc(l.profiles.full_name):'–')+'</td><td>'+(l.start_time?l.start_time.slice(0,5):'–')+'</td><td>'+(l.end_time?l.end_time.slice(0,5):'–')+'</td><td>'+((l.start_time&&l.end_time)?calcHours(l.start_time,l.end_time).toFixed(1)+' ч.':'–')+'</td><td><span class="pill pill-'+l.log_type+'">'+typeLabelMk(l.log_type)+'</span></td></tr>';}).join('');
-  document.getElementById('reportOutput').style.display='block';showToast('Извештајот е генериран!','success');
 }
 
 /* ── ADMIN ── */
@@ -764,15 +671,15 @@ async function createEmployee(){
 }
 
 /* ── NAVIGATION ── */
-var PAGE_TITLES={dashboard:'Контролна табла',worklog:'Работни часови',settings:'Мој профил',staff:'Тим – преглед',reports:'Месечни извештаи',admin:'Управување со тим'};
+var PAGE_TITLES={dashboard:'Контролна табла',settings:'Мој профил',staff:'Тим – преглед',admin:'Управување со тим'};
 function navigate(page){
-  if(['staff','reports','admin'].includes(page)&&(!currentProfile||currentProfile.role!=='doctor'))return;
+  if(['staff','admin'].includes(page)&&(!currentProfile||currentProfile.role!=='doctor'))return;
   document.querySelectorAll('.page-section').forEach(function(s){s.classList.remove('active');});
   document.getElementById('page-'+page).classList.add('active');
   document.querySelectorAll('.nav-link[data-page]').forEach(function(l){l.classList.remove('active');});
   var link=document.querySelector('.nav-link[data-page="'+page+'"]');if(link)link.classList.add('active');
   document.getElementById('topbarTitle').textContent=PAGE_TITLES[page]||page;
-  if(page==='worklog')loadWorkLogs();if(page==='settings')loadSettingsPage();if(page==='staff')loadStaffTable();if(page==='admin')loadAdminUsers();
+  if(page==='settings')loadSettingsPage();if(page==='staff')loadStaffTable();if(page==='admin')loadAdminUsers();
   closeSidebar();
 }
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show');}

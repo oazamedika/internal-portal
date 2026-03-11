@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Извештаи – Оаза Медика</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- html2pdf for client-side PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    const SUPABASE_URL  = 'https://pmolxspputemoyvilzyq.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtb2x4c3BwdXRlbW95dmlsenlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwNjI0OTUsImV4cCI6MjA4ODYzODQ5NX0.f4t9wIzvhnrMeh_O4aesS94qyv71LUO1LA3lcyY7i8o';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  </script>
+  <style>
+    :root{
+      --teal:#2a7a7a;--teal-dark:#1d5e5e;--green:#1a5c2a;--green-light:#e8f5ec;
+      --teal-light:#e4f2f2;--cream:#f9faf8;--text:#1c2a22;--text-mid:#3d5046;
+      --text-light:#6b8070;--white:#fff;--shadow:0 4px 32px rgba(26,92,42,.10);
+      --radius:14px;--sidebar:240px;--amber:#f59e0b;--amber-light:#fef9ec;
+      --red:#c0392b;--red-light:#fdf0ee
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Lato',sans-serif;background:var(--cream);color:var(--text);line-height:1.6;display:flex;min-height:100vh}
+    h1,h2,h3,h4{font-family:'Playfair Display',serif;line-height:1.2}
+
+    /* SIDEBAR */
+    .sidebar{width:var(--sidebar);background:linear-gradient(165deg,var(--teal-dark) 0%,var(--green) 70%,#0f3d1c 100%);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .3s ease;overflow:hidden}
+    .sidebar-logo{padding:1rem 1.1rem .85rem;display:flex;align-items:center;gap:9px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .sidebar-logo img{height:34px;width:auto;filter:brightness(0) invert(1);opacity:.92;flex-shrink:0}
+    .sidebar-logo-text{font-size:.6rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+    .sidebar-user{margin:.65rem .85rem .4rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:.6rem .8rem;display:flex;align-items:center;gap:8px;flex-shrink:0}
+    .user-avatar{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0}
+    .user-info{flex:1;overflow:hidden}
+    .user-name{font-size:.78rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .user-role{font-size:.62rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em}
+    nav.sidebar-nav{flex:1;padding:.3rem 0;overflow:hidden}
+    .nav-section-label{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.33);padding:.55rem 1.1rem .2rem}
+    .nav-link{display:flex;align-items:center;gap:9px;padding:.56rem 1.1rem;text-decoration:none;font-size:.81rem;font-weight:600;color:rgba(255,255,255,.65);transition:all .2s;border-left:3px solid transparent;cursor:pointer;user-select:none;white-space:nowrap}
+    .nav-link .nav-icon{width:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .nav-link .nav-icon svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+    .nav-link:hover{color:#fff;background:rgba(255,255,255,.07)}
+    .nav-link.active{color:#fff;background:rgba(255,255,255,.12);border-left-color:rgba(255,255,255,.6)}
+    .nav-link .badge{margin-left:auto;background:var(--amber);color:#fff;font-size:.6rem;font-weight:700;padding:.1rem .38rem;border-radius:50px;min-width:16px;text-align:center}
+    .sidebar-ext{padding:.45rem .85rem .2rem;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .ext-label{font-size:.57rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:.38rem;padding-left:.18rem}
+    .btn-ext{width:100%;padding:.45rem .65rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:rgba(255,255,255,.72);font-family:'Lato',sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;text-decoration:none;margin-bottom:.35rem}
+    .btn-ext:hover{background:rgba(255,255,255,.15);color:#fff}
+    .btn-ext-icon{width:18px;height:18px;flex-shrink:0;object-fit:contain;filter:brightness(0) invert(1);opacity:.85}
+    .btn-ext-arrow{margin-left:auto;opacity:.4}.btn-ext-arrow svg{width:10px;height:10px;stroke:#fff;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    .sidebar-bottom{padding:.45rem .85rem .7rem;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .btn-logout{width:100%;padding:.52rem .85rem;background:rgba(255,80,80,.15);border:1px solid rgba(255,100,100,.25);border-radius:9px;color:rgba(255,200,200,.9);font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s}
+    .btn-logout:hover{background:rgba(192,57,43,.6);color:#fff;border-color:rgba(255,100,100,.5)}
+    .btn-logout svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+
+    /* TOPBAR */
+    .topbar{position:fixed;top:0;left:var(--sidebar);right:0;height:56px;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-bottom:1px solid rgba(42,122,122,.1);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;z-index:100}
+    .topbar-left{display:flex;align-items:center;gap:.7rem}
+    .hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;color:var(--teal)}
+    .hamburger-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-width:2}
+    .topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--text)}
+    .topbar-right{display:flex;align-items:center;gap:1rem}
+    .topbar-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green);padding:.25rem .75rem;border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+
+    /* MAIN */
+    .main{margin-left:var(--sidebar);margin-top:56px;padding:1.5rem;flex:1;min-width:0}
+    .section-header{margin-bottom:1.4rem}
+    .section-label{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:.25rem}
+    .section-title{font-size:clamp(1.4rem,2.5vw,1.9rem);color:var(--text)}
+    .section-sub{font-size:.88rem;color:var(--text-light);font-weight:300;margin-top:.25rem}
+
+    /* CARD */
+    .card{background:var(--white);border-radius:var(--radius);border:1px solid rgba(42,122,122,.08);padding:1.3rem;margin-bottom:1.3rem}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid rgba(42,122,122,.08);flex-wrap:wrap;gap:.5rem}
+    .card-title{font-family:'Playfair Display',serif;font-size:1rem;color:var(--text)}
+    .card-action{font-size:.76rem;color:var(--teal);font-weight:600;text-decoration:none;cursor:pointer;background:none;border:none;transition:color .2s;display:inline-flex;align-items:center;gap:4px}
+    .card-action:hover{color:var(--teal-dark)}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.3rem}
+
+    /* FORMS */
+    .f-group{margin-bottom:1rem}
+    .f-label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);margin-bottom:.35rem}
+    .f-input{width:100%;padding:.68rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.88rem;color:var(--text);background:var(--cream);outline:none;transition:border-color .2s}
+    .f-input:focus{border-color:var(--teal);background:var(--white)}
+    .f-select{width:100%;padding:.68rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.88rem;color:var(--text);background:var(--cream);outline:none}
+    .btn-primary{padding:.68rem 1.3rem;background:var(--teal);color:#fff;border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.87rem;font-weight:700;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:7px}
+    .btn-primary:hover{background:var(--teal-dark)}
+    .btn-primary:disabled{background:#9bb8b8;cursor:not-allowed}
+    .btn-secondary{padding:.52rem .85rem;background:var(--teal-light);color:var(--teal);border:1px solid rgba(42,122,122,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+    .btn-secondary:hover{background:var(--teal);color:#fff}
+    .btn-danger{padding:.52rem .85rem;background:var(--red-light);color:var(--red);border:1px solid rgba(192,57,43,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+    .btn-danger:hover{background:var(--red);color:#fff}
+
+    /* TABS */
+    .tabs{display:flex;gap:.35rem;margin-bottom:1.3rem;flex-wrap:wrap}
+    .tab-btn{padding:.52rem 1.1rem;border:2px solid rgba(42,122,122,.15);border-radius:50px;font-family:'Lato',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;background:var(--white);color:var(--text-mid);transition:all .2s}
+    .tab-btn.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+    .tab-btn:hover:not(.active){border-color:var(--teal);color:var(--teal)}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block;animation:fadeIn .3s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+    /* REPORT PARAMS */
+    .params-row{display:flex;gap:.85rem;flex-wrap:wrap;align-items:flex-end}
+    .params-row .f-group{margin-bottom:0;min-width:170px}
+
+    /* GENERATED REPORTS LIST */
+    .report-item{display:flex;align-items:center;gap:.85rem;padding:.85rem 1rem;background:var(--cream);border-radius:10px;border:1px solid rgba(42,122,122,.07);margin-bottom:.55rem;flex-wrap:wrap;gap:.6rem}
+    .report-item-info{flex:1;min-width:0}
+    .report-item-title{font-size:.88rem;font-weight:700;color:var(--text)}
+    .report-item-meta{font-size:.72rem;color:var(--text-light);margin-top:2px}
+    .report-item-actions{display:flex;gap:.4rem;flex-shrink:0}
+
+    /* HOLIDAYS MODULE */
+    .holiday-item{display:flex;align-items:center;gap:.65rem;padding:.62rem .85rem;background:var(--amber-light);border:1px solid rgba(245,158,11,.15);border-radius:9px;margin-bottom:.45rem}
+    .holiday-item-info{flex:1;min-width:0}
+    .holiday-item-name{font-size:.86rem;font-weight:700;color:var(--text)}
+    .holiday-item-date{font-size:.72rem;color:var(--amber);font-weight:600;margin-top:1px}
+    .holiday-del{background:none;border:none;cursor:pointer;color:var(--text-light);padding:4px;border-radius:5px;transition:all .2s;flex-shrink:0}
+    .holiday-del:hover{color:var(--red);background:var(--red-light)}
+    .holiday-del svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+
+    /* PILLS */
+    .pill{display:inline-flex;align-items:center;padding:.18rem .62rem;border-radius:50px;font-size:.7rem;font-weight:700;white-space:nowrap}
+    .pill-work{background:var(--teal-light);color:var(--teal)}
+    .pill-sick{background:var(--red-light);color:var(--red)}
+    .pill-holiday{background:var(--amber-light);color:var(--amber)}
+
+    /* STATS */
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:1.3rem}
+    .stat-card{background:var(--white);border-radius:var(--radius);padding:1.2rem 1.3rem;border:1px solid rgba(42,122,122,.08);position:relative;overflow:hidden}
+    .stat-card::after{content:'';position:absolute;top:0;right:0;width:60px;height:60px;background:radial-gradient(ellipse at top right,var(--teal-light),transparent 70%)}
+    .stat-icon{width:32px;height:32px;border-radius:9px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;margin-bottom:.7rem}
+    .stat-icon svg{width:16px;height:16px;stroke:var(--teal);fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+    .stat-val{font-family:'Playfair Display',serif;font-size:1.85rem;font-weight:700;color:var(--text);line-height:1}
+    .stat-label{font-size:.74rem;color:var(--text-light);font-weight:600;margin-top:.25rem;letter-spacing:.04em;text-transform:uppercase}
+
+    /* SKELETON */
+    .skeleton{background:linear-gradient(90deg,#e8eee9 25%,#d4ddd5 50%,#e8eee9 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;height:36px;margin-bottom:.45rem}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    /* TOAST */
+    #toast{position:fixed;bottom:1.2rem;right:1.2rem;z-index:9999;background:var(--text);color:#fff;padding:.78rem 1.2rem;border-radius:11px;font-size:.84rem;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.22,.68,0,1.1);max-width:300px;pointer-events:none}
+    #toast.show{transform:translateY(0);opacity:1}
+    #toast.success{background:var(--teal-dark)}
+    #toast.error{background:var(--red)}
+
+    /* SIDEBAR MOBILE */
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:199;opacity:0;pointer-events:none;transition:opacity .3s}
+    .sidebar-overlay.show{opacity:1;pointer-events:auto}
+
+    /* MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--white);border-radius:18px;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.2)}
+    .modal-header{padding:1.15rem 1.3rem .85rem;border-bottom:1px solid rgba(42,122,122,.08);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:1}
+    .modal-header h3{font-family:'Playfair Display',serif;font-size:1.08rem;color:var(--text)}
+    .modal-close{background:var(--teal-light);border:none;cursor:pointer;width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal);transition:background .2s;flex-shrink:0}
+    .modal-close:hover{background:var(--teal);color:#fff}
+    .modal-close svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    .modal-body{padding:1.15rem 1.3rem}
+    .modal-footer{padding:.65rem 1.3rem 1.15rem;border-top:1px solid rgba(42,122,122,.08);display:flex;gap:.65rem;justify-content:flex-end;flex-wrap:wrap}
+
+    /* PDF PREVIEW OVERLAY */
+    .pdf-overlay{display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);flex-direction:column;align-items:center}
+    .pdf-overlay.open{display:flex}
+    .pdf-toolbar{width:100%;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:rgba(0,0,0,.4);flex-shrink:0;gap:.65rem;flex-wrap:wrap}
+    .pdf-toolbar-title{font-family:'Playfair Display',serif;color:#fff;font-size:1rem}
+    .pdf-toolbar-actions{display:flex;gap:.55rem;flex-wrap:wrap}
+    .pdf-scroll{flex:1;overflow-y:auto;display:flex;justify-content:center;padding:1.5rem 1rem}
+
+    /* ============================================================
+       A4 REPORT STYLES (used inside #reportPreview)
+       ============================================================ */
+    #reportPreview{
+      width:210mm;
+      min-height:297mm;
+      background:#fff;
+      padding:20mm 20mm 25mm 20mm;
+      box-shadow:0 8px 40px rgba(0,0,0,.18);
+      border-radius:4px;
+      font-family:'Times New Roman',Times,serif;
+      font-size:11pt;
+      color:#000;
+      position:relative;
+    }
+    .rp-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8mm;padding-bottom:4mm;border-bottom:2px solid #000}
+    .rp-logo{max-height:22mm;max-width:70mm;object-fit:contain}
+    .rp-header-right{text-align:right;font-size:8.5pt;line-height:1.5;color:#333}
+    .rp-title-block{text-align:center;margin-bottom:8mm}
+    .rp-title{font-size:16pt;font-weight:700;letter-spacing:4px;text-transform:uppercase;margin-bottom:2mm}
+    .rp-subtitle{font-size:10pt;font-style:italic;color:#333;margin-bottom:5mm}
+    .rp-meta{font-size:10pt;line-height:1.8}
+    .rp-meta strong{font-weight:700}
+    .rp-table-wrap{margin-top:7mm}
+    .rp-table{width:100%;border-collapse:collapse;font-size:9pt}
+    .rp-table th{background:#1d5e5e;color:#fff;padding:4px 5px;text-align:center;font-weight:700;font-size:8pt;border:1px solid #1d5e5e;line-height:1.3}
+    .rp-table td{padding:3.5px 5px;border:1px solid #ccc;text-align:center;vertical-align:middle;font-size:9pt;line-height:1.3}
+    .rp-table tr:nth-child(even) td{background:#f7fafa}
+    .rp-table .merged-holiday{background:#fef9ec;color:#92400e;font-weight:700;font-style:italic}
+    .rp-table .merged-sick{background:#fdf0ee;color:#922b21;font-weight:700;font-style:italic}
+    .rp-table .merged-state-holiday{background:#e8f5ec;color:#145a32;font-weight:700;font-style:italic}
+    .rp-table .merged-saturday{background:#f0f4ff;color:#1e3a8a;font-weight:700;font-style:italic}
+    .rp-table .merged-sunday{background:#f0f4ff;color:#1e3a8a;font-weight:700;font-style:italic}
+    .rp-table .td-date{font-weight:700;white-space:nowrap;text-align:left;padding-left:7px}
+    .rp-table .td-yn-yes{color:#1a5c2a;font-weight:700}
+    .rp-table .td-yn-no{color:#aaa}
+    .rp-summary{margin-top:6mm;padding:3mm 5mm;background:#f7fafa;border:1px solid #ccc;font-size:9pt;line-height:1.8}
+    .rp-summary strong{font-weight:700}
+    .rp-signature{margin-top:18mm;display:flex;justify-content:space-between;align-items:flex-end}
+    .rp-sign-block{text-align:center;width:60mm}
+    .rp-sign-line{border-top:1px solid #000;padding-top:3px;font-size:8.5pt;color:#333}
+    .rp-footer{position:absolute;bottom:12mm;left:20mm;right:20mm;display:flex;justify-content:space-between;font-size:7.5pt;color:#888;border-top:1px solid #ddd;padding-top:3mm}
+
+    /* MOBILE */
+    @media(max-width:900px){
+      .sidebar{width:260px;transform:translateX(-100%);display:flex}
+      .sidebar.open{transform:translateX(0)}
+      .sidebar-overlay{display:block}
+      .topbar{left:0}
+      .main{margin-left:0;padding:1rem}
+      .hamburger-btn{display:block}
+      .two-col{grid-template-columns:1fr}
+      .params-row{flex-direction:column}
+      .params-row .f-group{min-width:0;width:100%}
+      #reportPreview{width:100%;min-height:auto;padding:8mm}
+      .rp-header{flex-direction:column;gap:3mm}
+      .rp-header-right{text-align:left}
+      .rp-signature{flex-direction:column;gap:8mm;align-items:center}
+    }
+    @media(max-width:480px){
+      .main{padding:.8rem}
+      .tabs{gap:.25rem}
+      .tab-btn{font-size:.76rem;padding:.42rem .8rem}
+      .rp-table{font-size:7.5pt}
+      .rp-table th{font-size:7pt;padding:3px 3px}
+      .rp-table td{padding:2.5px 3px}
+    }
+  </style>
+</head>
+<body>
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-home"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+  <symbol id="i-clock"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-tasks"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
+  <symbol id="i-user"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-users"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-bar"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+  <symbol id="i-gear"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+  <symbol id="i-cal"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+  <symbol id="i-pulse"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+  <symbol id="i-check"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-trash"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></symbol>
+  <symbol id="i-plus"   viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+  <symbol id="i-eye"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-x"      viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+  <symbol id="i-menu"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+  <symbol id="i-ext"    viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+  <symbol id="i-refresh"viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-4.43"/></symbol>
+</svg>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <a href="dashboard.html" class="sidebar-logo">
+    <img src="logo_header.png" alt="Оаза Медика" onerror="this.style.display='none'"/>
+    <span class="sidebar-logo-text">Портал за вработени</span>
+  </a>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="avatarInitial">–</div>
+    <div class="user-info">
+      <div class="user-name" id="sidebarUserName">…</div>
+      <div class="user-role" id="sidebarUserRole">…</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Мени</div>
+    <a class="nav-link" href="dashboard.html">
+      <span class="nav-icon"><svg><use href="#i-home"/></svg></span>Контролна табла
+    </a>
+    <a class="nav-link" href="work-hours.html">
+      <span class="nav-icon"><svg><use href="#i-clock"/></svg></span>Работни часови
+    </a>
+    <a class="nav-link" href="tasks.html">
+      <span class="nav-icon"><svg><use href="#i-tasks"/></svg></span>Задачи
+    </a>
+    <a class="nav-link" href="dashboard.html#profile">
+      <span class="nav-icon"><svg><use href="#i-user"/></svg></span>Мој профил
+    </a>
+    <div class="nav-section-label">Доктор</div>
+    <a class="nav-link" href="dashboard.html#team">
+      <span class="nav-icon"><svg><use href="#i-users"/></svg></span>Тим – преглед
+    </a>
+    <a class="nav-link active" href="reports.html">
+      <span class="nav-icon"><svg><use href="#i-bar"/></svg></span>Извештаи
+    </a>
+    <a class="nav-link" href="dashboard.html#admin">
+      <span class="nav-icon"><svg><use href="#i-gear"/></svg></span>Управување со тим
+    </a>
+  </nav>
+  <div class="sidebar-ext">
+    <div class="ext-label">Надворешни портали</div>
+    <a class="btn-ext" href="https://portal.fzo.org.mk/" target="_blank" rel="noopener">
+      <img class="btn-ext-icon" src="fzom.png" alt="" onerror="this.style.display='none'"/>
+      Портал на ФЗОМ
+      <span class="btn-ext-arrow"><svg><use href="#i-ext"/></svg></span>
+    </a>
+    <a class="btn-ext" href="https://app.helio.mk/" target="_blank" rel="noopener">
+      <img class="btn-ext-icon" src="helio.png" alt="" onerror="this.style.display='none'"/>
+      Хелио Пациенти
+      <span class="btn-ext-arrow"><svg><use href="#i-ext"/></svg></span>
+    </a>
+  </div>
+  <div class="sidebar-bottom">
+    <button class="btn-logout" id="logoutBtn" type="button">
+      <svg><use href="#i-logout"/></svg>Одјавете се
+    </button>
+  </div>
+</aside>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="hamburger-btn" id="hamburgerBtn" type="button"><svg><use href="#i-menu"/></svg></button>
+    <div class="topbar-title">Извештаи</div>
+  </div>
+  <div class="topbar-right">
+    <span class="topbar-badge" id="roleBadge">…</span>
+  </div>
+</header>
+
+<main class="main">
+  <div class="section-header">
+    <div class="section-label">Доктор</div>
+    <h2 class="section-title">Месечни извештаи</h2>
+    <p class="section-sub">Генерирај, прегледај и преземи извештаи за редовноста на вработените</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('generate')" id="tab-generate">Генерирај извештај</button>
+    <button class="tab-btn" onclick="switchTab('saved')" id="tab-saved">Зачувани извештаи</button>
+    <button class="tab-btn" onclick="switchTab('holidays')" id="tab-holidays">Државни празници</button>
+  </div>
+
+  <!-- TAB: GENERATE -->
+  <div class="tab-panel active" id="panel-generate">
+    <div class="card">
+      <div class="card-header"><span class="card-title">Параметри на извештај</span></div>
+      <div class="params-row">
+        <div class="f-group">
+          <label class="f-label">Вработен</label>
+          <select id="reportEmployee" class="f-select" style="min-width:210px">
+            <option value="">— Избери вработен —</option>
+          </select>
+        </div>
+        <div class="f-group">
+          <label class="f-label">Месец</label>
+          <input type="month" id="reportMonth" class="f-input" style="width:auto"/>
+        </div>
+        <div class="f-group" style="display:flex;align-items:flex-end">
+          <button class="btn-primary" type="button" id="genReportBtn" onclick="generateReport()">
+            <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-bar"/></svg>
+            Генерирај
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats summary (shown after generate) -->
+    <div id="reportSummaryArea" style="display:none">
+      <div class="stats-grid" id="reportStats"></div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title" id="reportCardTitle">Преглед</span>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <button class="btn-secondary" type="button" onclick="previewReport()">
+              <svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-eye"/></svg>
+              Преглед
+            </button>
+            <button class="btn-primary" type="button" onclick="downloadReportPDF()">
+              <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-download"/></svg>
+              Преземи PDF
+            </button>
+            <button class="btn-secondary" type="button" onclick="saveReportRecord()">
+              <svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-check"/></svg>
+              Зачувај запис
+            </button>
+          </div>
+        </div>
+        <!-- Quick table preview inside dashboard -->
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:.82rem">
+            <thead>
+              <tr>
+                <th style="text-align:left;padding:.45rem .7rem;font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-light);border-bottom:2px solid rgba(42,122,122,.1);white-space:nowrap">Датум</th>
+                <th style="text-align:center;padding:.45rem .7rem;font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-light);border-bottom:2px solid rgba(42,122,122,.1)">Пристигнување</th>
+                <th style="text-align:center;padding:.45rem .7rem;font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-light);border-bottom:2px solid rgba(42,122,122,.1)">Заминување</th>
+                <th style="text-align:center;padding:.45rem .7rem;font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-light);border-bottom:2px solid rgba(42,122,122,.1)">Вкупно ч.</th>
+                <th style="text-align:center;padding:.45rem .7rem;font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-light);border-bottom:2px solid rgba(42,122,122,.1)">Тип</th>
+              </tr>
+            </thead>
+            <tbody id="previewTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: SAVED -->
+  <div class="tab-panel" id="panel-saved">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Зачувани извештаи</span>
+        <button class="card-action" type="button" onclick="loadSavedReports()">
+          <svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-refresh"/></svg>
+          Освежи
+        </button>
+      </div>
+      <div id="savedReportsList"><div class="skeleton"></div><div class="skeleton"></div></div>
+    </div>
+  </div>
+
+  <!-- TAB: HOLIDAYS -->
+  <div class="tab-panel" id="panel-holidays">
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Додај државен празник</span></div>
+        <div class="f-group">
+          <label class="f-label">Година</label>
+          <select id="holidayYear" class="f-select"></select>
+        </div>
+        <div class="f-group">
+          <label class="f-label">Датум на празникот</label>
+          <input type="date" id="holidayDate" class="f-input"/>
+        </div>
+        <div class="f-group">
+          <label class="f-label">Назив на празникот</label>
+          <input type="text" id="holidayName" class="f-input" placeholder="пр. Нова Година, Велигден…"/>
+        </div>
+        <div style="display:flex;gap:.65rem;align-items:center;flex-wrap:wrap">
+          <button class="btn-primary" type="button" onclick="addHoliday()">
+            <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2.5" viewBox="0 0 24 24"><use href="#i-plus"/></svg>
+            Додај
+          </button>
+          <span style="font-size:.75rem;color:var(--text-light)">Ќе важи за сите извештаи за тоа лето.</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Празници по година</span>
+          <select id="viewHolidayYear" class="f-select" style="width:auto;padding:.32rem .65rem;font-size:.82rem" onchange="renderHolidaysList()"></select>
+        </div>
+        <div id="holidaysList"><div class="skeleton"></div></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- PDF PREVIEW OVERLAY -->
+<div class="pdf-overlay" id="pdfOverlay">
+  <div class="pdf-toolbar">
+    <span class="pdf-toolbar-title" id="pdfOverlayTitle">Преглед на извештај</span>
+    <div class="pdf-toolbar-actions">
+      <button class="btn-primary" type="button" onclick="downloadReportPDF()">
+        <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-download"/></svg>
+        Преземи PDF
+      </button>
+      <button class="btn-secondary" type="button" onclick="closePDFOverlay()">
+        <svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-x"/></svg>
+        Затвори
+      </button>
+    </div>
+  </div>
+  <div class="pdf-scroll">
+    <!-- The A4 report lives here and is also used for PDF generation -->
+    <div id="reportPreview">
+      <!-- Populated by buildReportHTML() -->
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="modal-overlay" id="confirmDeleteModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Избриши извештај</h3>
+      <button class="modal-close" type="button" onclick="closeModal('confirmDeleteModal')"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:.88rem;color:var(--text-mid);line-height:1.6">Дали сте сигурни дека сакате да го избришете овој извештај? Оваа акција не може да се поврати.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" type="button" onclick="closeModal('confirmDeleteModal')">Откажи</button>
+      <button class="btn-danger" type="button" id="confirmDeleteBtn">Избриши</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var currentUser = null, currentProfile = null, allStaff = [];
+var currentReportData = null; // holds last generated report context
+var pendingDeleteId = null;
+var stateHolidays = {}; // { 'YYYY-MM-DD': 'Назив' }
+
+(async function init() {
+  var now = new Date();
+  document.getElementById('reportMonth').value =
+    now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+
+  // Populate year selects (current year ±3)
+  var yr = now.getFullYear();
+  var yHtml = '';
+  for (var y = yr - 2; y <= yr + 2; y++) yHtml += '<option value="' + y + '"' + (y === yr ? ' selected' : '') + '>' + y + '</option>';
+  document.getElementById('holidayYear').innerHTML = yHtml;
+  document.getElementById('viewHolidayYear').innerHTML = yHtml;
+
+  document.getElementById('hamburgerBtn').addEventListener('click', toggleSidebar);
+  document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+  document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+
+  var res = await sb.auth.getSession();
+  if (!res.data || !res.data.session) { window.location.replace('index.html'); return; }
+  currentUser = res.data.session.user;
+  sb.auth.onAuthStateChange(function(ev, s) { if (ev === 'SIGNED_OUT') window.location.replace('index.html'); });
+
+  await loadProfile();
+  if (!currentProfile || currentProfile.role !== 'doctor') {
+    window.location.replace('dashboard.html');
+    return;
+  }
+  await loadStaff();
+  await loadStateHolidays();
+  renderHolidaysList();
+})();
+
+async function loadProfile() {
+  var res = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  if (res.error || !res.data) return;
+  currentProfile = res.data;
+  document.getElementById('sidebarUserName').textContent = res.data.full_name || currentUser.email;
+  document.getElementById('sidebarUserRole').textContent = res.data.role === 'doctor' ? 'Доктор' : 'Медицинска сестра';
+  document.getElementById('avatarInitial').textContent = (res.data.full_name || '?')[0].toUpperCase();
+  document.getElementById('roleBadge').textContent = res.data.role === 'doctor' ? 'Доктор' : 'Мед. сестра';
+}
+
+async function loadStaff() {
+  var res = await sb.from('profiles').select('*').order('full_name');
+  allStaff = res.data || [];
+  var opts = allStaff.map(function(s) {
+    return '<option value="' + s.id + '">' + esc(s.full_name) + ' (' + (s.role === 'doctor' ? 'Доктор' : 'Сестра') + ')</option>';
+  }).join('');
+  document.getElementById('reportEmployee').innerHTML = '<option value="">— Избери вработен —</option>' + opts;
+}
+
+/* ───────────────────────────────────────────────
+   STATE HOLIDAYS (stored in Supabase table: state_holidays)
+   ─────────────────────────────────────────────── */
+async function loadStateHolidays() {
+  stateHolidays = {};
+  var res = await sb.from('state_holidays').select('*');
+  (res.data || []).forEach(function(h) { stateHolidays[h.date] = h.name; });
+}
+
+async function addHoliday() {
+  var date = document.getElementById('holidayDate').value;
+  var name = document.getElementById('holidayName').value.trim();
+  if (!date || !name) { showToast('Внесете датум и назив.', 'error'); return; }
+  var res = await sb.from('state_holidays').upsert({ date: date, name: name }, { onConflict: 'date' });
+  if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); return; }
+  stateHolidays[date] = name;
+  document.getElementById('holidayDate').value = '';
+  document.getElementById('holidayName').value = '';
+  // Sync year selector to match newly added date year
+  var addedYear = date.slice(0, 4);
+  document.getElementById('viewHolidayYear').value = addedYear;
+  renderHolidaysList();
+  showToast('Празникот е зачуван!', 'success');
+}
+
+async function deleteHoliday(date) {
+  var res = await sb.from('state_holidays').delete().eq('date', date);
+  if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); return; }
+  delete stateHolidays[date];
+  renderHolidaysList();
+  showToast('Избришано.', 'success');
+}
+
+function renderHolidaysList() {
+  var year = document.getElementById('viewHolidayYear').value;
+  var el = document.getElementById('holidaysList');
+  var entries = Object.entries(stateHolidays)
+    .filter(function(e) { return e[0].startsWith(year); })
+    .sort(function(a, b) { return a[0].localeCompare(b[0]); });
+  if (!entries.length) {
+    el.innerHTML = '<p style="font-size:.82rem;color:var(--text-light);padding:.5rem 0">Нема внесени празници за ' + year + '.</p>';
+    return;
+  }
+  el.innerHTML = entries.map(function(e) {
+    return '<div class="holiday-item">' +
+      '<div class="holiday-item-info">' +
+        '<div class="holiday-item-name">' + esc(e[1]) + '</div>' +
+        '<div class="holiday-item-date">' + formatDate(e[0]) + '</div>' +
+      '</div>' +
+      '<button class="holiday-del" type="button" onclick="deleteHoliday(\'' + e[0] + '\')" title="Избриши">' +
+        '<svg><use href="#i-trash"/></svg>' +
+      '</button>' +
+    '</div>';
+  }).join('');
+}
+
+/* ───────────────────────────────────────────────
+   REPORT GENERATION
+   ─────────────────────────────────────────────── */
+async function generateReport() {
+  var empId = document.getElementById('reportEmployee').value;
+  var month = document.getElementById('reportMonth').value;
+  if (!empId) { showToast('Изберете вработен.', 'error'); return; }
+  if (!month) { showToast('Изберете месец.', 'error'); return; }
+
+  var btn = document.getElementById('genReportBtn');
+  btn.disabled = true;
+  btn.textContent = 'Вчитување…';
+
+  var parts = month.split('-'), year = parseInt(parts[0]), mo = parseInt(parts[1]);
+  var from = month + '-01';
+  var to = month + '-' + String(new Date(year, mo, 0).getDate()).padStart(2, '0');
+
+  var logsRes = await sb.from('work_logs').select('*').eq('user_id', empId).gte('date', from).lte('date', to).order('date');
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-bar"/></svg> Генерирај';
+
+  if (logsRes.error) { showToast('Грешка: ' + logsRes.error.message, 'error'); return; }
+
+  var staff = allStaff.find(function(s) { return s.id === empId; });
+  var logs = logsRes.data || [];
+
+  // Build a day-indexed map
+  var logMap = {};
+  logs.forEach(function(l) { logMap[l.date] = l; });
+
+  // Summary stats
+  var workLogs = logs.filter(function(l) { return l.log_type === 'work' && l.end_time; });
+  var totalHrs = workLogs.reduce(function(a, l) { return a + calcHours(l.start_time, l.end_time); }, 0);
+  var sickDays = logs.filter(function(l) { return l.log_type === 'sick'; }).length;
+  var holDays  = logs.filter(function(l) { return l.log_type === 'holiday'; }).length;
+
+  function si(id) { return '<div class="stat-icon"><svg viewBox="0 0 24 24"><use href="#i-' + id + '"/></svg></div>'; }
+  document.getElementById('reportStats').innerHTML =
+    '<div class="stat-card">' + si('clock') + '<div class="stat-val">' + Math.round(totalHrs) + '</div><div class="stat-label">Вкупно часови</div></div>' +
+    '<div class="stat-card">' + si('cal') + '<div class="stat-val">' + workLogs.length + '</div><div class="stat-label">Работни денови</div></div>' +
+    '<div class="stat-card">' + si('pulse') + '<div class="stat-val">' + sickDays + '</div><div class="stat-label">Боледување</div></div>' +
+    '<div class="stat-card">' + si('bar') + '<div class="stat-val">' + holDays + '</div><div class="stat-label">Одмор</div></div>';
+
+  document.getElementById('reportCardTitle').textContent =
+    'Преглед – ' + (staff ? staff.full_name : '') + ' / ' + monthNameMk(mo) + ' ' + year;
+
+  // Quick preview table
+  var tbody = document.getElementById('previewTableBody');
+  var daysInMonth = new Date(year, mo, 0).getDate();
+  var rows = '';
+  for (var d = 1; d <= daysInMonth; d++) {
+    var dateStr = year + '-' + String(mo).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    var log = logMap[dateStr];
+    var dow = new Date(dateStr + 'T00:00:00').getDay();
+    var isWeekend = dow === 0 || dow === 6;
+    var isStateHol = !!stateHolidays[dateStr];
+    var typePill = log ? '<span class="pill pill-' + log.log_type + '">' + typeLabelMk(log.log_type) + '</span>' : '';
+    var special = '';
+    if (isStateHol) special = '<span class="pill" style="background:var(--green-light);color:var(--green)">' + esc(stateHolidays[dateStr]) + '</span>';
+    else if (dow === 0) special = '<span class="pill" style="background:#f0f4ff;color:#1e3a8a">Недела</span>';
+    else if (dow === 6) special = '<span class="pill" style="background:#f0f4ff;color:#1e3a8a">Сабота</span>';
+    rows += '<tr style="border-bottom:1px solid rgba(42,122,122,.06)">' +
+      '<td style="padding:.42rem .7rem;font-weight:600;white-space:nowrap">' + formatDate(dateStr) + (special ? ' ' + special : '') + '</td>' +
+      '<td style="padding:.42rem .7rem;text-align:center">' + (log && log.start_time ? log.start_time.slice(0, 5) : '–') + '</td>' +
+      '<td style="padding:.42rem .7rem;text-align:center">' + (log && log.end_time ? log.end_time.slice(0, 5) : '–') + '</td>' +
+      '<td style="padding:.42rem .7rem;text-align:center">' + (log && log.start_time && log.end_time ? calcHours(log.start_time, log.end_time).toFixed(1) + ' ч.' : '–') + '</td>' +
+      '<td style="padding:.42rem .7rem;text-align:center">' + (typePill || '–') + '</td>' +
+    '</tr>';
+  }
+  tbody.innerHTML = rows;
+
+  // Store context for PDF
+  currentReportData = { staff: staff, year: year, mo: mo, logMap: logMap, daysInMonth: daysInMonth, totalHrs: totalHrs, sickDays: sickDays, holDays: holDays, workDays: workLogs.length };
+
+  document.getElementById('reportSummaryArea').style.display = 'block';
+  showToast('Извештајот е генериран!', 'success');
+}
+
+/* ───────────────────────────────────────────────
+   BUILD A4 HTML FOR PDF
+   ─────────────────────────────────────────────── */
+function buildReportHTML() {
+  if (!currentReportData) return;
+  var d = currentReportData;
+  var staff = d.staff, year = d.year, mo = d.mo, logMap = d.logMap;
+
+  // Table rows
+  var tableRows = '';
+  for (var day = 1; day <= d.daysInMonth; day++) {
+    var dateStr = year + '-' + String(mo).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+    var log = logMap[dateStr];
+    var dt = new Date(dateStr + 'T00:00:00');
+    var dow = dt.getDay(); // 0=Sun,6=Sat
+    var isStateHol = !!stateHolidays[dateStr];
+    var isSick    = log && log.log_type === 'sick';
+    var isHol     = log && log.log_type === 'holiday';
+    var isSat     = dow === 6;
+    var isSun     = dow === 0;
+
+    var dateCell = '<td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.<br/>' + dayNameMkShort(dow) + '</td>';
+
+    if (isSick) {
+      tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.<br/>' + dayNameMkShort(dow) + '</td>' +
+        '<td colspan="5" class="merged-sick">Боледување</td></tr>';
+      continue;
+    }
+    if (isHol) {
+      tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.<br/>' + dayNameMkShort(dow) + '</td>' +
+        '<td colspan="5" class="merged-holiday">Годишен одмор</td></tr>';
+      continue;
+    }
+    if (isStateHol) {
+      tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.<br/>' + dayNameMkShort(dow) + '</td>' +
+        '<td colspan="5" class="merged-state-holiday">' + esc(stateHolidays[dateStr]) + '</td></tr>';
+      continue;
+    }
+    if (isSun) {
+      tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.<br/>' + dayNameMkShort(dow) + '</td>' +
+        '<td colspan="5" class="merged-sunday">Недела</td></tr>';
+      continue;
+    }
+    if (isSat) {
+      tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.<br/>' + dayNameMkShort(dow) + '</td>' +
+        '<td colspan="5" class="merged-saturday">Сабота</td></tr>';
+      continue;
+    }
+
+    // Regular day
+    if (!log || !log.start_time) {
+      tableRows += '<tr>' + dateCell + '<td></td><td></td><td></td><td></td><td></td></tr>';
+      continue;
+    }
+
+    var hrs = log.end_time ? calcHours(log.start_time, log.end_time) : null;
+    var hrsDisplay = hrs !== null ? hrs.toFixed(1) : '–';
+
+    // Night work: any overlap with 23:00–05:00
+    var isNight = isNightWork(log.start_time, log.end_time);
+    // Work on state holiday
+    var isWorkOnHol = isStateHol; // if there's a log AND it's a state holiday — but we handle merged above, so if we reach here it's not a holiday w/o a log
+    // Work on sunday
+    var isWorkOnSun = (dow === 0) && log.log_type === 'work';
+
+    tableRows += '<tr>' + dateCell +
+      '<td>' + (log.start_time ? log.start_time.slice(0,5) : '') + '</td>' +
+      '<td>' + (log.end_time ? log.end_time.slice(0,5) : '') + '</td>' +
+      '<td>' + hrsDisplay + '</td>' +
+      '<td class="' + (isWorkOnHol ? 'td-yn-yes' : 'td-yn-no') + '">' + (isWorkOnHol ? 'Да' : 'Не') + '</td>' +
+      '<td class="' + (isWorkOnSun ? 'td-yn-yes' : 'td-yn-no') + '">' + (isWorkOnSun ? 'Да' : 'Не') + '</td>' +
+      '<td class="' + (isNight ? 'td-yn-yes' : 'td-yn-no') + '">' + (isNight ? 'Да' : 'Не') + '</td>' +
+      '</tr>';
+  }
+
+  var genDate = new Date();
+  var genDateStr = String(genDate.getDate()).padStart(2,'0') + '.' + String(genDate.getMonth()+1).padStart(2,'0') + '.' + genDate.getFullYear();
+
+  document.getElementById('reportPreview').innerHTML =
+    // Header
+    '<div class="rp-header">' +
+      '<img class="rp-logo" src="logo_long_reports.png" alt="Оаза Медика" onerror="this.style.opacity=0"/>' +
+      '<div class="rp-header-right">ПЗУ Оаза Медика<br/>ул. 2 бр. 105, лок. 10, Илинден<br/>Датум на печатење: ' + genDateStr + '</div>' +
+    '</div>' +
+
+    // Title block
+    '<div class="rp-title-block">' +
+      '<div class="rp-title">И З В Е Ш Т А Ј</div>' +
+      '<div class="rp-subtitle">за редовноста на вработени</div>' +
+      '<div class="rp-meta">' +
+        '<strong>Вработен/а:</strong> ' + esc(staff ? staff.full_name : '–') + '<br/>' +
+        '<strong>Работно место:</strong> ' + esc(staff && staff.job_title ? staff.job_title : '–') + '<br/>' +
+        '<strong>Период:</strong> ' + monthNameMk(mo) + ' ' + year +
+      '</div>' +
+    '</div>' +
+
+    // Table
+    '<div class="rp-table-wrap">' +
+      '<table class="rp-table">' +
+        '<thead><tr>' +
+          '<th style="width:60px">Дата</th>' +
+          '<th>Пристигнување</th>' +
+          '<th>Заминување</th>' +
+          '<th>Вкупно ч.</th>' +
+          '<th>Работа на празник</th>' +
+          '<th>Работа во недела</th>' +
+          '<th>Ноќна работа</th>' +
+        '</tr></thead>' +
+        '<tbody>' + tableRows + '</tbody>' +
+      '</table>' +
+    '</div>' +
+
+    // Summary
+    '<div class="rp-summary">' +
+      '<strong>Резиме:</strong>&nbsp;&nbsp;' +
+      'Работни денови: <strong>' + d.workDays + '</strong>&nbsp;&nbsp;|&nbsp;&nbsp;' +
+      'Вкупно часови: <strong>' + d.totalHrs.toFixed(1) + ' ч.</strong>&nbsp;&nbsp;|&nbsp;&nbsp;' +
+      'Боледување: <strong>' + d.sickDays + ' ден.</strong>&nbsp;&nbsp;|&nbsp;&nbsp;' +
+      'Годишен одмор: <strong>' + d.holDays + ' ден.</strong>' +
+    '</div>' +
+
+    // Signature
+    '<div class="rp-signature">' +
+      '<div class="rp-sign-block"><div style="height:16mm"></div><div class="rp-sign-line">Потпис на вработен/а</div></div>' +
+      '<div class="rp-sign-block"><div style="height:16mm"></div><div class="rp-sign-line">Одговорно лице / Доктор</div></div>' +
+    '</div>' +
+
+    // Footer
+    '<div class="rp-footer">' +
+      '<span>ПЗУ Оаза Медика · ул. 2 бр. 105, лок. 10, Илинден</span>' +
+      '<span>Генерирано: ' + genDateStr + '</span>' +
+    '</div>';
+}
+
+function isNightWork(start, end) {
+  if (!start || !end) return false;
+  // Night hours: 23:00 – 05:00 (next day)
+  var sp = start.split(':'), ep = end.split(':');
+  var sMin = parseInt(sp[0]) * 60 + parseInt(sp[1]);
+  var eMin = parseInt(ep[0]) * 60 + parseInt(ep[1]);
+  var nightStart = 23 * 60; // 1380
+  var nightEnd   = 5  * 60; // 300
+  // Covers any minute in [0,300) or [1380,1440)
+  if (sMin >= nightStart) return true; // starts after 23:00
+  if (eMin <= nightEnd && eMin > 0) return true;   // ends before 05:00 (next day)
+  if (eMin > nightStart) return true; // ends after 23:00
+  return false;
+}
+
+function previewReport() {
+  if (!currentReportData) { showToast('Прво генерирајте извештај.', 'error'); return; }
+  buildReportHTML();
+  document.getElementById('pdfOverlayTitle').textContent =
+    'Преглед – ' + (currentReportData.staff ? currentReportData.staff.full_name : '') +
+    ' / ' + monthNameMk(currentReportData.mo) + ' ' + currentReportData.year;
+  document.getElementById('pdfOverlay').classList.add('open');
+}
+
+function closePDFOverlay() {
+  document.getElementById('pdfOverlay').classList.remove('open');
+}
+
+function downloadReportPDF() {
+  if (!currentReportData) { showToast('Прво генерирајте извештај.', 'error'); return; }
+  buildReportHTML();
+  var element = document.getElementById('reportPreview');
+  var fileName = 'Izvestaj_' +
+    (currentReportData.staff ? currentReportData.staff.full_name.replace(/\s+/g, '_') : 'vraboten') +
+    '_' + currentReportData.year + '_' + String(currentReportData.mo).padStart(2, '0') + '.pdf';
+  var opt = {
+    margin:       [0, 0, 0, 0],
+    filename:     fileName,
+    image:        { type: 'jpeg', quality: 0.97 },
+    html2canvas:  { scale: 2, useCORS: true, logging: false },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak:    { mode: 'avoid-all' }
+  };
+  showToast('Подготвување на PDF…', 'success');
+  html2pdf().set(opt).from(element).save().then(function() {
+    showToast('PDF е преземен!', 'success');
+  });
+}
+
+/* ───────────────────────────────────────────────
+   SAVED REPORTS (stored in Supabase: report_records)
+   ─────────────────────────────────────────────── */
+async function saveReportRecord() {
+  if (!currentReportData) { showToast('Прво генерирајте извештај.', 'error'); return; }
+  var d = currentReportData;
+  var res = await sb.from('report_records').upsert({
+    employee_id: d.staff.id,
+    year: d.year,
+    month: d.mo,
+    work_days: d.workDays,
+    total_hours: parseFloat(d.totalHrs.toFixed(2)),
+    sick_days: d.sickDays,
+    holiday_days: d.holDays,
+    generated_by: currentUser.id,
+    generated_at: new Date().toISOString()
+  }, { onConflict: 'employee_id,year,month' });
+  if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); return; }
+  showToast('Записот е зачуван во базата!', 'success');
+}
+
+async function loadSavedReports() {
+  var el = document.getElementById('savedReportsList');
+  el.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
+  var res = await sb.from('report_records')
+    .select('*, profiles!report_records_employee_id_fkey(full_name,job_title)')
+    .order('year', { ascending: false })
+    .order('month', { ascending: false });
+  var data = res.data || [];
+  if (!data.length) { el.innerHTML = '<p style="font-size:.82rem;color:var(--text-light);padding:.5rem 0">Нема зачувани извештаи.</p>'; return; }
+  el.innerHTML = data.map(function(r) {
+    var name = r.profiles ? r.profiles.full_name : '–';
+    var jobTitle = r.profiles ? (r.profiles.job_title || '') : '';
+    return '<div class="report-item">' +
+      '<div class="report-item-info">' +
+        '<div class="report-item-title">' + esc(name) + ' – ' + monthNameMk(r.month) + ' ' + r.year + '</div>' +
+        '<div class="report-item-meta">' + esc(jobTitle) + ' · ' + r.work_days + ' работни денови · ' + r.total_hours + ' ч. · Боледување: ' + r.sick_days + ' · Одмор: ' + r.holiday_days + '</div>' +
+      '</div>' +
+      '<div class="report-item-actions">' +
+        '<button class="btn-secondary" type="button" onclick="regenFromRecord(\'' + r.employee_id + '\',\'' + r.year + '-' + String(r.month).padStart(2,'0') + '\')" title="Регенерирај и прегледај">' +
+          '<svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-eye"/></svg>' +
+        '</button>' +
+        '<button class="btn-danger" type="button" onclick="confirmDelete(\'' + r.id + '\')" title="Избриши">' +
+          '<svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-trash"/></svg>' +
+        '</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function regenFromRecord(empId, month) {
+  document.getElementById('reportEmployee').value = empId;
+  document.getElementById('reportMonth').value = month;
+  switchTab('generate');
+  generateReport();
+}
+
+function confirmDelete(id) {
+  pendingDeleteId = id;
+  document.getElementById('confirmDeleteBtn').onclick = async function() {
+    if (!pendingDeleteId) return;
+    var res = await sb.from('report_records').delete().eq('id', pendingDeleteId);
+    if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); return; }
+    closeModal('confirmDeleteModal');
+    pendingDeleteId = null;
+    showToast('Избришано.', 'success');
+    loadSavedReports();
+  };
+  openModal('confirmDeleteModal');
+}
+
+/* ───────────────────────────────────────────────
+   UI HELPERS
+   ─────────────────────────────────────────────── */
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+  if (name === 'saved') loadSavedReports();
+}
+
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('show'); }
+function closeSidebar()  { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('show'); }
+function openModal(id)   { document.getElementById(id).classList.add('open'); }
+function closeModal(id)  { document.getElementById(id).classList.remove('open'); }
+async function handleLogout() {
+  document.getElementById('logoutBtn').disabled = true;
+  try { await sb.auth.signOut(); } catch(e) {}
+  window.location.replace('index.html');
+}
+
+function calcHours(start, end) {
+  if (!start || !end) return 0;
+  var sp = start.split(':'), ep = end.split(':');
+  return ((parseInt(ep[0]) * 60 + parseInt(ep[1])) - (parseInt(sp[0]) * 60 + parseInt(sp[1]))) / 60;
+}
+function formatDate(d) {
+  if (!d) return '–';
+  var dt = new Date(d + 'T00:00:00');
+  return String(dt.getDate()).padStart(2,'0') + '.' + String(dt.getMonth()+1).padStart(2,'0') + '.' + dt.getFullYear();
+}
+function typeLabelMk(t) { return { work:'Работа', sick:'Боледување', holiday:'Одмор' }[t] || t; }
+function monthNameMk(m) {
+  return ['','јануари','февруари','март','април','мај','јуни','јули','август','септември','октомври','ноември','декември'][m] || m;
+}
+function dayNameMkShort(d) {
+  return ['Нед','Пон','Вто','Сре','Чет','Пет','Саб'][d] || '';
+}
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function showToast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (type ? ' ' + type : '');
+  clearTimeout(t._tid);
+  t._tid = setTimeout(function() { t.className = type || ''; }, 3500);
+}
+</script>
+</body>
+</html>
