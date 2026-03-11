@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Смени – Оаза Медика</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{--teal:#2a7a7a;--teal-dark:#1d5e5e;--green:#1a5c2a;--green-light:#e8f5ec;--teal-light:#e4f2f2;--cream:#f9faf8;--text:#1c2a22;--text-mid:#3d5046;--text-light:#6b8070;--white:#fff;--radius:14px;--sidebar:240px;--amber:#f59e0b;--amber-light:#fef9ec;--red:#c0392b;--red-light:#fdf0ee}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Lato',sans-serif;background:var(--cream);color:var(--text);line-height:1.6;display:flex;min-height:100vh}
+    h1,h2,h3,h4{font-family:'Playfair Display',serif;line-height:1.2}
+
+    /* ── SIDEBAR ── */
+    .sidebar{width:var(--sidebar);background:linear-gradient(165deg,var(--teal-dark) 0%,var(--green) 70%,#0f3d1c 100%);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .3s;overflow:hidden}
+    .sidebar-logo{padding:1rem 1.1rem .85rem;display:flex;align-items:center;gap:9px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .sidebar-logo img{height:34px;width:auto;filter:brightness(0) invert(1);opacity:.92;flex-shrink:0}
+    .sidebar-logo-text{font-size:.6rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+    .sidebar-user{margin:.65rem .85rem .4rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:.6rem .8rem;display:flex;align-items:center;gap:8px;flex-shrink:0}
+    .user-avatar{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0}
+    .user-info{flex:1;overflow:hidden}
+    .user-name{font-size:.78rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .user-role{font-size:.62rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em}
+    nav.sidebar-nav{flex:1;padding:.3rem 0;overflow:hidden}
+    .nav-section-label{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.33);padding:.55rem 1.1rem .2rem}
+    .nav-link{display:flex;align-items:center;gap:9px;padding:.56rem 1.1rem;text-decoration:none;font-size:.81rem;font-weight:600;color:rgba(255,255,255,.65);transition:all .2s;border-left:3px solid transparent;white-space:nowrap}
+    .nav-link .nav-icon{width:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .nav-link .nav-icon svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+    .nav-link:hover{color:#fff;background:rgba(255,255,255,.07)}
+    .nav-link.active{color:#fff;background:rgba(255,255,255,.12);border-left-color:rgba(255,255,255,.6)}
+    .sidebar-ext{padding:.45rem .85rem .2rem;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .ext-label{font-size:.57rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:.38rem;padding-left:.18rem}
+    .btn-ext{width:100%;padding:.45rem .65rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:rgba(255,255,255,.72);font-family:'Lato',sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;text-decoration:none;margin-bottom:.35rem}
+    .btn-ext:hover{background:rgba(255,255,255,.15);color:#fff}
+    .btn-ext-icon{width:18px;height:18px;flex-shrink:0;object-fit:contain;filter:brightness(0) invert(1);opacity:.85}
+    .btn-ext-arrow{margin-left:auto;opacity:.4}.btn-ext-arrow svg{width:10px;height:10px;stroke:#fff;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    .sidebar-bottom{padding:.45rem .85rem .7rem;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .btn-logout{width:100%;padding:.52rem .85rem;background:rgba(255,80,80,.15);border:1px solid rgba(255,100,100,.25);border-radius:9px;color:rgba(255,200,200,.9);font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s}
+    .btn-logout:hover{background:rgba(192,57,43,.6);color:#fff}
+    .btn-logout svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+
+    /* ── TOPBAR ── */
+    .topbar{position:fixed;top:0;left:var(--sidebar);right:0;height:56px;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-bottom:1px solid rgba(42,122,122,.1);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;z-index:100}
+    .topbar-left{display:flex;align-items:center;gap:.7rem}
+    .hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;color:var(--teal)}
+    .hamburger-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-width:2}
+    .topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--text)}
+    .topbar-right{display:flex;align-items:center;gap:.75rem}
+    .topbar-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green);padding:.25rem .75rem;border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    .btn-back{display:inline-flex;align-items:center;gap:6px;padding:.45rem .9rem;background:var(--teal-light);color:var(--teal);border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;text-decoration:none;transition:all .2s}
+    .btn-back:hover{background:var(--teal);color:#fff}
+    .btn-back svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+
+    /* ── MAIN ── */
+    .main{margin-left:var(--sidebar);margin-top:56px;padding:1.5rem;flex:1;min-width:0}
+    .section-header{margin-bottom:1.2rem}
+    .section-label{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:.25rem}
+    .section-title{font-size:clamp(1.4rem,2.5vw,1.9rem);color:var(--text)}
+    .section-sub{font-size:.88rem;color:var(--text-light);font-weight:300;margin-top:.25rem}
+
+    /* ── TABS ── */
+    .tabs{display:flex;gap:.35rem;margin-bottom:1.2rem;flex-wrap:wrap}
+    .tab-btn{padding:.5rem 1.1rem;border:2px solid rgba(42,122,122,.15);border-radius:50px;font-family:'Lato',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;background:var(--white);color:var(--text-mid);transition:all .2s}
+    .tab-btn.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+    .tab-btn:hover:not(.active){border-color:var(--teal);color:var(--teal)}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block;animation:fadeIn .2s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+    /* ── CARD ── */
+    .card{background:var(--white);border-radius:var(--radius);border:1px solid rgba(42,122,122,.08);padding:1.3rem;margin-bottom:1.2rem}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid rgba(42,122,122,.08);flex-wrap:wrap;gap:.5rem}
+    .card-title{font-family:'Playfair Display',serif;font-size:1rem;color:var(--text)}
+
+    /* ── FORMS ── */
+    .f-group{margin-bottom:.9rem}
+    .f-label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);margin-bottom:.32rem}
+    .f-input{width:100%;padding:.65rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.88rem;color:var(--text);background:var(--cream);outline:none;transition:border-color .2s}
+    .f-input:focus{border-color:var(--teal);background:var(--white)}
+    .f-select{width:100%;padding:.65rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.88rem;color:var(--text);background:var(--cream);outline:none}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+    .form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem}
+    .toggle-row{display:flex;align-items:center;gap:.65rem;padding:.65rem .9rem;background:var(--cream);border:2px solid rgba(42,122,122,.15);border-radius:9px}
+    .toggle-label{flex:1;font-size:.88rem;font-weight:600;color:var(--text-mid)}
+    .toggle{position:relative;width:38px;height:22px;flex-shrink:0}
+    .toggle input{opacity:0;width:0;height:0;position:absolute}
+    .toggle-slider{position:absolute;inset:0;background:#cdd8ce;border-radius:50px;cursor:pointer;transition:background .2s}
+    .toggle-slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+    .toggle input:checked + .toggle-slider{background:var(--teal)}
+    .toggle input:checked + .toggle-slider::before{transform:translateX(16px)}
+
+    /* ── BUTTONS ── */
+    .btn-primary{padding:.65rem 1.2rem;background:var(--teal);color:#fff;border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.87rem;font-weight:700;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:7px}
+    .btn-primary:hover{background:var(--teal-dark)}
+    .btn-secondary{padding:.5rem .85rem;background:var(--teal-light);color:var(--teal);border:1px solid rgba(42,122,122,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+    .btn-secondary:hover{background:var(--teal);color:#fff}
+    .btn-danger{padding:.5rem .85rem;background:var(--red-light);color:var(--red);border:1px solid rgba(192,57,43,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+    .btn-danger:hover{background:var(--red);color:#fff}
+
+    /* ── SHIFT CHIPS ── */
+    .shift-chip{display:inline-flex;align-items:center;gap:6px;padding:.3rem .75rem;border-radius:50px;font-size:.78rem;font-weight:700;border:2px solid transparent}
+    .shift-swatch{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+    /* ── SHIFT CARDS LIST ── */
+    .shift-def-list{display:flex;flex-direction:column;gap:.6rem}
+    .shift-def-item{display:flex;align-items:center;gap:.85rem;padding:.75rem 1rem;background:var(--cream);border-radius:11px;border:1px solid rgba(42,122,122,.09)}
+    .shift-def-swatch{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+    .shift-def-info{flex:1;min-width:0}
+    .shift-def-name{font-size:.9rem;font-weight:700;color:var(--text)}
+    .shift-def-time{font-size:.75rem;color:var(--text-light)}
+    .shift-def-actions{display:flex;gap:.35rem}
+
+    /* ── WORKER ASSIGNMENT CARDS ── */
+    .worker-assign-list{display:flex;flex-direction:column;gap:.65rem}
+    .worker-assign-item{background:var(--cream);border-radius:12px;border:1px solid rgba(42,122,122,.09);padding:.85rem 1rem}
+    .worker-assign-top{display:flex;align-items:center;gap:.75rem;margin-bottom:.55rem}
+    .worker-assign-avatar{width:32px;height:32px;border-radius:50%;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.88rem;font-weight:700;color:var(--teal);flex-shrink:0}
+    .worker-assign-name{font-size:.88rem;font-weight:700;color:var(--text)}
+    .worker-assign-role{font-size:.7rem;color:var(--text-light)}
+    .worker-assign-body{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+    .worker-no-shift{font-size:.8rem;color:var(--text-light);font-style:italic}
+
+    /* ── EXCEPTION LIST ── */
+    .exc-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .9rem;background:var(--cream);border-radius:10px;border:1px solid rgba(42,122,122,.08);margin-bottom:.4rem;flex-wrap:wrap}
+    .exc-item-info{flex:1;min-width:0}
+    .exc-item-name{font-size:.87rem;font-weight:700;color:var(--text)}
+    .exc-item-meta{font-size:.73rem;color:var(--text-light)}
+
+    /* ── CALENDAR VIEWER ── */
+    .cal-controls{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;flex-wrap:wrap}
+    .cal-nav{display:flex;align-items:center;gap:.4rem}
+    .cal-nav-btn{width:30px;height:30px;border-radius:50%;background:var(--teal-light);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--teal);transition:all .2s;flex-shrink:0}
+    .cal-nav-btn:hover{background:var(--teal);color:#fff}
+    .cal-nav-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    .cal-period{font-family:'Playfair Display',serif;font-size:1rem;color:var(--text);min-width:160px;text-align:center}
+    .view-toggle{display:flex;border:2px solid rgba(42,122,122,.15);border-radius:50px;overflow:hidden;background:var(--white)}
+    .view-toggle button{padding:.35rem .85rem;font-family:'Lato',sans-serif;font-size:.78rem;font-weight:700;border:none;cursor:pointer;background:none;color:var(--text-mid);transition:all .2s}
+    .view-toggle button.active{background:var(--teal);color:#fff}
+    .cal-filter{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-left:auto}
+
+    /* weekly grid */
+    .week-grid{display:grid;grid-template-columns:140px repeat(7,1fr);border-radius:12px;overflow:hidden;border:1px solid rgba(42,122,122,.1)}
+    .week-grid-header{background:var(--teal-dark);color:#fff;padding:.55rem .5rem;font-size:.7rem;font-weight:700;text-align:center;letter-spacing:.04em}
+    .week-grid-label{background:var(--teal-dark);color:rgba(255,255,255,.7);padding:.55rem .7rem;font-size:.75rem;font-weight:600;display:flex;align-items:center}
+    .week-cell{padding:.6rem .5rem;text-align:center;font-size:.75rem;border-bottom:1px solid rgba(42,122,122,.06);border-right:1px solid rgba(42,122,122,.06);min-height:52px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px}
+    .week-cell.weekend{background:rgba(42,122,122,.03)}
+    .week-cell.holiday-col{background:rgba(245,158,11,.05)}
+    .week-cell.today-col{background:rgba(42,122,122,.07)}
+    .week-name-cell{padding:.6rem .7rem;font-size:.78rem;font-weight:600;color:var(--text-mid);border-bottom:1px solid rgba(42,122,122,.06);display:flex;align-items:center}
+    .shift-badge{display:inline-flex;align-items:center;gap:4px;padding:.18rem .5rem;border-radius:6px;font-size:.7rem;font-weight:700;line-height:1.3}
+    .day-off-badge{font-size:.68rem;color:var(--text-light);font-style:italic}
+    .exc-badge{font-size:.65rem;padding:.12rem .42rem;border-radius:5px;background:var(--amber-light);color:#92400e;font-weight:700}
+
+    /* monthly grid */
+    .month-grid-wrap{overflow-x:auto}
+    .month-grid{min-width:700px;border:1px solid rgba(42,122,122,.1);border-radius:12px;overflow:hidden}
+    .month-header-row{display:grid;grid-template-columns:repeat(7,1fr);background:var(--teal-dark)}
+    .month-header-cell{color:rgba(255,255,255,.8);font-size:.68rem;font-weight:700;letter-spacing:.05em;text-align:center;padding:.45rem}
+    .month-body{display:grid;grid-template-columns:repeat(7,1fr)}
+    .month-day{min-height:72px;padding:.4rem .45rem;border-bottom:1px solid rgba(42,122,122,.07);border-right:1px solid rgba(42,122,122,.07);background:var(--white);font-size:.72rem}
+    .month-day.empty{background:var(--cream)}
+    .month-day.weekend{background:#f5faf5}
+    .month-day.holiday-day{background:rgba(245,158,11,.06)}
+    .month-day.today{background:rgba(42,122,122,.07)}
+    .month-day-num{font-size:.75rem;font-weight:700;color:var(--text-mid);margin-bottom:.25rem}
+    .month-day.today .month-day-num{background:var(--teal);color:#fff;display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;font-size:.68rem}
+    .month-shift-list{display:flex;flex-direction:column;gap:2px}
+    .month-shift-entry{font-size:.65rem;font-weight:700;padding:.1rem .3rem;border-radius:4px}
+
+    /* LEGEND */
+    .legend{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:.9rem;padding:.7rem .9rem;background:var(--white);border-radius:10px;border:1px solid rgba(42,122,122,.08)}
+    .legend-item{display:flex;align-items:center;gap:.35rem;font-size:.73rem;color:var(--text-mid)}
+    .legend-swatch{width:10px;height:10px;border-radius:3px}
+
+    /* ── TABLE ── */
+    .log-table-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;font-size:.83rem}
+    thead th{text-align:left;padding:.5rem .8rem;font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);border-bottom:2px solid rgba(42,122,122,.1);white-space:nowrap}
+    tbody tr{border-bottom:1px solid rgba(42,122,122,.06);transition:background .15s}
+    tbody tr:hover{background:var(--cream)}
+    tbody td{padding:.6rem .8rem;color:var(--text-mid);vertical-align:middle}
+    .action-btns{display:flex;gap:.3rem}
+    .action-btns button{padding:.25rem .5rem;border-radius:6px;border:none;cursor:pointer;display:flex;align-items:center;transition:all .15s}
+    .action-btns button svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+    .btn-edit-sm{background:var(--teal-light);color:var(--teal)}
+    .btn-edit-sm:hover{background:var(--teal);color:#fff}
+    .btn-del-sm{background:var(--red-light);color:var(--red)}
+    .btn-del-sm:hover{background:var(--red);color:#fff}
+
+    /* ── ROTATION BUILDER ── */
+    .rotation-slots{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem}
+    .rotation-slot{display:inline-flex;align-items:center;gap:5px;padding:.28rem .65rem;border-radius:8px;background:var(--teal-light);border:2px solid var(--teal);font-size:.78rem;font-weight:700;color:var(--teal)}
+    .rotation-slot-remove{background:none;border:none;cursor:pointer;color:var(--teal);display:flex;align-items:center;padding:0;transition:color .15s;font-size:.9rem;line-height:1}
+    .rotation-slot-remove:hover{color:var(--red)}
+    .rotation-empty{font-size:.8rem;color:var(--text-light);font-style:italic}
+
+    /* ── SKELETON / TOAST / MODAL ── */
+    .skeleton{background:linear-gradient(90deg,#e8eee9 25%,#d4ddd5 50%,#e8eee9 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;height:36px;margin-bottom:.45rem}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    #toast{position:fixed;bottom:1.2rem;right:1.2rem;z-index:9999;background:var(--text);color:#fff;padding:.78rem 1.2rem;border-radius:11px;font-size:.84rem;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.22,.68,0,1.1);max-width:320px;pointer-events:none}
+    #toast.show{transform:translateY(0);opacity:1}
+    #toast.success{background:var(--teal-dark)}
+    #toast.error{background:var(--red)}
+    .modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--white);border-radius:18px;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.2)}
+    .modal-header{padding:1.1rem 1.3rem .8rem;border-bottom:1px solid rgba(42,122,122,.08);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:1}
+    .modal-header h3{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--text)}
+    .modal-close{background:var(--teal-light);border:none;cursor:pointer;width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal);transition:background .2s;flex-shrink:0}
+    .modal-close:hover{background:var(--teal);color:#fff}
+    .modal-close svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    .modal-body{padding:1.1rem 1.3rem}
+    .modal-footer{padding:.6rem 1.3rem 1.1rem;border-top:1px solid rgba(42,122,122,.08);display:flex;gap:.6rem;justify-content:flex-end;flex-wrap:wrap}
+
+    /* ── TWO COL ── */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+
+    /* ── SIDEBAR MOBILE ── */
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:199;opacity:0;pointer-events:none;transition:opacity .3s}
+    .sidebar-overlay.show{opacity:1;pointer-events:auto}
+
+    @media(max-width:960px){
+      .sidebar{width:260px;transform:translateX(-100%);display:flex}
+      .sidebar.open{transform:translateX(0)}
+      .sidebar-overlay{display:block}
+      .topbar{left:0}
+      .main{margin-left:0;padding:1rem}
+      .hamburger-btn{display:block}
+      .two-col{grid-template-columns:1fr}
+      .form-row,.form-row-3{grid-template-columns:1fr}
+    }
+    @media(max-width:480px){
+      .main{padding:.8rem}
+      .tabs{gap:.2rem}
+      .tab-btn{font-size:.76rem;padding:.42rem .8rem}
+    }
+  </style>
+</head>
+<body>
+
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-home"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+  <symbol id="i-clock"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-tasks"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
+  <symbol id="i-users"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-bar"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+  <symbol id="i-gear"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+  <symbol id="i-edit"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+  <symbol id="i-trash"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></symbol>
+  <symbol id="i-plus"   viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="i-check"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-x"      viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+  <symbol id="i-menu"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+  <symbol id="i-ext"    viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+  <symbol id="i-chev-l" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></symbol>
+  <symbol id="i-back"   viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></symbol>
+</svg>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <a href="dashboard.html" class="sidebar-logo">
+    <img src="logo_header.png" alt="Оаза Медика" onerror="this.style.display='none'"/>
+    <span class="sidebar-logo-text">Портал за вработени</span>
+  </a>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="avatarInitial">–</div>
+    <div class="user-info">
+      <div class="user-name" id="sidebarUserName">…</div>
+      <div class="user-role" id="sidebarUserRole">Доктор</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Мени</div>
+    <a class="nav-link" href="dashboard.html"><span class="nav-icon"><svg><use href="#i-home"/></svg></span>Контролна табла</a>
+    <a class="nav-link active" href="work-hours.html"><span class="nav-icon"><svg><use href="#i-clock"/></svg></span>Работни часови</a>
+    <a class="nav-link" href="tasks.html"><span class="nav-icon"><svg><use href="#i-tasks"/></svg></span>Задачи</a>
+    <div class="nav-section-label">Доктор</div>
+    <a class="nav-link" href="dashboard.html#team"><span class="nav-icon"><svg><use href="#i-users"/></svg></span>Тим – преглед</a>
+    <a class="nav-link" href="reports.html"><span class="nav-icon"><svg><use href="#i-bar"/></svg></span>Извештаи</a>
+    <a class="nav-link" href="dashboard.html#admin"><span class="nav-icon"><svg><use href="#i-gear"/></svg></span>Управување со тим</a>
+  </nav>
+  <div class="sidebar-ext">
+    <div class="ext-label">Надворешни портали</div>
+    <a class="btn-ext" href="https://portal.fzo.org.mk/" target="_blank" rel="noopener">
+      <img class="btn-ext-icon" src="fzom.png" alt="" onerror="this.style.display='none'"/>Портал на ФЗОМ
+      <span class="btn-ext-arrow"><svg><use href="#i-ext"/></svg></span>
+    </a>
+    <a class="btn-ext" href="https://app.helio.mk/" target="_blank" rel="noopener">
+      <img class="btn-ext-icon" src="helio.png" alt="" onerror="this.style.display='none'"/>Хелио Пациенти
+      <span class="btn-ext-arrow"><svg><use href="#i-ext"/></svg></span>
+    </a>
+  </div>
+  <div class="sidebar-bottom">
+    <button class="btn-logout" id="logoutBtn" type="button"><svg><use href="#i-logout"/></svg>Одјавете се</button>
+  </div>
+</aside>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="hamburger-btn" id="hamburgerBtn" type="button"><svg><use href="#i-menu"/></svg></button>
+    <div class="topbar-title">Управување со смени</div>
+  </div>
+  <div class="topbar-right">
+    <a class="btn-back" href="work-hours.html"><svg><use href="#i-back"/></svg>Назад кон работни часови</a>
+    <span class="topbar-badge">Доктор</span>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="section-header">
+    <div class="section-label">Распоред</div>
+    <h2 class="section-title">Управување со смени</h2>
+    <p class="section-sub">Дефинирајте смени, доделувајте ги на вработени и следете го распоредот</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-defs"    onclick="switchTab('defs')">Смени</button>
+    <button class="tab-btn"        id="tab-assign"  onclick="switchTab('assign')">Доделување</button>
+    <button class="tab-btn"        id="tab-exc"     onclick="switchTab('exc')">Исклучоци</button>
+    <button class="tab-btn"        id="tab-viewer"  onclick="switchTab('viewer')">Распоред</button>
+  </div>
+
+  <!-- ════════ TAB: СМЕНИ ДЕФИНИЦИИ ════════ -->
+  <div class="tab-panel active" id="panel-defs">
+    <div class="two-col">
+      <!-- Form -->
+      <div class="card">
+        <div class="card-header"><span class="card-title" id="defFormTitle">Нова смена</span></div>
+        <input type="hidden" id="defEditId"/>
+        <div class="f-group"><label class="f-label">Назив на смената</label><input type="text" id="defName" class="f-input" placeholder="пр. Прва смена"/></div>
+        <div class="form-row">
+          <div class="f-group"><label class="f-label">Почеток</label><input type="time" id="defStart" class="f-input" value="07:30"/></div>
+          <div class="f-group"><label class="f-label">Крај</label><input type="time" id="defEnd" class="f-input" value="15:00"/></div>
+        </div>
+        <div class="f-group">
+          <label class="f-label">Боја</label>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap" id="colorPicker">
+            <div class="color-opt" data-color="#2a7a7a" style="width:26px;height:26px;border-radius:50%;background:#2a7a7a;cursor:pointer;border:3px solid #2a7a7a"></div>
+            <div class="color-opt" data-color="#1a5c2a" style="width:26px;height:26px;border-radius:50%;background:#1a5c2a;cursor:pointer;border:3px solid transparent"></div>
+            <div class="color-opt" data-color="#c0392b" style="width:26px;height:26px;border-radius:50%;background:#c0392b;cursor:pointer;border:3px solid transparent"></div>
+            <div class="color-opt" data-color="#7c3aed" style="width:26px;height:26px;border-radius:50%;background:#7c3aed;cursor:pointer;border:3px solid transparent"></div>
+            <div class="color-opt" data-color="#0369a1" style="width:26px;height:26px;border-radius:50%;background:#0369a1;cursor:pointer;border:3px solid transparent"></div>
+            <div class="color-opt" data-color="#b45309" style="width:26px;height:26px;border-radius:50%;background:#b45309;cursor:pointer;border:3px solid transparent"></div>
+          </div>
+          <input type="hidden" id="defColor" value="#2a7a7a"/>
+        </div>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+          <button class="btn-primary" type="button" onclick="saveShiftDef()">
+            <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2.5" viewBox="0 0 24 24"><use href="#i-check"/></svg>Зачувај
+          </button>
+          <button class="btn-secondary" type="button" id="cancelDefBtn" onclick="resetDefForm()" style="display:none">Откажи</button>
+        </div>
+      </div>
+      <!-- List -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Дефинирани смени</span></div>
+        <div id="shiftDefList"><div class="skeleton"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ TAB: ДОДЕЛУВАЊЕ ════════ -->
+  <div class="tab-panel" id="panel-assign">
+    <div class="two-col">
+      <!-- Assignment form -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Додели смена на вработен</span></div>
+        <div class="f-group"><label class="f-label">Вработен</label><select id="assignWorker" class="f-select"></select></div>
+        <div class="f-group"><label class="f-label">Основна смена</label><select id="assignShift" class="f-select"></select></div>
+        <div class="f-group"><label class="f-label">Важи од</label><input type="date" id="assignFrom" class="f-input"/></div>
+
+        <!-- Rotation section -->
+        <div class="f-group">
+          <div class="toggle-row">
+            <span class="toggle-label">Ротација (наизменично менување смени)</span>
+            <label class="toggle"><input type="checkbox" id="rotToggle" onchange="toggleRotation()"/><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+        <div id="rotSection" style="display:none">
+          <div class="f-group"><label class="f-label">Тип на ротација</label>
+            <select id="rotType" class="f-select">
+              <option value="weekly">Неделна (секоја недела се менува)</option>
+              <option value="biweekly">Двонеделна (на секои 2 недели)</option>
+              <option value="monthly">Месечна (еднаш месечно)</option>
+            </select>
+          </div>
+          <div class="f-group"><label class="f-label">Датум на почеток на циклусот</label><input type="date" id="rotStartDate" class="f-input"/></div>
+          <div class="f-group">
+            <label class="f-label">Редослед на смени во циклусот</label>
+            <div id="rotSlots" class="rotation-slots"><span class="rotation-empty">Додадете смени подолу</span></div>
+            <div style="display:flex;gap:.5rem;align-items:center;margin-top:.4rem">
+              <select id="rotAddShift" class="f-select" style="flex:1"></select>
+              <button class="btn-secondary" type="button" onclick="addRotSlot()">
+                <svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2.5" viewBox="0 0 24 24"><use href="#i-plus"/></svg>Додај
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary" type="button" onclick="saveAssignment()">
+          <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2.5" viewBox="0 0 24 24"><use href="#i-check"/></svg>Зачувај доделување
+        </button>
+      </div>
+
+      <!-- Current assignments -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Тековни доделувања</span></div>
+        <div id="assignList"><div class="skeleton"></div><div class="skeleton"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ TAB: ИСКЛУЧОЦИ ════════ -->
+  <div class="tab-panel" id="panel-exc">
+    <div class="two-col">
+      <!-- Exception form -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Додај исклучок</span></div>
+        <div class="f-group"><label class="f-label">Вработен</label><select id="excWorker" class="f-select"></select></div>
+        <div class="f-group"><label class="f-label">Датум</label><input type="date" id="excDate" class="f-input"/></div>
+        <div class="f-group"><label class="f-label">Тип</label>
+          <select id="excType" class="f-select" onchange="toggleExcShift()">
+            <option value="day_off">Слободен ден</option>
+            <option value="shift_override">Замена со друга смена</option>
+            <option value="custom">Прибелешка</option>
+          </select>
+        </div>
+        <div class="f-group" id="excShiftGroup" style="display:none">
+          <label class="f-label">Замена смена</label><select id="excShift" class="f-select"></select>
+        </div>
+        <div class="f-group"><label class="f-label">Забелешка (опционално)</label><input type="text" id="excNote" class="f-input" placeholder="пр. боледување, замена…"/></div>
+        <button class="btn-primary" type="button" onclick="saveException()">
+          <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2.5" viewBox="0 0 24 24"><use href="#i-check"/></svg>Зачувај исклучок
+        </button>
+      </div>
+
+      <!-- Exception list -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Евидентирани исклучоци</span>
+          <div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center">
+            <select id="excListWorker" class="f-select" style="width:auto;padding:.28rem .55rem;font-size:.8rem" onchange="loadExcList()"><option value="">Сите</option></select>
+            <input type="month" id="excListMonth" class="f-input" style="width:auto;padding:.28rem .55rem;font-size:.8rem" onchange="loadExcList()"/>
+          </div>
+        </div>
+        <div id="excList"><div class="skeleton"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ TAB: РАСПОРЕД ════════ -->
+  <div class="tab-panel" id="panel-viewer">
+    <div class="cal-controls">
+      <div class="view-toggle">
+        <button id="viewWeekBtn" class="active" onclick="setView('week')">Неделен</button>
+        <button id="viewMonthBtn" onclick="setView('month')">Месечен</button>
+      </div>
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="navCal(-1)"><svg><use href="#i-chev-l"/></svg></button>
+        <div class="cal-period" id="calPeriodLabel">–</div>
+        <button class="cal-nav-btn" onclick="navCal(1)"><svg><use href="#i-chev-r"/></svg></button>
+      </div>
+      <div class="cal-filter">
+        <button class="btn-secondary" onclick="navCal(0,true)">Денес</button>
+        <select id="viewWorkerFilter" class="f-select" style="padding:.35rem .7rem;font-size:.8rem" onchange="renderCalendar()"><option value="">Сите вработени</option></select>
+      </div>
+    </div>
+
+    <div class="legend" id="calLegend"></div>
+    <div id="calBody"><div class="skeleton" style="height:200px"></div></div>
+  </div>
+
+</main>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="modal-overlay" id="confirmDeleteModal">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header"><h3>Потврди бришење</h3><button class="modal-close" onclick="closeModal('confirmDeleteModal')"><svg><use href="#i-x"/></svg></button></div>
+    <div class="modal-body"><p style="font-size:.88rem;color:var(--text-mid);line-height:1.6">Дали сте сигурни? Оваа акција не може да се поврати.</p></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('confirmDeleteModal')">Откажи</button>
+      <button class="btn-danger" id="confirmDeleteBtn">Избриши</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var sb = supabase.createClient(
+  'https://pmolxspputemoyvilzyq.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtb2x4c3BwdXRlbW95dmlsenlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwNjI0OTUsImV4cCI6MjA4ODYzODQ5NX0.f4t9wIzvhnrMeh_O4aesS94qyv71LUO1LA3lcyY7i8o'
+);
+
+// ── State ──
+var currentUser    = null;
+var allStaff       = [];
+var allShifts      = [];
+var allAssignments = [];   // worker_shifts rows with nested shift data
+var stateHolidays  = [];   // array of date strings yyyy-mm-dd
+var rotCycle       = [];   // array of shift_ids for rotation builder
+var calView        = 'week';
+var calAnchor      = new Date(); // start of displayed week/month
+var pendingDeleteFn = null;
+
+// ── INIT ──
+(async function init() {
+  document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+  document.getElementById('hamburgerBtn').addEventListener('click', toggleSidebar);
+  document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+  document.getElementById('confirmDeleteBtn').addEventListener('click', function(){ if(pendingDeleteFn) pendingDeleteFn(); });
+
+  // Color picker
+  document.querySelectorAll('.color-opt').forEach(function(el) {
+    el.addEventListener('click', function() {
+      document.querySelectorAll('.color-opt').forEach(function(e){ e.style.border='3px solid transparent'; });
+      el.style.border = '3px solid ' + el.dataset.color;
+      document.getElementById('defColor').value = el.dataset.color;
+    });
+  });
+
+  // today defaults
+  var today = new Date().toISOString().slice(0,10);
+  document.getElementById('assignFrom').value   = today;
+  document.getElementById('rotStartDate').value = today;
+  document.getElementById('excDate').value      = today;
+  document.getElementById('excListMonth').value = today.slice(0,7);
+
+  // set calAnchor to monday of current week
+  calAnchor = getMonday(new Date());
+
+  var session = await sb.auth.getSession();
+  if (!session.data || !session.data.session) { window.location.replace('index.html'); return; }
+  currentUser = session.data.session.user;
+  sb.auth.onAuthStateChange(function(ev){ if(ev==='SIGNED_OUT') window.location.replace('index.html'); });
+
+  // Guard: doctor only
+  var prof = await sb.from('profiles').select('role,full_name').eq('id', currentUser.id).single();
+  if (!prof.data || prof.data.role !== 'doctor') { window.location.replace('work-hours.html'); return; }
+  var name = prof.data.full_name || currentUser.email;
+  document.getElementById('sidebarUserName').textContent = name;
+  document.getElementById('avatarInitial').textContent   = (name||'?')[0].toUpperCase();
+
+  await Promise.all([loadShifts(), loadStaff(), loadHolidays()]);
+  await loadAssignments();
+  renderCalendar();
+})();
+
+// ── DATA LOADERS ──
+async function loadShifts() {
+  var res   = await sb.from('shifts').select('*').eq('is_active', true).order('start_time');
+  allShifts = res.data || [];
+  renderShiftDefs();
+  populateShiftSelects();
+}
+
+async function loadStaff() {
+  var res   = await sb.from('profiles').select('id,full_name,role').order('full_name');
+  allStaff  = res.data || [];
+  var opts  = allStaff.map(function(s){ return '<option value="'+s.id+'">'+esc(s.full_name)+' ('+(s.role==='doctor'?'Д':'С')+')</option>'; }).join('');
+  var allOpt = '<option value="">Сите вработени</option>';
+  ['assignWorker','excWorker','excListWorker','viewWorkerFilter'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = (id==='assignWorker'||id==='excWorker') ? opts : allOpt+opts;
+  });
+  if (allStaff.length) {
+    document.getElementById('assignWorker').value = allStaff[0].id;
+    document.getElementById('excWorker').value    = allStaff[0].id;
+  }
+}
+
+async function loadHolidays() {
+  var res      = await sb.from('state_holidays').select('date');
+  stateHolidays = (res.data||[]).map(function(h){ return h.date; });
+}
+
+async function loadAssignments() {
+  var res        = await sb.from('worker_shifts').select('*, shifts(*), profiles(full_name,role)').order('created_at', {ascending:false});
+  allAssignments = res.data || [];
+  renderAssignList();
+}
+
+// ── SHIFT DEFINITIONS ──
+function renderShiftDefs() {
+  var el = document.getElementById('shiftDefList');
+  if (!allShifts.length) { el.innerHTML = '<p style="font-size:.82rem;color:var(--text-light)">Нема дефинирани смени. Додадете ја првата.</p>'; return; }
+  el.innerHTML = '<div class="shift-def-list">' + allShifts.map(function(s) {
+    return '<div class="shift-def-item">' +
+      '<div class="shift-def-swatch" style="background:'+esc(s.color||'#2a7a7a')+'"></div>' +
+      '<div class="shift-def-info"><div class="shift-def-name">'+esc(s.name)+'</div><div class="shift-def-time">'+s.start_time.slice(0,5)+' – '+s.end_time.slice(0,5)+'</div></div>' +
+      '<div class="shift-def-actions">' +
+        '<button class="action-btns btn-edit-sm" style="padding:.3rem .5rem;background:var(--teal-light);color:var(--teal);border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center" onclick="editShiftDef(\''+s.id+'\')" title="Уреди"><svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-edit"/></svg></button>' +
+        '<button style="padding:.3rem .5rem;background:var(--red-light);color:var(--red);border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center" onclick="deleteShiftDef(\''+s.id+'\')" title="Избриши"><svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-trash"/></svg></button>' +
+      '</div>' +
+    '</div>';
+  }).join('') + '</div>';
+}
+
+function populateShiftSelects() {
+  var opts = allShifts.map(function(s){ return '<option value="'+s.id+'">'+esc(s.name)+' ('+s.start_time.slice(0,5)+'–'+s.end_time.slice(0,5)+')</option>'; }).join('');
+  ['assignShift','rotAddShift','excShift'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.innerHTML = opts || '<option disabled>Нема дефинирани смени</option>';
+  });
+  // update legend
+  var leg = document.getElementById('calLegend');
+  leg.innerHTML = allShifts.map(function(s){
+    return '<div class="legend-item"><div class="legend-swatch" style="background:'+esc(s.color||'#2a7a7a')+'"></div>'+esc(s.name)+'</div>';
+  }).join('') +
+  '<div class="legend-item"><div class="legend-swatch" style="background:#e8eee9;border:1px solid #ccc"></div>Слободен ден / одмор</div>' +
+  '<div class="legend-item"><div class="legend-swatch" style="background:rgba(245,158,11,.3)"></div>Државен празник</div>';
+}
+
+async function saveShiftDef() {
+  var id    = document.getElementById('defEditId').value;
+  var name  = document.getElementById('defName').value.trim();
+  var start = document.getElementById('defStart').value;
+  var end   = document.getElementById('defEnd').value;
+  var color = document.getElementById('defColor').value;
+  if (!name || !start || !end) { showToast('Пополнете ги сите полиња.','error'); return; }
+  var payload = { name: name, start_time: start+':00', end_time: end+':00', color: color, created_by: currentUser.id };
+  var res = id
+    ? await sb.from('shifts').update(payload).eq('id', id)
+    : await sb.from('shifts').insert(payload);
+  if (res.error) { showToast('Грешка: '+res.error.message,'error'); return; }
+  showToast(id ? 'Сменaта е ажурирана!' : 'Сменaта е додадена!', 'success');
+  resetDefForm();
+  await loadShifts();
+  renderCalendar();
+}
+
+function editShiftDef(id) {
+  var s = allShifts.find(function(x){ return x.id===id; });
+  if (!s) return;
+  document.getElementById('defEditId').value  = s.id;
+  document.getElementById('defName').value    = s.name;
+  document.getElementById('defStart').value   = s.start_time.slice(0,5);
+  document.getElementById('defEnd').value     = s.end_time.slice(0,5);
+  document.getElementById('defColor').value   = s.color || '#2a7a7a';
+  document.getElementById('defFormTitle').textContent = 'Уреди смена';
+  document.getElementById('cancelDefBtn').style.display = 'inline-flex';
+  // Highlight color
+  document.querySelectorAll('.color-opt').forEach(function(el){
+    el.style.border = el.dataset.color === s.color ? '3px solid '+s.color : '3px solid transparent';
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function deleteShiftDef(id) {
+  pendingDeleteFn = async function() {
+    var res = await sb.from('shifts').update({ is_active: false }).eq('id', id);
+    if (res.error) { showToast('Грешка: '+res.error.message,'error'); return; }
+    closeModal('confirmDeleteModal');
+    showToast('Сменaта е деактивирана.','success');
+    await loadShifts();
+    renderCalendar();
+  };
+  openModal('confirmDeleteModal');
+}
+
+function resetDefForm() {
+  document.getElementById('defEditId').value  = '';
+  document.getElementById('defName').value    = '';
+  document.getElementById('defStart').value   = '07:30';
+  document.getElementById('defEnd').value     = '15:00';
+  document.getElementById('defColor').value   = '#2a7a7a';
+  document.getElementById('defFormTitle').textContent = 'Нова смена';
+  document.getElementById('cancelDefBtn').style.display = 'none';
+  document.querySelectorAll('.color-opt').forEach(function(el,i){
+    el.style.border = i===0 ? '3px solid #2a7a7a' : '3px solid transparent';
+  });
+}
+
+// ── ASSIGNMENTS ──
+function renderAssignList() {
+  var el = document.getElementById('assignList');
+  if (!allAssignments.length) { el.innerHTML = '<p style="font-size:.82rem;color:var(--text-light)">Нема доделувања.</p>'; return; }
+  el.innerHTML = '<div class="worker-assign-list">' + allAssignments.map(function(ws) {
+    var sName  = ws.shifts ? ws.shifts.name : '–';
+    var sColor = ws.shifts ? (ws.shifts.color||'#2a7a7a') : '#ccc';
+    var wName  = ws.profiles ? ws.profiles.full_name : '–';
+    var rot    = ws.rotation_enabled ? (' <span style="font-size:.7rem;color:var(--amber);font-weight:700">РОТАЦИЈА</span>') : '';
+    return '<div class="worker-assign-item">' +
+      '<div class="worker-assign-top">' +
+        '<div class="worker-assign-avatar">'+esc((wName||'?')[0].toUpperCase())+'</div>' +
+        '<div><div class="worker-assign-name">'+esc(wName)+'</div><div class="worker-assign-role">'+(ws.profiles&&ws.profiles.role==='doctor'?'Доктор':'Мед. сестра')+'</div></div>' +
+        '<button style="margin-left:auto;padding:.28rem .5rem;background:var(--red-light);color:var(--red);border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center" onclick="deleteAssignment(\''+ws.id+'\')" title="Избриши"><svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-trash"/></svg></button>' +
+      '</div>' +
+      '<div class="worker-assign-body">' +
+        '<span class="shift-chip" style="background:'+sColor+'22;color:'+sColor+';border-color:'+sColor+'44"><span class="shift-swatch" style="background:'+sColor+'"></span>'+esc(sName)+'</span>' +
+        rot +
+        '<span style="font-size:.73rem;color:var(--text-light)">од '+formatDateShort(ws.effective_from)+'</span>' +
+      '</div>' +
+    '</div>';
+  }).join('') + '</div>';
+}
+
+function toggleRotation() {
+  var on = document.getElementById('rotToggle').checked;
+  document.getElementById('rotSection').style.display = on ? 'block' : 'none';
+}
+
+function addRotSlot() {
+  var shiftId = document.getElementById('rotAddShift').value;
+  if (!shiftId) return;
+  var s = allShifts.find(function(x){ return x.id===shiftId; });
+  if (!s) return;
+  rotCycle.push(shiftId);
+  renderRotSlots();
+}
+
+function removeRotSlot(idx) {
+  rotCycle.splice(idx, 1);
+  renderRotSlots();
+}
+
+function renderRotSlots() {
+  var el = document.getElementById('rotSlots');
+  if (!rotCycle.length) { el.innerHTML = '<span class="rotation-empty">Додадете смени подолу</span>'; return; }
+  el.innerHTML = rotCycle.map(function(sid, i) {
+    var s = allShifts.find(function(x){ return x.id===sid; });
+    var label = s ? s.name : '?';
+    var col   = s ? (s.color||'#2a7a7a') : '#ccc';
+    return '<div class="rotation-slot" style="background:'+col+'22;color:'+col+';border-color:'+col+'66">' +
+      '<span>'+(i+1)+'. '+esc(label)+'</span>' +
+      '<button class="rotation-slot-remove" onclick="removeRotSlot('+i+')">×</button>' +
+    '</div>';
+  }).join('');
+}
+
+async function saveAssignment() {
+  var workerId = document.getElementById('assignWorker').value;
+  var shiftId  = document.getElementById('assignShift').value;
+  var from     = document.getElementById('assignFrom').value;
+  var rotOn    = document.getElementById('rotToggle').checked;
+  var rotType  = document.getElementById('rotType').value;
+  var rotStart = document.getElementById('rotStartDate').value;
+  if (!workerId || !shiftId || !from) { showToast('Пополнете ги задолжителните полиња.','error'); return; }
+  if (rotOn && rotCycle.length < 2) { showToast('За ротација потребни се барем 2 смени.','error'); return; }
+
+  var payload = {
+    worker_id:          workerId,
+    shift_id:           shiftId,
+    effective_from:     from,
+    rotation_enabled:   rotOn,
+    rotation_type:      rotOn ? rotType : null,
+    rotation_shifts:    rotOn ? rotCycle : null,
+    rotation_start_date:rotOn ? rotStart : null,
+    created_by:         currentUser.id
+  };
+
+  // Upsert on worker_id (one row per worker)
+  var res = await sb.from('worker_shifts').upsert(payload, { onConflict: 'worker_id' });
+  if (res.error) { showToast('Грешка: '+res.error.message,'error'); return; }
+  showToast('Доделувањето е зачувано!','success');
+  rotCycle = [];
+  renderRotSlots();
+  document.getElementById('rotToggle').checked = false;
+  toggleRotation();
+  await loadAssignments();
+  renderCalendar();
+}
+
+async function deleteAssignment(id) {
+  pendingDeleteFn = async function() {
+    var res = await sb.from('worker_shifts').delete().eq('id', id);
+    if (res.error) { showToast('Грешка: '+res.error.message,'error'); return; }
+    closeModal('confirmDeleteModal');
+    showToast('Избришано.','success');
+    await loadAssignments();
+    renderCalendar();
+  };
+  openModal('confirmDeleteModal');
+}
+
+// ── EXCEPTIONS ──
+function toggleExcShift() {
+  var type = document.getElementById('excType').value;
+  document.getElementById('excShiftGroup').style.display = type==='shift_override' ? 'block' : 'none';
+}
+
+async function saveException() {
+  var workerId = document.getElementById('excWorker').value;
+  var date     = document.getElementById('excDate').value;
+  var type     = document.getElementById('excType').value;
+  var shiftId  = type==='shift_override' ? document.getElementById('excShift').value : null;
+  var note     = document.getElementById('excNote').value.trim();
+  if (!workerId || !date) { showToast('Изберете вработен и датум.','error'); return; }
+
+  var payload = { worker_id: workerId, date: date, type: type, shift_id: shiftId, note: note||null, created_by: currentUser.id };
+  var res = await sb.from('shift_exceptions').upsert(payload, { onConflict: 'worker_id,date' });
+  if (res.error) { showToast('Грешка: '+res.error.message,'error'); return; }
+  showToast('Исклучокот е зачуван!','success');
+  document.getElementById('excNote').value = '';
+  loadExcList();
+  renderCalendar();
+}
+
+async function loadExcList() {
+  var worker = document.getElementById('excListWorker').value;
+  var month  = document.getElementById('excListMonth').value || new Date().toISOString().slice(0,7);
+  var el     = document.getElementById('excList');
+  el.innerHTML = '<div class="skeleton"></div>';
+  var r    = monthRange(month);
+  var q    = sb.from('shift_exceptions').select('*, profiles(full_name), shifts(name,color)').gte('date',r.from).lte('date',r.to).order('date',{ascending:false});
+  if (worker) q = q.eq('worker_id', worker);
+  var res  = await q;
+  var data = res.data || [];
+  if (!data.length) { el.innerHTML = '<p style="font-size:.82rem;color:var(--text-light)">Нема исклучоци за овој период.</p>'; return; }
+  el.innerHTML = data.map(function(e) {
+    var typeLabel = { day_off:'Слободен ден', shift_override:'Замена смена', custom:'Прибелешка' }[e.type]||e.type;
+    return '<div class="exc-item">' +
+      '<div class="exc-item-info">' +
+        '<div class="exc-item-name">'+esc((e.profiles&&e.profiles.full_name)||'–')+'</div>' +
+        '<div class="exc-item-meta">'+formatDateShort(e.date)+' · '+typeLabel+(e.shifts?' · '+esc(e.shifts.name):'')+(e.note?' · '+esc(e.note):'')+' </div>' +
+      '</div>' +
+      '<button style="padding:.28rem .5rem;background:var(--red-light);color:var(--red);border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center" onclick="deleteException(\''+e.id+'\')" title="Избриши">' +
+        '<svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-trash"/></svg>' +
+      '</button>' +
+    '</div>';
+  }).join('');
+}
+
+async function deleteException(id) {
+  pendingDeleteFn = async function() {
+    var res = await sb.from('shift_exceptions').delete().eq('id', id);
+    if (res.error) { showToast('Грешка: '+res.error.message,'error'); return; }
+    closeModal('confirmDeleteModal');
+    showToast('Исклучокот е избришан.','success');
+    loadExcList();
+    renderCalendar();
+  };
+  openModal('confirmDeleteModal');
+}
+
+// ── CALENDAR ──
+function setView(v) {
+  calView = v;
+  document.getElementById('viewWeekBtn').className  = v==='week'  ? 'active' : '';
+  document.getElementById('viewMonthBtn').className = v==='month' ? 'active' : '';
+  if (v==='month') calAnchor = new Date(calAnchor.getFullYear(), calAnchor.getMonth(), 1);
+  else             calAnchor = getMonday(calAnchor);
+  renderCalendar();
+}
+
+function navCal(dir, toToday) {
+  if (toToday) { calAnchor = calView==='week' ? getMonday(new Date()) : new Date(new Date().getFullYear(), new Date().getMonth(), 1); }
+  else if (calView==='week')  calAnchor = addDays(calAnchor, dir*7);
+  else                        calAnchor = new Date(calAnchor.getFullYear(), calAnchor.getMonth()+dir, 1);
+  renderCalendar();
+}
+
+async function renderCalendar() {
+  var workerFilter = document.getElementById('viewWorkerFilter') ? document.getElementById('viewWorkerFilter').value : '';
+
+  // Fetch exceptions for visible range
+  var range  = calView==='week' ? weekRange(calAnchor) : { from: fmtDate(calAnchor), to: fmtDate(new Date(calAnchor.getFullYear(), calAnchor.getMonth()+1, 0)) };
+  var excRes = await sb.from('shift_exceptions').select('*, shifts(name,color)').gte('date', range.from).lte('date', range.to);
+  var exceptions = excRes.data || [];
+
+  var workers = workerFilter ? allAssignments.filter(function(ws){ return ws.worker_id===workerFilter; }) : allAssignments;
+
+  if (calView==='week') renderWeekView(workers, exceptions, range);
+  else                  renderMonthView(workers, exceptions, range);
+}
+
+function renderWeekView(workers, exceptions, range) {
+  var days = [];
+  for (var i=0; i<7; i++) days.push(addDays(calAnchor, i));
+  var today = fmtDate(new Date());
+  var dayNames = ['Пон','Вто','Сре','Чет','Пет','Саб','Нед'];
+
+  // Update label
+  document.getElementById('calPeriodLabel').textContent =
+    pad(days[0].getDate())+'.'+pad(days[0].getMonth()+1)+' – '+pad(days[6].getDate())+'.'+pad(days[6].getMonth()+1)+'.'+days[0].getFullYear();
+
+  // Build grid HTML
+  var html = '<div class="week-grid">';
+  // Header row
+  html += '<div class="week-grid-label" style="background:var(--teal-dark);color:rgba(255,255,255,.5);font-size:.65rem;letter-spacing:.05em">ВРАБОТЕН</div>';
+  days.forEach(function(d, di) {
+    var dateStr = fmtDate(d);
+    var isWknd  = d.getDay()===0||d.getDay()===6;
+    var isHol   = stateHolidays.indexOf(dateStr)!==-1;
+    var isTod   = dateStr===today;
+    var extra   = isHol ? ' 🎉' : '';
+    html += '<div class="week-grid-header" style="'+(isTod?'background:rgba(255,255,255,.15)':'')+(isWknd?'opacity:.7':'')+'">'+
+      dayNames[di]+'<br/><span style="font-size:.85rem;font-weight:700">'+pad(d.getDate())+'</span>'+extra+'</div>';
+  });
+
+  // Rows per worker
+  workers.forEach(function(ws) {
+    var wName = ws.profiles ? ws.profiles.full_name : '–';
+    html += '<div class="week-name-cell">'+esc(wName.split(' ').slice(0,2).join(' '))+'</div>';
+    days.forEach(function(d) {
+      var dateStr = fmtDate(d);
+      var isWknd  = d.getDay()===0||d.getDay()===6;
+      var isHol   = stateHolidays.indexOf(dateStr)!==-1;
+      var isTod   = dateStr===today;
+      var cls     = 'week-cell'+(isWknd?' weekend':'')+(isHol?' holiday-col':'')+(isTod?' today-col':'');
+
+      // Check exception
+      var exc = exceptions.find(function(e){ return e.worker_id===ws.worker_id && e.date===dateStr; });
+      var cellContent = '';
+
+      if (isWknd || isHol) {
+        cellContent = '<span class="day-off-badge">'+(isHol?'Празник':'Слободен')+'</span>';
+      } else if (exc) {
+        if (exc.type==='day_off') {
+          cellContent = '<span class="day-off-badge">Слободен</span>';
+          if (exc.note) cellContent += '<span class="exc-badge">'+esc(exc.note.slice(0,10))+'</span>';
+        } else if (exc.type==='shift_override' && exc.shifts) {
+          var col = exc.shifts.color||'#2a7a7a';
+          cellContent = '<span class="shift-badge" style="background:'+col+'22;color:'+col+'">'+esc(exc.shifts.name)+'</span><span class="exc-badge">замена</span>';
+        } else {
+          cellContent = '<span class="exc-badge">'+esc((exc.note||exc.type).slice(0,12))+'</span>';
+        }
+      } else {
+        // resolve shift
+        var shift = resolveShiftForDate(ws, dateStr);
+        if (shift) {
+          var col = shift.color||'#2a7a7a';
+          cellContent = '<span class="shift-badge" style="background:'+col+'22;color:'+col+'">'+esc(shift.name)+'</span>'+
+            '<span style="font-size:.65rem;color:#888">'+shift.start_time.slice(0,5)+'</span>';
+        } else {
+          cellContent = '<span class="day-off-badge">–</span>';
+        }
+      }
+      html += '<div class="'+cls+'">'+cellContent+'</div>';
+    });
+  });
+
+  if (!workers.length) {
+    html += '<div style="grid-column:1/-1;padding:1.5rem;text-align:center;font-size:.85rem;color:var(--text-light)">Нема доделени смени. Одете во табот „Доделување".</div>';
+  }
+
+  html += '</div>';
+  document.getElementById('calBody').innerHTML = html;
+}
+
+function renderMonthView(workers, exceptions, range) {
+  var yr   = calAnchor.getFullYear();
+  var mo   = calAnchor.getMonth();
+  var today = fmtDate(new Date());
+  var months = ['Јануари','Февруари','Март','Април','Мај','Јуни','Јули','Август','Септември','Октомври','Ноември','Декември'];
+  document.getElementById('calPeriodLabel').textContent = months[mo] + ' ' + yr;
+
+  var firstDay  = new Date(yr, mo, 1);
+  var lastDay   = new Date(yr, mo+1, 0);
+  var startDow  = (firstDay.getDay()+6)%7; // 0=Mon
+  var totalDays = lastDay.getDate();
+  var workerFilter = document.getElementById('viewWorkerFilter').value;
+
+  var html = '<div class="month-grid-wrap"><div class="month-grid">';
+  // Header
+  html += '<div class="month-header-row">';
+  ['ПОН','ВТО','СРЕ','ЧЕТ','ПЕТ','САБ','НЕД'].forEach(function(d){ html += '<div class="month-header-cell">'+d+'</div>'; });
+  html += '</div><div class="month-body">';
+
+  // empty cells before first day
+  for (var e=0; e<startDow; e++) html += '<div class="month-day empty"></div>';
+
+  for (var day=1; day<=totalDays; day++) {
+    var d       = new Date(yr, mo, day);
+    var dateStr = fmtDate(d);
+    var dow     = (d.getDay()+6)%7;
+    var isWknd  = dow>=5;
+    var isHol   = stateHolidays.indexOf(dateStr)!==-1;
+    var isTod   = dateStr===today;
+    var cls     = 'month-day'+(isWknd?' weekend':'')+(isHol?' holiday-day':'')+(isTod?' today':'');
+
+    html += '<div class="'+cls+'"><div class="month-day-num">'+day+'</div><div class="month-shift-list">';
+
+    if (isWknd || isHol) {
+      html += '<div style="font-size:.65rem;color:var(--text-light);font-style:italic">'+(isHol?'Празник':'Слободен')+'</div>';
+    } else {
+      var displayWorkers = workerFilter
+        ? workers.filter(function(ws){ return ws.worker_id===workerFilter; })
+        : workers;
+      displayWorkers.forEach(function(ws) {
+        var exc   = exceptions.find(function(ex){ return ex.worker_id===ws.worker_id && ex.date===dateStr; });
+        var wName = ws.profiles ? ws.profiles.full_name.split(' ')[0] : '–';
+        if (exc) {
+          if (exc.type==='day_off') {
+            html += '<div class="month-shift-entry" style="background:#f3f4f6;color:#6b7280">'+esc(wName)+': слободен</div>';
+          } else if (exc.type==='shift_override' && exc.shifts) {
+            var col = exc.shifts.color||'#2a7a7a';
+            html += '<div class="month-shift-entry" style="background:'+col+'22;color:'+col+'">'+esc(wName)+': '+esc(exc.shifts.name)+'</div>';
+          }
+        } else {
+          var shift = resolveShiftForDate(ws, dateStr);
+          if (shift) {
+            var col = shift.color||'#2a7a7a';
+            html += '<div class="month-shift-entry" style="background:'+col+'22;color:'+col+'">'+esc(wName)+'</div>';
+          }
+        }
+      });
+    }
+    html += '</div></div>';
+  }
+
+  // trailing empty cells
+  var total = startDow + totalDays;
+  var trail = total%7 === 0 ? 0 : 7-(total%7);
+  for (var t=0; t<trail; t++) html += '<div class="month-day empty"></div>';
+
+  html += '</div></div></div>';
+  document.getElementById('calBody').innerHTML = html;
+}
+
+// Given a worker_shift assignment and a date string, return the effective shift object (or null for day off)
+function resolveShiftForDate(ws, dateStr) {
+  if (!ws.shifts) return null;
+  if (!ws.rotation_enabled || !ws.rotation_shifts || !ws.rotation_shifts.length || !ws.rotation_start_date) {
+    return ws.shifts;
+  }
+  // compute rotation index
+  var anchor  = new Date(ws.rotation_start_date + 'T00:00:00');
+  var target  = new Date(dateStr + 'T00:00:00');
+  var days    = Math.floor((target - anchor) / 86400000);
+  var period  = { weekly:7, biweekly:14, monthly:30 }[ws.rotation_type] || 7;
+  var cycleLen= ws.rotation_shifts.length;
+  var idx     = Math.floor(days / period) % cycleLen;
+  if (idx < 0) idx = 0;
+  var shiftId = ws.rotation_shifts[idx];
+  return allShifts.find(function(s){ return s.id===shiftId; }) || ws.shifts;
+}
+
+// ── TABS ──
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById('tab-'+name).classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
+  if (name==='exc')    loadExcList();
+  if (name==='viewer') renderCalendar();
+}
+
+// ── HELPERS ──
+function getMonday(d) {
+  var day = d.getDay();
+  var diff = (day===0) ? -6 : 1-day;
+  return addDays(new Date(d.getFullYear(), d.getMonth(), d.getDate()), diff);
+}
+function addDays(d, n) { var r = new Date(d); r.setDate(r.getDate()+n); return r; }
+function fmtDate(d) { return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function weekRange(mon) { return { from: fmtDate(mon), to: fmtDate(addDays(mon,6)) }; }
+function monthRange(m) { var p=m.split('-'),yr=parseInt(p[0]),mo=parseInt(p[1]); return { from:m+'-01', to:m+'-'+pad(new Date(yr,mo,0).getDate()) }; }
+function formatDateShort(d) { if(!d)return'–'; var dt=new Date(d+'T00:00:00'); return pad(dt.getDate())+'.'+pad(dt.getMonth()+1)+'.'+dt.getFullYear(); }
+function pad(n){ return String(n).padStart(2,'0'); }
+function esc(s){ if(!s)return''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function showToast(msg,type){ var t=document.getElementById('toast'); t.textContent=msg; t.className='show'+(type?' '+type:''); clearTimeout(t._tid); t._tid=setTimeout(function(){t.className=type||'';},3500); }
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('show'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open');  document.getElementById('sidebarOverlay').classList.remove('show'); }
+async function handleLogout(){ document.getElementById('logoutBtn').disabled=true; try{await sb.auth.signOut();}catch(e){} window.location.replace('index.html'); }
+</script>
+</body>
+</html>

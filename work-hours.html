@@ -1,23 +1,16 @@
 <!DOCTYPE html>
 <html lang="mk">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Работни часови – Оаза Медика</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root{
-      --teal:#2a7a7a;--teal-dark:#1d5e5e;--green:#1a5c2a;--green-light:#e8f5ec;
-      --teal-light:#e4f2f2;--cream:#f9faf8;--text:#1c2a22;--text-mid:#3d5046;
-      --text-light:#6b8070;--white:#fff;--shadow:0 4px 32px rgba(26,92,42,.10);
-      --radius:14px;--sidebar:240px;--amber:#f59e0b;--amber-light:#fef9ec;
-      --red:#c0392b;--red-light:#fdf0ee
-    }
+    :root{--teal:#2a7a7a;--teal-dark:#1d5e5e;--green:#1a5c2a;--green-light:#e8f5ec;--teal-light:#e4f2f2;--cream:#f9faf8;--text:#1c2a22;--text-mid:#3d5046;--text-light:#6b8070;--white:#fff;--shadow:0 4px 32px rgba(26,92,42,.10);--radius:14px;--sidebar:240px;--amber:#f59e0b;--amber-light:#fef9ec;--red:#c0392b;--red-light:#fdf0ee}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Lato',sans-serif;background:var(--cream);color:var(--text);line-height:1.6;display:flex;min-height:100vh}
     h1,h2,h3,h4{font-family:'Playfair Display',serif;line-height:1.2}
-
     /* SIDEBAR */
     .sidebar{width:var(--sidebar);background:linear-gradient(165deg,var(--teal-dark) 0%,var(--green) 70%,#0f3d1c 100%);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .3s ease;overflow:hidden}
     .sidebar-logo{padding:1rem 1.1rem .85rem;display:flex;align-items:center;gap:9px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
@@ -30,12 +23,11 @@
     .user-role{font-size:.62rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em}
     nav.sidebar-nav{flex:1;padding:.3rem 0;overflow:hidden}
     .nav-section-label{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.33);padding:.55rem 1.1rem .2rem}
-    .nav-link{display:flex;align-items:center;gap:9px;padding:.56rem 1.1rem;text-decoration:none;font-size:.81rem;font-weight:600;color:rgba(255,255,255,.65);transition:all .2s;border-left:3px solid transparent;cursor:pointer;user-select:none;white-space:nowrap}
+    .nav-link{display:flex;align-items:center;gap:9px;padding:.56rem 1.1rem;text-decoration:none;font-size:.81rem;font-weight:600;color:rgba(255,255,255,.65);transition:all .2s;border-left:3px solid transparent;white-space:nowrap}
     .nav-link .nav-icon{width:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
     .nav-link .nav-icon svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
     .nav-link:hover{color:#fff;background:rgba(255,255,255,.07)}
     .nav-link.active{color:#fff;background:rgba(255,255,255,.12);border-left-color:rgba(255,255,255,.6)}
-    .nav-link .badge{margin-left:auto;background:var(--amber);color:#fff;font-size:.6rem;font-weight:700;padding:.1rem .38rem;border-radius:50px;min-width:16px;text-align:center}
     .doctor-only{display:none}
     .sidebar-ext{padding:.45rem .85rem .2rem;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
     .ext-label{font-size:.57rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:.38rem;padding-left:.18rem}
@@ -45,34 +37,40 @@
     .btn-ext-arrow{margin-left:auto;opacity:.4}.btn-ext-arrow svg{width:10px;height:10px;stroke:#fff;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
     .sidebar-bottom{padding:.45rem .85rem .7rem;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
     .btn-logout{width:100%;padding:.52rem .85rem;background:rgba(255,80,80,.15);border:1px solid rgba(255,100,100,.25);border-radius:9px;color:rgba(255,200,200,.9);font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s}
-    .btn-logout:hover{background:rgba(192,57,43,.6);color:#fff;border-color:rgba(255,100,100,.5)}
+    .btn-logout:hover{background:rgba(192,57,43,.6);color:#fff}
     .btn-logout svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
-
     /* TOPBAR */
     .topbar{position:fixed;top:0;left:var(--sidebar);right:0;height:56px;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-bottom:1px solid rgba(42,122,122,.1);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;z-index:100}
     .topbar-left{display:flex;align-items:center;gap:.7rem}
     .hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;color:var(--teal)}
     .hamburger-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-width:2}
     .topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--text)}
-    .topbar-right{display:flex;align-items:center;gap:1rem}
+    .topbar-right{display:flex;align-items:center;gap:.75rem}
     .topbar-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green);padding:.25rem .75rem;border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
-
     /* MAIN */
     .main{margin-left:var(--sidebar);margin-top:56px;padding:1.5rem;flex:1;min-width:0}
-    .section-header{margin-bottom:1.4rem}
+    .section-header{margin-bottom:1.2rem}
     .section-label{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:.25rem}
     .section-title{font-size:clamp(1.4rem,2.5vw,1.9rem);color:var(--text)}
     .section-sub{font-size:.88rem;color:var(--text-light);font-weight:300;margin-top:.25rem}
-
+    /* TABS */
+    .tabs{display:flex;gap:.35rem;margin-bottom:1.2rem;flex-wrap:wrap}
+    .tab-btn{padding:.5rem 1.1rem;border:2px solid rgba(42,122,122,.15);border-radius:50px;font-family:'Lato',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;background:var(--white);color:var(--text-mid);transition:all .2s}
+    .tab-btn.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+    .tab-btn:hover:not(.active){border-color:var(--teal);color:var(--teal)}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block;animation:fadeIn .25s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
     /* CLOCK WIDGET */
-    .clock-widget{background:linear-gradient(135deg,var(--teal),var(--green));border-radius:var(--radius);padding:1.3rem 1.5rem;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:1.2rem;margin-bottom:1.3rem;flex-wrap:wrap}
+    .clock-widget{background:linear-gradient(135deg,var(--teal),var(--green));border-radius:var(--radius);padding:1.3rem 1.5rem;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:1.2rem;margin-bottom:1.2rem;flex-wrap:wrap}
     .clock-info h3{font-size:.85rem;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:.2rem;font-family:'Lato',sans-serif}
     #liveTime{font-family:'Playfair Display',serif;font-size:2.2rem;color:#fff;line-height:1;letter-spacing:.03em}
-    .clock-date{font-size:.78rem;color:rgba(255,255,255,.65);margin-top:.25rem}
-    .clock-status{display:flex;align-items:center;gap:7px;margin-top:.35rem;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.8)}
-    .status-dot{width:7px;height:7px;border-radius:50%;background:#6ee89a;animation:pulse 2s infinite;flex-shrink:0}
+    .clock-date{font-size:.78rem;color:rgba(255,255,255,.65);margin-top:.2rem}
+    .clock-shift{font-size:.76rem;color:rgba(255,255,255,.75);margin-top:.18rem;font-weight:600}
+    .clock-status{display:flex;align-items:center;gap:7px;margin-top:.3rem;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.85)}
+    .status-dot{width:7px;height:7px;border-radius:50%;background:#6ee89a;animation:blink 2s infinite;flex-shrink:0}
     .status-dot.out{background:#f87171;animation:none}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.45}}
     .clock-actions{display:flex;gap:.65rem;flex-wrap:wrap;align-items:center}
     .btn-clock{padding:.58rem 1.1rem;border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.84rem;font-weight:700;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:6px}
     .btn-clock svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
@@ -81,46 +79,98 @@
     .btn-clock-out{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff}
     .btn-clock-out:hover:not(:disabled){background:rgba(255,255,255,.28);transform:translateY(-1px)}
     .btn-clock:disabled{opacity:.45;cursor:not-allowed}
-    .leave-select{padding:.52rem .85rem;border-radius:50px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;outline:none}
-    .leave-select option{background:var(--teal-dark);color:#fff}
-
+    /* LEAVE BANNER */
+    .leave-banner{border-radius:var(--radius);padding:1rem 1.2rem;margin-bottom:1.2rem;display:none;align-items:center;gap:.85rem}
+    .leave-banner.sick{background:var(--red-light);border:1px solid rgba(192,57,43,.2)}
+    .leave-banner.holiday{background:var(--amber-light);border:1px solid rgba(245,158,11,.2)}
+    .leave-banner-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .leave-banner.sick .leave-banner-icon{background:rgba(192,57,43,.12)}
+    .leave-banner.holiday .leave-banner-icon{background:rgba(245,158,11,.12)}
+    .leave-banner-icon svg{width:18px;height:18px;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+    .leave-banner.sick .leave-banner-icon svg{stroke:var(--red)}
+    .leave-banner.holiday .leave-banner-icon svg{stroke:var(--amber)}
+    .leave-banner-title{font-size:.9rem;font-weight:700}
+    .leave-banner.sick .leave-banner-title{color:var(--red)}
+    .leave-banner.holiday .leave-banner-title{color:#92400e}
+    .leave-banner-sub{font-size:.8rem;color:var(--text-mid)}
     /* CARD */
-    .card{background:var(--white);border-radius:var(--radius);border:1px solid rgba(42,122,122,.08);padding:1.3rem;margin-bottom:1.3rem}
+    .card{background:var(--white);border-radius:var(--radius);border:1px solid rgba(42,122,122,.08);padding:1.3rem;margin-bottom:1.2rem}
     .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid rgba(42,122,122,.08);flex-wrap:wrap;gap:.5rem}
     .card-title{font-family:'Playfair Display',serif;font-size:1rem;color:var(--text)}
-
+    .card-action{font-size:.76rem;color:var(--teal);font-weight:600;cursor:pointer;background:none;border:none;transition:color .2s;display:inline-flex;align-items:center;gap:4px}
+    .card-action:hover{color:var(--teal-dark)}
     /* FORMS */
-    .f-input{width:100%;padding:.68rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.88rem;color:var(--text);background:var(--cream);outline:none;transition:border-color .2s}
+    .f-group{margin-bottom:.9rem}
+    .f-label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);margin-bottom:.32rem}
+    .f-input{width:100%;padding:.65rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.88rem;color:var(--text);background:var(--cream);outline:none;transition:border-color .2s}
     .f-input:focus{border-color:var(--teal);background:var(--white)}
-    .f-select{width:100%;padding:.68rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.88rem;color:var(--text);background:var(--cream);outline:none}
-    .f-label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);margin-bottom:.35rem}
-
+    .f-select{width:100%;padding:.65rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.88rem;color:var(--text);background:var(--cream);outline:none}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+    /* BUTTONS */
+    .btn-primary{padding:.65rem 1.2rem;background:var(--teal);color:#fff;border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.87rem;font-weight:700;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:7px}
+    .btn-primary:hover{background:var(--teal-dark)}
+    .btn-primary:disabled{background:#9bb8b8;cursor:not-allowed}
+    .btn-secondary{padding:.5rem .85rem;background:var(--teal-light);color:var(--teal);border:1px solid rgba(42,122,122,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+    .btn-secondary:hover{background:var(--teal);color:#fff}
+    .btn-danger{padding:.5rem .85rem;background:var(--red-light);color:var(--red);border:1px solid rgba(192,57,43,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+    .btn-danger:hover{background:var(--red);color:#fff}
+    .btn-shifts-link{display:inline-flex;align-items:center;gap:7px;padding:.52rem 1.05rem;background:linear-gradient(135deg,var(--teal-dark),var(--green));color:#fff;border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.83rem;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity .2s}
+    .btn-shifts-link:hover{opacity:.86}
+    .btn-shifts-link svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
     /* TABLE */
     .log-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
     table{width:100%;border-collapse:collapse;font-size:.83rem}
-    thead th{text-align:left;padding:.52rem .85rem;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);border-bottom:2px solid rgba(42,122,122,.1);white-space:nowrap}
+    thead th{text-align:left;padding:.5rem .8rem;font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);border-bottom:2px solid rgba(42,122,122,.1);white-space:nowrap}
     tbody tr{border-bottom:1px solid rgba(42,122,122,.06);transition:background .15s}
     tbody tr:hover{background:var(--cream)}
-    tbody td{padding:.62rem .85rem;color:var(--text-mid);vertical-align:middle}
-    .pill{display:inline-flex;align-items:center;padding:.18rem .62rem;border-radius:50px;font-size:.7rem;font-weight:700;white-space:nowrap}
+    tbody td{padding:.6rem .8rem;color:var(--text-mid);vertical-align:middle}
+    .pill{display:inline-flex;align-items:center;padding:.18rem .58rem;border-radius:50px;font-size:.7rem;font-weight:700;white-space:nowrap}
     .pill-work{background:var(--teal-light);color:var(--teal)}
     .pill-sick{background:var(--red-light);color:var(--red)}
     .pill-holiday{background:var(--amber-light);color:var(--amber)}
-
+    .pill-backdated{background:#f3f4f6;color:#6b7280;font-size:.64rem;margin-left:3px;vertical-align:middle}
+    .action-btns{display:flex;gap:.3rem}
+    .action-btns button{padding:.25rem .5rem;border-radius:6px;border:none;cursor:pointer;display:flex;align-items:center;transition:all .15s}
+    .action-btns button svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+    .btn-edit-log{background:var(--teal-light);color:var(--teal)}
+    .btn-edit-log:hover{background:var(--teal);color:#fff}
+    .btn-del-log{background:var(--red-light);color:var(--red)}
+    .btn-del-log:hover{background:var(--red);color:#fff}
+    /* LEAVE LIST */
+    .leave-list-item{display:flex;align-items:center;gap:.7rem;padding:.7rem .9rem;border-radius:10px;border:1px solid rgba(42,122,122,.08);background:var(--cream);margin-bottom:.45rem;flex-wrap:wrap}
+    .leave-list-item-info{flex:1;min-width:0}
+    .leave-list-item-name{font-size:.87rem;font-weight:700;color:var(--text)}
+    .leave-list-item-meta{font-size:.73rem;color:var(--text-light);margin-top:1px}
     /* SKELETON */
     .skeleton{background:linear-gradient(90deg,#e8eee9 25%,#d4ddd5 50%,#e8eee9 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;height:36px;margin-bottom:.45rem}
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
     /* TOAST */
-    #toast{position:fixed;bottom:1.2rem;right:1.2rem;z-index:9999;background:var(--text);color:#fff;padding:.78rem 1.2rem;border-radius:11px;font-size:.84rem;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.22,.68,0,1.1);max-width:300px;pointer-events:none}
+    #toast{position:fixed;bottom:1.2rem;right:1.2rem;z-index:9999;background:var(--text);color:#fff;padding:.78rem 1.2rem;border-radius:11px;font-size:.84rem;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.22,.68,0,1.1);max-width:310px;pointer-events:none}
     #toast.show{transform:translateY(0);opacity:1}
     #toast.success{background:var(--teal-dark)}
     #toast.error{background:var(--red)}
-
+    /* MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--white);border-radius:18px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.2)}
+    .modal-header{padding:1.1rem 1.3rem .8rem;border-bottom:1px solid rgba(42,122,122,.08);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:1}
+    .modal-header h3{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--text)}
+    .modal-close{background:var(--teal-light);border:none;cursor:pointer;width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal);transition:background .2s;flex-shrink:0}
+    .modal-close:hover{background:var(--teal);color:#fff}
+    .modal-close svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    .modal-body{padding:1.1rem 1.3rem}
+    .modal-footer{padding:.6rem 1.3rem 1.1rem;border-top:1px solid rgba(42,122,122,.08);display:flex;gap:.6rem;justify-content:flex-end;flex-wrap:wrap}
+    /* PROMPT MODAL */
+    .prompt-icon{width:56px;height:56px;background:var(--teal-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .9rem}
+    .prompt-icon svg{width:26px;height:26px;stroke:var(--teal);fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+    .prompt-title{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--text);text-align:center;margin-bottom:.4rem}
+    .prompt-sub{font-size:.86rem;color:var(--text-light);text-align:center;line-height:1.55;margin-bottom:.9rem}
+    .prompt-shift-badge{background:var(--teal-light);border-radius:10px;padding:.6rem 1rem;font-size:.85rem;font-weight:700;color:var(--teal);text-align:center;margin-bottom:1.2rem}
     /* SIDEBAR MOBILE */
     .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:199;opacity:0;pointer-events:none;transition:opacity .3s}
     .sidebar-overlay.show{opacity:1;pointer-events:auto}
-
+    /* two-col grid for doctor panels */
+    .two-col-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
     @media(max-width:900px){
       .sidebar{width:260px;transform:translateX(-100%);display:flex}
       .sidebar.open{transform:translateX(0)}
@@ -129,12 +179,16 @@
       .main{margin-left:0;padding:1rem}
       .hamburger-btn{display:block}
       .clock-widget{flex-direction:column;align-items:flex-start;gap:1rem}
+      .form-row{grid-template-columns:1fr}
+      .two-col-grid{grid-template-columns:1fr}
     }
     @media(max-width:480px){
       .main{padding:.8rem}
-      #liveTime{font-size:1.9rem}
-      tbody td,thead th{padding:.45rem .55rem;font-size:.77rem}
-      .clock-actions{flex-wrap:wrap;gap:.5rem}
+      #liveTime{font-size:1.85rem}
+      tbody td,thead th{padding:.42rem .5rem;font-size:.77rem}
+      .clock-actions{gap:.45rem}
+      .tabs{gap:.2rem}
+      .tab-btn{font-size:.76rem;padding:.42rem .8rem}
     }
   </style>
 </head>
@@ -150,8 +204,15 @@
   <symbol id="i-logout" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
   <symbol id="i-play"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
   <symbol id="i-stop"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></symbol>
-  <symbol id="i-ext"    viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+  <symbol id="i-edit"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+  <symbol id="i-trash"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></symbol>
+  <symbol id="i-plus"   viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="i-check"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-x"      viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
   <symbol id="i-menu"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+  <symbol id="i-ext"    viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+  <symbol id="i-refresh"viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-4.43"/></symbol>
+  <symbol id="i-cal"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
 </svg>
 
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -170,47 +231,28 @@
   </div>
   <nav class="sidebar-nav">
     <div class="nav-section-label">Мени</div>
-    <a class="nav-link" href="dashboard.html">
-      <span class="nav-icon"><svg><use href="#i-home"/></svg></span>Контролна табла
-    </a>
-    <a class="nav-link active" href="work-hours.html">
-      <span class="nav-icon"><svg><use href="#i-clock"/></svg></span>Работни часови
-    </a>
-    <a class="nav-link" href="tasks.html">
-      <span class="nav-icon"><svg><use href="#i-tasks"/></svg></span>Задачи
-      <span class="badge" id="tasksBadge" style="display:none">0</span>
-    </a>
-    <a class="nav-link" href="dashboard.html#profile">
-      <span class="nav-icon"><svg><use href="#i-user"/></svg></span>Мој профил
-    </a>
+    <a class="nav-link" href="dashboard.html"><span class="nav-icon"><svg><use href="#i-home"/></svg></span>Контролна табла</a>
+    <a class="nav-link active" href="work-hours.html"><span class="nav-icon"><svg><use href="#i-clock"/></svg></span>Работни часови</a>
+    <a class="nav-link" href="tasks.html"><span class="nav-icon"><svg><use href="#i-tasks"/></svg></span>Задачи</a>
+    <a class="nav-link" href="dashboard.html#profile"><span class="nav-icon"><svg><use href="#i-user"/></svg></span>Мој профил</a>
     <div class="nav-section-label doctor-only">Доктор</div>
-    <a class="nav-link doctor-only" href="dashboard.html#team">
-      <span class="nav-icon"><svg><use href="#i-users"/></svg></span>Тим – преглед
-    </a>
-    <a class="nav-link doctor-only" href="reports.html">
-      <span class="nav-icon"><svg><use href="#i-bar"/></svg></span>Извештаи
-    </a>
-    <a class="nav-link doctor-only" href="dashboard.html#admin">
-      <span class="nav-icon"><svg><use href="#i-gear"/></svg></span>Управување со тим
-    </a>
+    <a class="nav-link doctor-only" href="dashboard.html#team"><span class="nav-icon"><svg><use href="#i-users"/></svg></span>Тим – преглед</a>
+    <a class="nav-link doctor-only" href="reports.html"><span class="nav-icon"><svg><use href="#i-bar"/></svg></span>Извештаи</a>
+    <a class="nav-link doctor-only" href="dashboard.html#admin"><span class="nav-icon"><svg><use href="#i-gear"/></svg></span>Управување со тим</a>
   </nav>
   <div class="sidebar-ext">
     <div class="ext-label">Надворешни портали</div>
     <a class="btn-ext" href="https://portal.fzo.org.mk/" target="_blank" rel="noopener">
-      <img class="btn-ext-icon" src="fzom.png" alt="" onerror="this.style.display='none'"/>
-      Портал на ФЗОМ
+      <img class="btn-ext-icon" src="fzom.png" alt="" onerror="this.style.display='none'"/>Портал на ФЗОМ
       <span class="btn-ext-arrow"><svg><use href="#i-ext"/></svg></span>
     </a>
     <a class="btn-ext" href="https://app.helio.mk/" target="_blank" rel="noopener">
-      <img class="btn-ext-icon" src="helio.png" alt="" onerror="this.style.display='none'"/>
-      Хелио Пациенти
+      <img class="btn-ext-icon" src="helio.png" alt="" onerror="this.style.display='none'"/>Хелио Пациенти
       <span class="btn-ext-arrow"><svg><use href="#i-ext"/></svg></span>
     </a>
   </div>
   <div class="sidebar-bottom">
-    <button class="btn-logout" id="logoutBtn" type="button">
-      <svg><use href="#i-logout"/></svg>Одјавете се
-    </button>
+    <button class="btn-logout" id="logoutBtn" type="button"><svg><use href="#i-logout"/></svg>Одјавете се</button>
   </div>
 </aside>
 
@@ -220,6 +262,9 @@
     <div class="topbar-title">Работни часови</div>
   </div>
   <div class="topbar-right">
+    <a class="btn-shifts-link doctor-only" href="shifts.html" id="shiftsBtn" style="display:none">
+      <svg><use href="#i-cal"/></svg>Смени
+    </a>
     <span class="topbar-badge" id="roleBadge">…</span>
   </div>
 </header>
@@ -228,78 +273,246 @@
   <div class="section-header">
     <div class="section-label">Евиденција</div>
     <h2 class="section-title">Работни часови</h2>
-    <p class="section-sub">Пријавете се, одјавете се и прегледајте ја историјата на вашите часови</p>
+    <p class="section-sub">Пријавете се, одјавете се и прегледајте ја евиденцијата</p>
   </div>
 
-  <!-- CLOCK WIDGET -->
-  <div class="clock-widget">
-    <div class="clock-info">
-      <h3>Датум и час</h3>
-      <div id="liveTime">00:00:00</div>
-      <div class="clock-date" id="clockDate"></div>
-      <div class="clock-status">
-        <span class="status-dot out" id="clockDot"></span>
-        <span id="clockStatusText">Не сте пријавени</span>
+  <!-- LEAVE BANNER -->
+  <div class="leave-banner" id="leaveBanner">
+    <div class="leave-banner-icon">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div>
+      <div class="leave-banner-title" id="leaveBannerTitle">Боледување</div>
+      <div class="leave-banner-sub" id="leaveBannerSub">Денес сте евидентирани на боледување.</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-mylog"  onclick="switchTab('mylog')">Мои часови</button>
+    <button class="tab-btn doctor-only" id="tab-team"    onclick="switchTab('team')"    style="display:none">Тим евиденција</button>
+    <button class="tab-btn doctor-only" id="tab-leave"   onclick="switchTab('leave')"   style="display:none">Отсуства</button>
+    <button class="tab-btn doctor-only" id="tab-backlog" onclick="switchTab('backlog')" style="display:none">Додај / Уреди</button>
+  </div>
+
+  <!-- ── TAB: МОИ ЧАСОВИ ── -->
+  <div class="tab-panel active" id="panel-mylog">
+    <div id="clockWidgetWrap">
+      <div class="clock-widget">
+        <div class="clock-info">
+          <h3>Датум и час</h3>
+          <div id="liveTime">00:00:00</div>
+          <div class="clock-date" id="clockDate"></div>
+          <div class="clock-shift" id="clockShiftInfo"></div>
+          <div class="clock-status">
+            <span class="status-dot out" id="clockDot"></span>
+            <span id="clockStatusText">Не сте пријавени</span>
+          </div>
+        </div>
+        <div class="clock-actions">
+          <button class="btn-clock btn-clock-in" id="btnClockIn" type="button">
+            <svg><use href="#i-play"/></svg>Пријави се
+          </button>
+          <button class="btn-clock btn-clock-out" id="btnClockOut" type="button" disabled>
+            <svg><use href="#i-stop"/></svg>Одјави се
+          </button>
+        </div>
       </div>
     </div>
-    <div class="clock-actions">
-      <select class="leave-select" id="leaveType">
-        <option value="work">Работен ден</option>
-        <option value="sick">Боледување</option>
-        <option value="holiday">Годишен одмор</option>
-      </select>
-      <button class="btn-clock btn-clock-in" id="btnClockIn" type="button">
-        <svg><use href="#i-play"/></svg>Пријави се
-      </button>
-      <button class="btn-clock btn-clock-out" id="btnClockOut" type="button" disabled>
-        <svg><use href="#i-stop"/></svg>Одјави се
-      </button>
-    </div>
-  </div>
 
-  <!-- WORK LOG HISTORY -->
-  <div class="card">
-    <div class="card-header">
-      <span class="card-title">Историја</span>
-      <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Историја</span>
         <input type="month" id="logMonthFilter" class="f-input" style="width:auto;padding:.3rem .6rem"/>
-        <select id="staffFilter" class="f-select doctor-only" style="display:none;width:auto;padding:.3rem .6rem">
-          <option value="">Сите вработени</option>
-        </select>
+      </div>
+      <div class="log-table-wrap">
+        <table>
+          <thead><tr><th>Датум</th><th>Пријава</th><th>Одјава</th><th>Часови</th><th>Тип</th></tr></thead>
+          <tbody id="myLogsBody"><tr><td colspan="5"><div class="skeleton"></div></td></tr></tbody>
+        </table>
+      </div>
+      <div id="myLogTotals" style="display:none;padding:.6rem .8rem 0;font-size:.81rem;color:var(--text-mid);font-weight:600;border-top:2px solid rgba(42,122,122,.08);margin-top:.4rem">
+        Вкупно: <span id="myTotalHours" style="color:var(--teal)">0 ч.</span> · <span id="myTotalDays" style="color:var(--teal)">0</span> работни денови
       </div>
     </div>
-    <div class="log-table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Датум</th>
-            <th class="doctor-only" id="logColEmployee" style="display:none">Вработен</th>
-            <th>Пријава</th>
-            <th>Одјава</th>
-            <th>Часови</th>
-            <th>Тип</th>
-          </tr>
-        </thead>
-        <tbody id="workLogsBody">
-          <tr><td colspan="6"><div class="skeleton"></div></td></tr>
-        </tbody>
-      </table>
+  </div>
+
+  <!-- ── TAB: ТИМ ЕВИДЕНЦИЈА ── -->
+  <div class="tab-panel" id="panel-team">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Евиденција на тимот</span>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+          <select id="teamStaffFilter" class="f-select" style="width:auto;padding:.3rem .6rem"><option value="">Сите вработени</option></select>
+          <input type="month" id="teamMonthFilter" class="f-input" style="width:auto;padding:.3rem .6rem"/>
+        </div>
+      </div>
+      <div class="log-table-wrap">
+        <table>
+          <thead><tr><th>Датум</th><th>Вработен</th><th>Пријава</th><th>Одјава</th><th>Часови</th><th>Тип</th></tr></thead>
+          <tbody id="teamLogsBody"><tr><td colspan="6"><div class="skeleton"></div></td></tr></tbody>
+        </table>
+      </div>
+      <div id="teamLogTotals" style="display:none;padding:.6rem .8rem 0;font-size:.81rem;color:var(--text-mid);font-weight:600;border-top:2px solid rgba(42,122,122,.08);margin-top:.4rem">
+        Вкупно: <span id="teamTotalHours" style="color:var(--teal)">0 ч.</span> · <span id="teamTotalDays" style="color:var(--teal)">0</span> работни денови
+      </div>
     </div>
-    <div id="workLogTotals" style="display:none;padding:.65rem .85rem 0;font-size:.81rem;color:var(--text-mid);font-weight:600;border-top:2px solid rgba(42,122,122,.08);margin-top:.45rem">
-      Вкупно: <span id="totalHoursDisplay" style="color:var(--teal)">0 ч.</span> · <span id="totalDaysDisplay" style="color:var(--teal)">0</span> работни денови
+  </div>
+
+  <!-- ── TAB: ОТСУСТВА ── -->
+  <div class="tab-panel" id="panel-leave">
+    <div class="two-col-grid">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Евидентирај отсуство</span></div>
+        <div class="f-group"><label class="f-label">Вработен</label><select id="leaveWorker" class="f-select"></select></div>
+        <div class="f-group"><label class="f-label">Тип</label>
+          <select id="leaveType" class="f-select"><option value="sick">Боледување</option><option value="holiday">Годишен одмор</option></select>
+        </div>
+        <div class="form-row">
+          <div class="f-group"><label class="f-label">Од датум</label><input type="date" id="leaveFrom" class="f-input"/></div>
+          <div class="f-group"><label class="f-label">До датум</label><input type="date" id="leaveTo" class="f-input"/></div>
+        </div>
+        <div class="f-group"><label class="f-label">Забелешка</label><input type="text" id="leaveNote" class="f-input" placeholder="Опционално…"/></div>
+        <button class="btn-primary" type="button" onclick="addLeave()">
+          <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2.5" viewBox="0 0 24 24"><use href="#i-plus"/></svg>Зачувај отсуство
+        </button>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Евидентирани отсуства</span>
+          <div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center">
+            <select id="leaveListWorker" class="f-select" style="width:auto;padding:.28rem .55rem;font-size:.8rem" onchange="loadLeaveList()"><option value="">Сите</option></select>
+            <input type="month" id="leaveListMonth" class="f-input" style="width:auto;padding:.28rem .55rem;font-size:.8rem" onchange="loadLeaveList()"/>
+            <button class="card-action" onclick="loadLeaveList()"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-refresh"/></svg></button>
+          </div>
+        </div>
+        <div id="leaveListBody"><div class="skeleton"></div><div class="skeleton"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: ДОДАЈ / УРЕДИ ── -->
+  <div class="tab-panel" id="panel-backlog">
+    <div class="two-col-grid">
+      <div class="card">
+        <div class="card-header"><span class="card-title" id="backlogFormTitle">Додај евиденција</span></div>
+        <input type="hidden" id="editLogId"/>
+        <div class="f-group"><label class="f-label">Вработен</label><select id="backlogWorker" class="f-select"></select></div>
+        <div class="f-group"><label class="f-label">Датум</label><input type="date" id="backlogDate" class="f-input"/></div>
+        <div class="form-row">
+          <div class="f-group"><label class="f-label">Пријава</label><input type="time" id="backlogStart" class="f-input"/></div>
+          <div class="f-group"><label class="f-label">Одјава</label><input type="time" id="backlogEnd" class="f-input"/></div>
+        </div>
+        <div class="f-group"><label class="f-label">Тип</label>
+          <select id="backlogType" class="f-select"><option value="work">Работа</option><option value="sick">Боледување</option><option value="holiday">Годишен одмор</option></select>
+        </div>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+          <button class="btn-primary" type="button" onclick="saveBacklog()">
+            <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-check"/></svg>Зачувај
+          </button>
+          <button class="btn-secondary" type="button" id="cancelBacklogBtn" onclick="resetBacklogForm()" style="display:none">Откажи</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Пребарај евиденции</span>
+          <div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center">
+            <select id="backlogListWorker" class="f-select" style="width:auto;padding:.28rem .55rem;font-size:.8rem" onchange="loadBacklogList()"><option value="">Сите</option></select>
+            <input type="month" id="backlogListMonth" class="f-input" style="width:auto;padding:.28rem .55rem;font-size:.8rem" onchange="loadBacklogList()"/>
+          </div>
+        </div>
+        <div class="log-table-wrap">
+          <table>
+            <thead><tr><th>Датум</th><th>Вработен</th><th>Пријава</th><th>Одјава</th><th>Тип</th><th></th></tr></thead>
+            <tbody id="backlogListBody"><tr><td colspan="6"><div class="skeleton"></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </main>
 
+<!-- CLOCK-IN PROMPT MODAL -->
+<div class="modal-overlay" id="clockPromptModal">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-body" style="padding:1.6rem 1.4rem">
+      <div class="prompt-icon"><svg viewBox="0 0 24 24"><use href="#i-clock"/></svg></div>
+      <div class="prompt-title">Време е за пријава!</div>
+      <div class="prompt-sub" id="promptSubText">Вашата смена започнува наскоро.</div>
+      <div class="prompt-shift-badge" id="promptShiftBadge">–</div>
+      <div style="display:flex;gap:.65rem;justify-content:center;flex-wrap:wrap">
+        <button class="btn-primary" type="button" onclick="clockInFromPrompt()">
+          <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-play"/></svg>Пријави се сега
+        </button>
+        <button class="btn-secondary" type="button" onclick="closeModal('clockPromptModal')">Подоцна</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT LOG MODAL -->
+<div class="modal-overlay" id="editLogModal">
+  <div class="modal">
+    <div class="modal-header"><h3>Уреди евиденција</h3><button class="modal-close" type="button" onclick="closeModal('editLogModal')"><svg><use href="#i-x"/></svg></button></div>
+    <div class="modal-body">
+      <input type="hidden" id="modalEditId"/>
+      <div class="f-group"><label class="f-label">Датум</label><input type="date" id="modalEditDate" class="f-input"/></div>
+      <div class="form-row">
+        <div class="f-group"><label class="f-label">Пријава</label><input type="time" id="modalEditStart" class="f-input"/></div>
+        <div class="f-group"><label class="f-label">Одјава</label><input type="time" id="modalEditEnd" class="f-input"/></div>
+      </div>
+      <div class="f-group"><label class="f-label">Тип</label>
+        <select id="modalEditType" class="f-select"><option value="work">Работа</option><option value="sick">Боледување</option><option value="holiday">Годишен одмор</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" type="button" onclick="closeModal('editLogModal')">Откажи</button>
+      <button class="btn-primary" type="button" onclick="saveEditLog()"><svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-check"/></svg>Зачувај</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="modal-overlay" id="confirmDeleteModal">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header"><h3>Избриши евиденција</h3><button class="modal-close" type="button" onclick="closeModal('confirmDeleteModal')"><svg><use href="#i-x"/></svg></button></div>
+    <div class="modal-body"><p style="font-size:.88rem;color:var(--text-mid);line-height:1.6">Дали сте сигурни? Оваа акција не може да се поврати.</p></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" type="button" onclick="closeModal('confirmDeleteModal')">Откажи</button>
+      <button class="btn-danger" type="button" id="confirmDeleteBtn">Избриши</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
-var currentUser = null, currentProfile = null, allStaff = [], activeClock = null;
+var sb = supabase.createClient(
+  'https://pmolxspputemoyvilzyq.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtb2x4c3BwdXRlbW95dmlsenlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwNjI0OTUsImV4cCI6MjA4ODYzODQ5NX0.f4t9wIzvhnrMeh_O4aesS94qyv71LUO1LA3lcyY7i8o'
+);
+
+var currentUser    = null;
+var currentProfile = null;
+var allStaff       = [];
+var activeClock    = null;
+var todayLeave     = null;
+var myShift        = null;
+var promptShown    = false;
+var pendingDeleteId = null;
 
 (async function init() {
-  var now = new Date();
-  var ym = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
-  document.getElementById('logMonthFilter').value = ym;
+  var now   = new Date();
+  var ym    = now.getFullYear() + '-' + pad(now.getMonth() + 1);
+  var today = now.toISOString().slice(0, 10);
+
+  document.getElementById('logMonthFilter').value    = ym;
+  document.getElementById('teamMonthFilter').value   = ym;
+  document.getElementById('leaveListMonth').value    = ym;
+  document.getElementById('backlogListMonth').value  = ym;
+  document.getElementById('leaveFrom').value  = today;
+  document.getElementById('leaveTo').value    = today;
+  document.getElementById('backlogDate').value = today;
 
   startClock();
 
@@ -308,20 +521,22 @@ var currentUser = null, currentProfile = null, allStaff = [], activeClock = null
   document.getElementById('logoutBtn').addEventListener('click', handleLogout);
   document.getElementById('btnClockIn').addEventListener('click', clockIn);
   document.getElementById('btnClockOut').addEventListener('click', clockOut);
-  document.getElementById('logMonthFilter').addEventListener('change', loadWorkLogs);
-  document.getElementById('staffFilter').addEventListener('change', loadWorkLogs);
+  document.getElementById('logMonthFilter').addEventListener('change', loadMyLogs);
+  document.getElementById('teamMonthFilter').addEventListener('change', loadTeamLogs);
+  document.getElementById('teamStaffFilter').addEventListener('change', loadTeamLogs);
+  document.getElementById('confirmDeleteBtn').addEventListener('click', executeDelete);
 
   var res = await sb.auth.getSession();
   if (!res.data || !res.data.session) { window.location.replace('index.html'); return; }
   currentUser = res.data.session.user;
-  sb.auth.onAuthStateChange(function(ev, s) { if (ev === 'SIGNED_OUT') window.location.replace('index.html'); });
+  sb.auth.onAuthStateChange(function(ev) { if (ev === 'SIGNED_OUT') window.location.replace('index.html'); });
 
   await loadProfile();
-  await checkTodayClock();
-  await loadWorkLogs();
-  if (currentProfile && currentProfile.role === 'doctor') await loadStaffForFilter();
+  await Promise.all([checkTodayStatus(), loadMyLogs()]);
+  if (!todayLeave) checkShiftPrompt();
 })();
 
+// ── PROFILE ──
 async function loadProfile() {
   var res = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
   if (res.error || !res.data) return;
@@ -329,141 +544,405 @@ async function loadProfile() {
   var name = res.data.full_name || currentUser.email;
   document.getElementById('sidebarUserName').textContent = name;
   document.getElementById('sidebarUserRole').textContent = res.data.role === 'doctor' ? 'Доктор' : 'Медицинска сестра';
-  document.getElementById('avatarInitial').textContent = (name || '?')[0].toUpperCase();
-  document.getElementById('roleBadge').textContent = res.data.role === 'doctor' ? 'Доктор' : 'Мед. сестра';
+  document.getElementById('avatarInitial').textContent   = (name || '?')[0].toUpperCase();
+  document.getElementById('roleBadge').textContent       = res.data.role === 'doctor' ? 'Доктор' : 'Мед. сестра';
+
   if (res.data.role === 'doctor') {
     document.querySelectorAll('.doctor-only').forEach(function(el) {
       el.style.display = el.classList.contains('nav-section-label') ? 'block' : 'flex';
     });
-    document.getElementById('staffFilter').style.display = 'block';
-    document.getElementById('logColEmployee').style.display = '';
+    document.getElementById('shiftsBtn').style.display = 'inline-flex';
+    await loadStaff();
   }
 }
 
-async function loadStaffForFilter() {
+async function loadStaff() {
   var res = await sb.from('profiles').select('id,full_name,role').order('full_name');
   allStaff = res.data || [];
-  var opts = allStaff.map(function(s) {
-    return '<option value="' + s.id + '">' + esc(s.full_name) + ' (' + (s.role === 'doctor' ? 'Доктор' : 'Сестра') + ')</option>';
-  }).join('');
-  document.getElementById('staffFilter').innerHTML = '<option value="">Сите вработени</option>' + opts;
+  var opts    = allStaff.map(function(s) { return '<option value="' + s.id + '">' + esc(s.full_name) + ' (' + (s.role==='doctor'?'Д':'С') + ')</option>'; }).join('');
+  var allOpt  = '<option value="">Сите вработени</option>';
+  ['teamStaffFilter','leaveListWorker','backlogListWorker'].forEach(function(id){ document.getElementById(id).innerHTML = allOpt + opts; });
+  // required pickers — no "all" option
+  ['leaveWorker','backlogWorker'].forEach(function(id){ document.getElementById(id).innerHTML = opts; });
+  if (allStaff.length) document.getElementById('backlogWorker').value = allStaff[0].id;
 }
 
-/* ── CLOCK ── */
-function startClock() {
-  function tick() {
-    var n = new Date();
-    document.getElementById('liveTime').textContent =
-      String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0') + ':' + String(n.getSeconds()).padStart(2,'0');
-    var days = ['Недела','Понеделник','Вторник','Среда','Четврток','Петок','Сабота'];
-    var el = document.getElementById('clockDate');
-    if (el) el.textContent = days[n.getDay()] + ', ' + String(n.getDate()).padStart(2,'0') + '.' + String(n.getMonth()+1).padStart(2,'0') + '.' + n.getFullYear();
+// ── TODAY STATUS ──
+async function checkTodayStatus() {
+  var today = new Date().toISOString().slice(0, 10);
+  var res   = await sb.from('work_logs').select('*').eq('user_id', currentUser.id).eq('date', today);
+  var logs  = res.data || [];
+
+  var openLog = logs.find(function(l){ return l.log_type === 'work' && !l.end_time; });
+  var sickLog = logs.find(function(l){ return l.log_type === 'sick'; });
+  var holLog  = logs.find(function(l){ return l.log_type === 'holiday'; });
+
+  if (sickLog || holLog) {
+    todayLeave = sickLog || holLog;
+    var banner = document.getElementById('leaveBanner');
+    banner.className = 'leave-banner ' + todayLeave.log_type;
+    banner.style.display = 'flex';
+    document.getElementById('leaveBannerTitle').textContent =
+      todayLeave.log_type === 'sick' ? 'Боледување' : 'Годишен одмор';
+    document.getElementById('leaveBannerSub').textContent =
+      todayLeave.log_type === 'sick'
+        ? 'Денес сте евидентирани на боледување. Не можете да логирате работни часови.'
+        : 'Денес сте на одобрен годишен одмор. Не можете да логирате работни часови.';
+    // hide clock widget for non-doctors
+    if (!currentProfile || currentProfile.role !== 'doctor') {
+      document.getElementById('clockWidgetWrap').style.display = 'none';
+    }
   }
-  tick(); setInterval(tick, 1000);
+
+  if (openLog) { activeClock = openLog.id; setClockedIn(true, 'work'); }
+  else { setClockedIn(false); }
+
+  await loadMyShift();
 }
 
-async function checkTodayClock() {
-  var today = new Date().toISOString().slice(0, 10);
-  var res = await sb.from('work_logs').select('*').eq('user_id', currentUser.id).eq('date', today).is('end_time', null).maybeSingle();
-  if (res.data) { activeClock = res.data.id; setClockedIn(true, res.data.log_type); }
-  else setClockedIn(false);
+async function loadMyShift() {
+  var wsRes = await sb.from('worker_shifts').select('*, shifts(*)').eq('worker_id', currentUser.id).maybeSingle();
+  if (!wsRes.data) { return; }
+  var ws    = wsRes.data;
+  var shift = ws.shifts;
+
+  if (ws.rotation_enabled && ws.rotation_shifts && ws.rotation_start_date) {
+    var rid = resolveRotation(ws);
+    if (rid && rid !== ws.shift_id) {
+      var rr = await sb.from('shifts').select('*').eq('id', rid).single();
+      if (rr.data) shift = rr.data;
+    }
+  }
+
+  var today  = new Date().toISOString().slice(0, 10);
+  var excRes = await sb.from('shift_exceptions').select('*, shifts(*)').eq('worker_id', currentUser.id).eq('date', today).maybeSingle();
+  if (excRes.data) {
+    if (excRes.data.type === 'day_off') {
+      document.getElementById('clockShiftInfo').textContent = 'Денес: слободен ден';
+      myShift = null; return;
+    }
+    if (excRes.data.type === 'shift_override' && excRes.data.shifts) shift = excRes.data.shifts;
+  }
+
+  myShift = shift;
+  if (shift) {
+    document.getElementById('clockShiftInfo').textContent =
+      'Смена: ' + shift.name + ' · ' + shift.start_time.slice(0,5) + ' – ' + shift.end_time.slice(0,5);
+  }
 }
 
-function setClockedIn(on, type) {
-  type = type || 'work';
-  document.getElementById('clockDot').className = 'status-dot' + (on ? '' : ' out');
-  document.getElementById('clockStatusText').textContent = on ? 'Пријавени сте (' + typeLabelMk(type) + ')' : 'Не сте пријавени';
-  document.getElementById('btnClockIn').disabled = on;
-  document.getElementById('btnClockOut').disabled = !on;
-  document.getElementById('leaveType').disabled = on;
-  if (on) document.getElementById('leaveType').value = type;
+function resolveRotation(ws) {
+  var cycle   = ws.rotation_shifts;
+  if (!cycle || !cycle.length) return ws.shift_id;
+  var anchor  = new Date(ws.rotation_start_date + 'T00:00:00');
+  var today   = new Date(new Date().toISOString().slice(0,10) + 'T00:00:00');
+  var days    = Math.floor((today - anchor) / 86400000);
+  var period  = { weekly:7, biweekly:14, monthly:30 }[ws.rotation_type] || 7;
+  var idx     = Math.floor(days / period) % cycle.length;
+  return cycle[idx < 0 ? 0 : idx];
 }
 
+// ── SHIFT PROMPT ──
+function checkShiftPrompt() {
+  if (promptShown || activeClock || !myShift || todayLeave) return;
+  var now  = new Date();
+  var nowM = now.getHours() * 60 + now.getMinutes();
+  var sp   = myShift.start_time.split(':');
+  var shM  = parseInt(sp[0]) * 60 + parseInt(sp[1]);
+  var diff = shM - nowM;
+  if (diff >= -45 && diff <= 45) {
+    promptShown = true;
+    var label = diff > 0 ? 'за ' + diff + ' мин.' : (diff === 0 ? 'сега' : 'пред ' + Math.abs(diff) + ' мин.');
+    document.getElementById('promptSubText').textContent  = 'Вашата смена започнува ' + label + '. Дали сакате да се пријавите?';
+    document.getElementById('promptShiftBadge').textContent = myShift.name + ' · ' + myShift.start_time.slice(0,5) + ' – ' + myShift.end_time.slice(0,5);
+    openModal('clockPromptModal');
+  }
+}
+
+async function clockInFromPrompt() { closeModal('clockPromptModal'); await clockIn(); }
+
+// ── CLOCK IN / OUT ──
 async function clockIn() {
-  var type = document.getElementById('leaveType').value;
-  var today = new Date().toISOString().slice(0, 10);
-  var now = new Date().toTimeString().slice(0, 8);
+  if (todayLeave && currentProfile && currentProfile.role !== 'doctor') {
+    showToast('Не можете да се пријавите — денес сте на ' + typeLabelMk(todayLeave.log_type) + '.', 'error');
+    return;
+  }
+  var today   = new Date().toISOString().slice(0, 10);
+  var nowTime = new Date().toTimeString().slice(0, 8);
   document.getElementById('btnClockIn').disabled = true;
-  var res = await sb.from('work_logs').insert({ user_id: currentUser.id, date: today, start_time: now, log_type: type }).select().single();
+  var res = await sb.from('work_logs').insert({ user_id: currentUser.id, date: today, start_time: nowTime, log_type: 'work' }).select().single();
   if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); document.getElementById('btnClockIn').disabled = false; return; }
-  activeClock = res.data.id; setClockedIn(true, type); showToast('Успешно пријавени!', 'success'); loadWorkLogs();
+  activeClock = res.data.id;
+  setClockedIn(true, 'work');
+  showToast('Успешно пријавени!', 'success');
+  loadMyLogs();
 }
 
 async function clockOut() {
   if (!activeClock) return;
-  var now = new Date().toTimeString().slice(0, 8);
+  // Auto-log current time as clock-out
+  var nowTime = new Date().toTimeString().slice(0, 8);
   document.getElementById('btnClockOut').disabled = true;
-  var res = await sb.from('work_logs').update({ end_time: now }).eq('id', activeClock);
+  var res = await sb.from('work_logs').update({ end_time: nowTime }).eq('id', activeClock);
   if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); document.getElementById('btnClockOut').disabled = false; return; }
-  activeClock = null; setClockedIn(false); showToast('Успешно одјавени!', 'success'); loadWorkLogs();
+  activeClock = null;
+  setClockedIn(false);
+  showToast('Одјавени во ' + nowTime.slice(0,5) + '.', 'success');
+  loadMyLogs();
 }
 
-/* ── WORK LOG ── */
-async function loadWorkLogs() {
+function setClockedIn(on, type) {
+  type = type || 'work';
+  document.getElementById('clockDot').className       = 'status-dot' + (on ? '' : ' out');
+  document.getElementById('clockStatusText').textContent = on ? 'Пријавени сте (' + typeLabelMk(type) + ')' : 'Не сте пријавени';
+  document.getElementById('btnClockIn').disabled  = on;
+  document.getElementById('btnClockOut').disabled = !on;
+}
+
+// ── MY LOGS ──
+async function loadMyLogs() {
   var month = document.getElementById('logMonthFilter').value;
-  var staffSel = document.getElementById('staffFilter').value;
   if (!month) return;
-  var parts = month.split('-'), year = parts[0], mo = parts[1];
-  var from = month + '-01';
-  var to = month + '-' + String(new Date(parseInt(year), parseInt(mo), 0).getDate()).padStart(2, '0');
-  var isDoc = currentProfile && currentProfile.role === 'doctor';
-  var query = sb.from('work_logs').select('*, profiles(full_name)').gte('date', from).lte('date', to).order('date', { ascending: false });
-  if (!isDoc) query = query.eq('user_id', currentUser.id);
-  else if (staffSel) query = query.eq('user_id', staffSel);
-  var res = await query, data = res.data || [];
-  var tbody = document.getElementById('workLogsBody');
-  var cols = isDoc ? 6 : 5;
+  var r   = monthRange(month);
+  var res = await sb.from('work_logs').select('*').eq('user_id', currentUser.id).gte('date', r.from).lte('date', r.to).order('date', { ascending: false });
+  var data = res.data || [];
+  var tbody = document.getElementById('myLogsBody');
   if (!data.length) {
-    tbody.innerHTML = '<tr><td colspan="' + cols + '" style="text-align:center;color:var(--text-light);padding:1.2rem;font-size:.82rem">Нема евиденции за избраниот месец</td></tr>';
-    document.getElementById('workLogTotals').style.display = 'none';
-    return;
+    tbody.innerHTML = emptyRow(5, 'Нема евиденции за избраниот месец');
+    document.getElementById('myLogTotals').style.display = 'none'; return;
   }
   tbody.innerHTML = data.map(function(l) {
     var hrs = (l.start_time && l.end_time) ? calcHours(l.start_time, l.end_time).toFixed(1) : '–';
     return '<tr>' +
-      '<td>' + formatDate(l.date) + '</td>' +
-      (isDoc ? '<td>' + (l.profiles && l.profiles.full_name ? esc(l.profiles.full_name) : '–') + '</td>' : '') +
-      '<td>' + (l.start_time ? l.start_time.slice(0, 5) : '–') + '</td>' +
-      '<td>' + (l.end_time ? l.end_time.slice(0, 5) : '–') + '</td>' +
-      '<td>' + (hrs !== '–' ? hrs + ' ч.' : '–') + '</td>' +
+      '<td>' + formatDate(l.date) + (l.is_backdated ? '<span class="pill pill-backdated">+</span>' : '') + '</td>' +
+      '<td>' + (l.start_time ? l.start_time.slice(0,5) : '–') + '</td>' +
+      '<td>' + (l.end_time   ? l.end_time.slice(0,5)   : '–') + '</td>' +
+      '<td>' + (hrs !== '–'  ? hrs + ' ч.' : '–') + '</td>' +
       '<td><span class="pill pill-' + l.log_type + '">' + typeLabelMk(l.log_type) + '</span></td>' +
     '</tr>';
   }).join('');
-  var completed = data.filter(function(l) { return l.end_time && l.log_type === 'work'; });
-  var totHrs = completed.reduce(function(a, l) { return a + calcHours(l.start_time, l.end_time); }, 0);
-  document.getElementById('totalHoursDisplay').textContent = totHrs.toFixed(1) + ' ч.';
-  document.getElementById('totalDaysDisplay').textContent = completed.length;
-  document.getElementById('workLogTotals').style.display = 'block';
+  var worked = data.filter(function(l){ return l.end_time && l.log_type==='work'; });
+  var totHrs = worked.reduce(function(a,l){ return a + calcHours(l.start_time,l.end_time); }, 0);
+  document.getElementById('myTotalHours').textContent = totHrs.toFixed(1) + ' ч.';
+  document.getElementById('myTotalDays').textContent  = worked.length;
+  document.getElementById('myLogTotals').style.display = 'block';
 }
 
-/* ── HELPERS ── */
-function calcHours(start, end) {
-  if (!start || !end) return 0;
-  var sp = start.split(':'), ep = end.split(':');
-  return ((parseInt(ep[0]) * 60 + parseInt(ep[1])) - (parseInt(sp[0]) * 60 + parseInt(sp[1]))) / 60;
+// ── TEAM LOGS ──
+async function loadTeamLogs() {
+  var month = document.getElementById('teamMonthFilter').value;
+  var staff = document.getElementById('teamStaffFilter').value;
+  if (!month) return;
+  var r = monthRange(month);
+  var q = sb.from('work_logs').select('*, profiles(full_name)').gte('date', r.from).lte('date', r.to).order('date', { ascending: false });
+  if (staff) q = q.eq('user_id', staff);
+  var res  = await q;
+  var data = res.data || [];
+  var tbody = document.getElementById('teamLogsBody');
+  if (!data.length) { tbody.innerHTML = emptyRow(6, 'Нема евиденции'); document.getElementById('teamLogTotals').style.display='none'; return; }
+  tbody.innerHTML = data.map(function(l) {
+    var hrs = (l.start_time && l.end_time) ? calcHours(l.start_time, l.end_time).toFixed(1) : '–';
+    return '<tr>' +
+      '<td>' + formatDate(l.date) + (l.is_backdated ? '<span class="pill pill-backdated">+</span>' : '') + '</td>' +
+      '<td>' + esc((l.profiles && l.profiles.full_name) || '–') + '</td>' +
+      '<td>' + (l.start_time ? l.start_time.slice(0,5) : '–') + '</td>' +
+      '<td>' + (l.end_time   ? l.end_time.slice(0,5)   : '–') + '</td>' +
+      '<td>' + (hrs !== '–'  ? hrs + ' ч.' : '–') + '</td>' +
+      '<td><span class="pill pill-' + l.log_type + '">' + typeLabelMk(l.log_type) + '</span></td>' +
+    '</tr>';
+  }).join('');
+  var worked = data.filter(function(l){ return l.end_time && l.log_type==='work'; });
+  var totHrs = worked.reduce(function(a,l){ return a + calcHours(l.start_time,l.end_time); }, 0);
+  document.getElementById('teamTotalHours').textContent = totHrs.toFixed(1) + ' ч.';
+  document.getElementById('teamTotalDays').textContent  = worked.length;
+  document.getElementById('teamLogTotals').style.display = 'block';
 }
-function formatDate(d) {
-  if (!d) return '–';
-  var dt = new Date(d + 'T00:00:00');
-  return String(dt.getDate()).padStart(2,'0') + '.' + String(dt.getMonth()+1).padStart(2,'0') + '.' + dt.getFullYear();
+
+// ── LEAVE MANAGEMENT ──
+async function addLeave() {
+  var workerId = document.getElementById('leaveWorker').value;
+  var type     = document.getElementById('leaveType').value;
+  var from     = document.getElementById('leaveFrom').value;
+  var to       = document.getElementById('leaveTo').value;
+  if (!workerId || !from || !to) { showToast('Пополнете ги сите полиња.', 'error'); return; }
+  if (from > to) { showToast('Почетниот датум мора да биде пред крајниот.', 'error'); return; }
+
+  var rows = [];
+  var cur  = new Date(from + 'T00:00:00');
+  var end  = new Date(to   + 'T00:00:00');
+  while (cur <= end) {
+    rows.push({ user_id: workerId, date: cur.toISOString().slice(0,10), log_type: type, start_time: '00:00:00', end_time: null, is_backdated: true, edited_by: currentUser.id, edited_at: new Date().toISOString() });
+    cur.setDate(cur.getDate() + 1);
+  }
+
+  var res = await sb.from('work_logs').upsert(rows, { onConflict: 'user_id,date', ignoreDuplicates: true });
+  if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); return; }
+  showToast('Отсуството е евидентирано за ' + rows.length + ' ден(а).', 'success');
+  document.getElementById('leaveNote').value = '';
+  loadLeaveList();
 }
-function typeLabelMk(t) { return { work: 'Работа', sick: 'Боледување', holiday: 'Одмор' }[t] || t; }
-function esc(s) {
-  if (!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+async function loadLeaveList() {
+  var worker = document.getElementById('leaveListWorker').value;
+  var month  = document.getElementById('leaveListMonth').value || new Date().toISOString().slice(0,7);
+  var el     = document.getElementById('leaveListBody');
+  el.innerHTML = '<div class="skeleton"></div>';
+  var r  = monthRange(month);
+  var q  = sb.from('work_logs').select('*, profiles(full_name)').in('log_type',['sick','holiday']).gte('date',r.from).lte('date',r.to).order('date',{ascending:false});
+  if (worker) q = q.eq('user_id', worker);
+  var res  = await q;
+  var data = res.data || [];
+  if (!data.length) { el.innerHTML = '<p style="font-size:.82rem;color:var(--text-light);padding:.5rem 0">Нема евидентирани отсуства.</p>'; return; }
+  el.innerHTML = data.map(function(l) {
+    return '<div class="leave-list-item">' +
+      '<div class="leave-list-item-info">' +
+        '<div class="leave-list-item-name">' + esc((l.profiles && l.profiles.full_name) || '–') + '</div>' +
+        '<div class="leave-list-item-meta">' + formatDate(l.date) + ' · <span class="pill pill-' + l.log_type + '">' + typeLabelMk(l.log_type) + '</span></div>' +
+      '</div>' +
+      '<button class="btn-danger" style="padding:.28rem .55rem" onclick="deleteLog(\'' + l.id + '\')">' +
+        '<svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-trash"/></svg>' +
+      '</button>' +
+    '</div>';
+  }).join('');
 }
-function showToast(msg, type) {
-  var t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'show' + (type ? ' ' + type : '');
-  clearTimeout(t._tid); t._tid = setTimeout(function() { t.className = type || ''; }, 3500);
+
+// ── BACKLOG / EDIT ──
+async function saveBacklog() {
+  var editId = document.getElementById('editLogId').value;
+  var worker = document.getElementById('backlogWorker').value;
+  var date   = document.getElementById('backlogDate').value;
+  var start  = document.getElementById('backlogStart').value;
+  var end    = document.getElementById('backlogEnd').value;
+  var type   = document.getElementById('backlogType').value;
+  if (!worker || !date) { showToast('Изберете вработен и датум.', 'error'); return; }
+
+  var payload = { user_id: worker, date: date, start_time: start ? start+':00' : null, end_time: end ? end+':00' : null, log_type: type, is_backdated: true, edited_by: currentUser.id, edited_at: new Date().toISOString() };
+  var res = editId
+    ? await sb.from('work_logs').update(payload).eq('id', editId)
+    : await sb.from('work_logs').insert(payload);
+
+  if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); return; }
+  showToast(editId ? 'Ажурирано!' : 'Додадено!', 'success');
+  resetBacklogForm();
+  loadBacklogList();
+  loadMyLogs();
 }
-function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('show'); }
-function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('show'); }
-async function handleLogout() {
-  document.getElementById('logoutBtn').disabled = true;
-  try { await sb.auth.signOut(); } catch(e) {}
-  window.location.replace('index.html');
+
+function resetBacklogForm() {
+  document.getElementById('editLogId').value    = '';
+  document.getElementById('backlogDate').value  = new Date().toISOString().slice(0,10);
+  document.getElementById('backlogStart').value = '';
+  document.getElementById('backlogEnd').value   = '';
+  document.getElementById('backlogType').value  = 'work';
+  if (allStaff.length) document.getElementById('backlogWorker').value = allStaff[0].id;
+  document.getElementById('backlogFormTitle').textContent     = 'Додај евиденција';
+  document.getElementById('cancelBacklogBtn').style.display   = 'none';
 }
+
+async function loadBacklogList() {
+  var worker = document.getElementById('backlogListWorker').value;
+  var month  = document.getElementById('backlogListMonth').value || new Date().toISOString().slice(0,7);
+  var tbody  = document.getElementById('backlogListBody');
+  tbody.innerHTML = '<tr><td colspan="6"><div class="skeleton"></div></td></tr>';
+  var r  = monthRange(month);
+  var q  = sb.from('work_logs').select('*, profiles(full_name)').gte('date',r.from).lte('date',r.to).order('date',{ascending:false});
+  if (worker) q = q.eq('user_id', worker);
+  var res  = await q;
+  var data = res.data || [];
+  if (!data.length) { tbody.innerHTML = emptyRow(6, 'Нема евиденции'); return; }
+  tbody.innerHTML = data.map(function(l) {
+    // Serialize l safely for inline onclick
+    var lJson = JSON.stringify(l).replace(/'/g, '&#39;');
+    return '<tr>' +
+      '<td>' + formatDate(l.date) + '</td>' +
+      '<td>' + esc((l.profiles && l.profiles.full_name) || '–') + '</td>' +
+      '<td>' + (l.start_time ? l.start_time.slice(0,5) : '–') + '</td>' +
+      '<td>' + (l.end_time   ? l.end_time.slice(0,5)   : '–') + '</td>' +
+      '<td><span class="pill pill-' + l.log_type + '">' + typeLabelMk(l.log_type) + '</span></td>' +
+      '<td><div class="action-btns">' +
+        '<button class="btn-edit-log" onclick="openEditLog(\'' + l.id + '\',\'' + l.date + '\',\'' + (l.start_time||'').slice(0,5) + '\',\'' + (l.end_time||'').slice(0,5) + '\',\'' + l.log_type + '\')" title="Уреди">' +
+          '<svg><use href="#i-edit"/></svg></button>' +
+        '<button class="btn-del-log" onclick="deleteLog(\'' + l.id + '\')" title="Избриши">' +
+          '<svg><use href="#i-trash"/></svg></button>' +
+      '</div></td>' +
+    '</tr>';
+  }).join('');
+}
+
+function openEditLog(id, date, start, end, type) {
+  document.getElementById('modalEditId').value    = id;
+  document.getElementById('modalEditDate').value  = date;
+  document.getElementById('modalEditStart').value = start;
+  document.getElementById('modalEditEnd').value   = end;
+  document.getElementById('modalEditType').value  = type;
+  openModal('editLogModal');
+}
+
+async function saveEditLog() {
+  var id    = document.getElementById('modalEditId').value;
+  var date  = document.getElementById('modalEditDate').value;
+  var start = document.getElementById('modalEditStart').value;
+  var end   = document.getElementById('modalEditEnd').value;
+  var type  = document.getElementById('modalEditType').value;
+  var res = await sb.from('work_logs').update({ date: date, start_time: start ? start+':00' : null, end_time: end ? end+':00' : null, log_type: type, edited_by: currentUser.id, edited_at: new Date().toISOString() }).eq('id', id);
+  if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); return; }
+  closeModal('editLogModal');
+  showToast('Зачувано!', 'success');
+  loadBacklogList(); loadTeamLogs(); loadMyLogs();
+}
+
+function deleteLog(id) { pendingDeleteId = id; openModal('confirmDeleteModal'); }
+
+async function executeDelete() {
+  if (!pendingDeleteId) return;
+  var res = await sb.from('work_logs').delete().eq('id', pendingDeleteId);
+  if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); return; }
+  pendingDeleteId = null;
+  closeModal('confirmDeleteModal');
+  showToast('Избришано.', 'success');
+  loadBacklogList(); loadLeaveList(); loadMyLogs();
+}
+
+// ── TAB SWITCHING ──
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById('tab-'+name).classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
+  if (name==='team')    loadTeamLogs();
+  if (name==='leave')   loadLeaveList();
+  if (name==='backlog') loadBacklogList();
+}
+
+// ── CLOCK ──
+function startClock() {
+  function tick() {
+    var n = new Date();
+    document.getElementById('liveTime').textContent = pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());
+    var days = ['Недела','Понеделник','Вторник','Среда','Четврток','Петок','Сабота'];
+    var el = document.getElementById('clockDate');
+    if (el) el.textContent = days[n.getDay()] + ', ' + pad(n.getDate()) + '.' + pad(n.getMonth()+1) + '.' + n.getFullYear();
+  }
+  tick(); setInterval(tick, 1000);
+}
+
+// ── HELPERS ──
+function monthRange(m) {
+  var p = m.split('-'), yr = parseInt(p[0]), mo = parseInt(p[1]);
+  return { from: m+'-01', to: m+'-'+pad(new Date(yr,mo,0).getDate()) };
+}
+function calcHours(s,e){ if(!s||!e)return 0; var sp=s.split(':'),ep=e.split(':'); return((parseInt(ep[0])*60+parseInt(ep[1]))-(parseInt(sp[0])*60+parseInt(sp[1])))/60; }
+function formatDate(d){ if(!d)return'–'; var dt=new Date(d+'T00:00:00'); return pad(dt.getDate())+'.'+pad(dt.getMonth()+1)+'.'+dt.getFullYear(); }
+function pad(n){ return String(n).padStart(2,'0'); }
+function typeLabelMk(t){ return{work:'Работа',sick:'Боледување',holiday:'Одмор'}[t]||t; }
+function emptyRow(cols,msg){ return '<tr><td colspan="'+cols+'" style="text-align:center;color:var(--text-light);padding:1.2rem;font-size:.82rem">'+msg+'</td></tr>'; }
+function esc(s){ if(!s)return''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function showToast(msg,type){ var t=document.getElementById('toast'); t.textContent=msg; t.className='show'+(type?' '+type:''); clearTimeout(t._tid); t._tid=setTimeout(function(){t.className=type||'';},3500); }
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('show'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open');  document.getElementById('sidebarOverlay').classList.remove('show'); }
+async function handleLogout(){ document.getElementById('logoutBtn').disabled=true; try{await sb.auth.signOut();}catch(e){} window.location.replace('index.html'); }
 </script>
 </body>
 </html>

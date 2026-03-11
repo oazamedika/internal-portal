@@ -290,17 +290,13 @@
         <h3>Датум и час</h3>
         <div id="liveTime">00:00:00</div>
         <div class="clock-date" id="clockDate"></div>
+        <div class="clock-shift" id="clockShiftInfo" style="font-size:.75rem;color:rgba(255,255,255,.75);margin-top:.18rem;font-weight:600"></div>
         <div class="clock-status">
           <span class="status-dot out" id="clockDot"></span>
           <span id="clockStatusText">Не сте пријавени</span>
         </div>
       </div>
       <div class="clock-actions">
-        <select class="leave-select" id="leaveType">
-          <option value="work">Работен ден</option>
-          <option value="sick">Боледување</option>
-          <option value="holiday">Годишен одмор</option>
-        </select>
         <button class="btn-clock btn-clock-in" id="btnClockIn" type="button">
           <svg><use href="#i-play"/></svg>Пријави се
         </button>
@@ -436,10 +432,31 @@
     </div>
   </div>
 </div>
+<!-- SHIFT CLOCK-IN PROMPT MODAL -->
+<div class="modal-overlay" id="shiftPromptModal">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-body" style="padding:1.6rem 1.4rem;text-align:center">
+      <div style="width:52px;height:52px;background:var(--teal-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .9rem">
+        <svg width="24" height="24" stroke="var(--teal)" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--text);margin-bottom:.4rem">Време е за пријава!</div>
+      <div id="shiftPromptSub" style="font-size:.86rem;color:var(--text-light);line-height:1.55;margin-bottom:.9rem">Вашата смена започнува наскоро.</div>
+      <div id="shiftPromptBadge" style="background:var(--teal-light);border-radius:10px;padding:.6rem 1rem;font-size:.85rem;font-weight:700;color:var(--teal);margin-bottom:1.2rem">–</div>
+      <div style="display:flex;gap:.65rem;justify-content:center;flex-wrap:wrap">
+        <button class="btn-primary" type="button" id="shiftPromptClockInBtn">
+          <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Пријави се сега
+        </button>
+        <button class="btn-secondary" type="button" onclick="closeModal('shiftPromptModal')">Подоцна</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
 var currentUser=null,currentProfile=null,allStaff=[],activeClock=null;
+var myShift=null,promptShown=false,todayLeave=null;
 
 (async function init(){
   // Immediately switch to the requested section before any network calls — prevents flash
@@ -466,6 +483,7 @@ var currentUser=null,currentProfile=null,allStaff=[],activeClock=null;
   document.getElementById('cancelEditModal').addEventListener('click',function(){closeModal('editUserModal');});
   document.getElementById('saveEditBtn').addEventListener('click',saveEditUser);
   document.getElementById('editUserModal').addEventListener('click',function(e){if(e.target===this)closeModal('editUserModal');});
+  document.getElementById('shiftPromptClockInBtn').addEventListener('click',function(){ closeModal('shiftPromptModal'); clockIn(); });
   var res=await sb.auth.getSession();
   if(!res.data||!res.data.session){window.location.replace('index.html');return;}
   currentUser=res.data.session.user;
@@ -498,6 +516,9 @@ function applyRoleUI(role,name){
 async function bootDashboard(){
   await Promise.all([loadStats(),loadRecentLogs(),loadUpcomingTasks(),checkTodayClock()]);
   if(currentProfile&&currentProfile.role==='doctor'){await loadStaffList();await loadTeamToday();}
+  // Shift-aware features
+  await loadMyShift();
+  if(!todayLeave&&!activeClock) checkShiftPrompt();
 }
 
 /* ── CLOCK ── */
@@ -514,8 +535,21 @@ function startClock(){
 }
 async function checkTodayClock(){
   var today=new Date().toISOString().slice(0,10);
-  var res=await sb.from('work_logs').select('*').eq('user_id',currentUser.id).eq('date',today).is('end_time',null).maybeSingle();
-  if(res.data){activeClock=res.data.id;setClockedIn(true,res.data.log_type);}else setClockedIn(false);
+  var res=await sb.from('work_logs').select('*').eq('user_id',currentUser.id).eq('date',today);
+  var logs=res.data||[];
+  var openLog=logs.find(function(l){return l.log_type==='work'&&!l.end_time;});
+  var sickLog=logs.find(function(l){return l.log_type==='sick';});
+  var holLog =logs.find(function(l){return l.log_type==='holiday';});
+  if(sickLog||holLog){
+    todayLeave=sickLog||holLog;
+    if(!currentProfile||currentProfile.role!=='doctor'){
+      document.getElementById('btnClockIn').disabled=true;
+      document.getElementById('clockStatusText').textContent='Денес сте на '+(todayLeave.log_type==='sick'?'боледување':'одмор');
+      document.getElementById('clockDot').className='status-dot out';
+    }
+  }
+  if(openLog){activeClock=openLog.id;setClockedIn(true,openLog.log_type);}
+  else if(!todayLeave) setClockedIn(false);
 }
 function setClockedIn(on,type){
   type=type||'work';
@@ -523,15 +557,14 @@ function setClockedIn(on,type){
   document.getElementById('clockStatusText').textContent=on?'Пријавени сте ('+typeLabelMk(type)+')':'Не сте пријавени';
   document.getElementById('btnClockIn').disabled=on;
   document.getElementById('btnClockOut').disabled=!on;
-  document.getElementById('leaveType').disabled=on;
-  if(on)document.getElementById('leaveType').value=type;
 }
 async function clockIn(){
-  var type=document.getElementById('leaveType').value,today=new Date().toISOString().slice(0,10),now=new Date().toTimeString().slice(0,8);
+  if(todayLeave&&currentProfile&&currentProfile.role!=='doctor'){showToast('Денес сте на '+typeLabelMk(todayLeave.log_type)+'. Не можете да се пријавите.','error');return;}
+  var today=new Date().toISOString().slice(0,10),now=new Date().toTimeString().slice(0,8);
   document.getElementById('btnClockIn').disabled=true;
-  var res=await sb.from('work_logs').insert({user_id:currentUser.id,date:today,start_time:now,log_type:type}).select().single();
+  var res=await sb.from('work_logs').insert({user_id:currentUser.id,date:today,start_time:now,log_type:'work'}).select().single();
   if(res.error){showToast('Грешка: '+res.error.message,'error');document.getElementById('btnClockIn').disabled=false;return;}
-  activeClock=res.data.id;setClockedIn(true,type);showToast('Успешно пријавени!','success');loadStats();loadRecentLogs();
+  activeClock=res.data.id;setClockedIn(true,'work');showToast('Успешно пријавени!','success');loadStats();loadRecentLogs();
 }
 async function clockOut(){
   if(!activeClock)return;
@@ -539,7 +572,44 @@ async function clockOut(){
   document.getElementById('btnClockOut').disabled=true;
   var res=await sb.from('work_logs').update({end_time:now}).eq('id',activeClock);
   if(res.error){showToast('Грешка: '+res.error.message,'error');document.getElementById('btnClockOut').disabled=false;return;}
-  activeClock=null;setClockedIn(false);showToast('Успешно одјавени!','success');loadStats();loadRecentLogs();
+  activeClock=null;setClockedIn(false);showToast('Одјавени во '+now.slice(0,5)+'.','success');loadStats();loadRecentLogs();
+}
+
+/* ── SHIFT LOGIC ── */
+async function loadMyShift(){
+  var wsRes=await sb.from('worker_shifts').select('*, shifts(*)').eq('worker_id',currentUser.id).maybeSingle();
+  if(!wsRes.data){document.getElementById('clockShiftInfo').textContent='';return;}
+  var ws=wsRes.data,shift=ws.shifts;
+  if(ws.rotation_enabled&&ws.rotation_shifts&&ws.rotation_start_date){
+    var rid=resolveRotation(ws);
+    if(rid&&rid!==ws.shift_id){var rr=await sb.from('shifts').select('*').eq('id',rid).single();if(rr.data)shift=rr.data;}
+  }
+  var today=new Date().toISOString().slice(0,10);
+  var excRes=await sb.from('shift_exceptions').select('*, shifts(*)').eq('worker_id',currentUser.id).eq('date',today).maybeSingle();
+  if(excRes.data){
+    if(excRes.data.type==='day_off'){document.getElementById('clockShiftInfo').textContent='Денес: слободен ден';myShift=null;return;}
+    if(excRes.data.type==='shift_override'&&excRes.data.shifts)shift=excRes.data.shifts;
+  }
+  myShift=shift;
+  if(shift)document.getElementById('clockShiftInfo').textContent='Смена: '+shift.name+' · '+shift.start_time.slice(0,5)+' – '+shift.end_time.slice(0,5);
+}
+function resolveRotation(ws){
+  var cycle=ws.rotation_shifts;if(!cycle||!cycle.length)return ws.shift_id;
+  var anchor=new Date(ws.rotation_start_date+'T00:00:00'),today=new Date(new Date().toISOString().slice(0,10)+'T00:00:00');
+  var days=Math.floor((today-anchor)/86400000),period={weekly:7,biweekly:14,monthly:30}[ws.rotation_type]||7;
+  var idx=Math.floor(days/period)%cycle.length;return cycle[idx<0?0:idx];
+}
+function checkShiftPrompt(){
+  if(promptShown||activeClock||!myShift||todayLeave)return;
+  var now=new Date(),nowM=now.getHours()*60+now.getMinutes();
+  var sp=myShift.start_time.split(':'),shM=parseInt(sp[0])*60+parseInt(sp[1]),diff=shM-nowM;
+  if(diff>=-45&&diff<=45){
+    promptShown=true;
+    var label=diff>0?'за '+diff+' мин.':(diff===0?'сега':'пред '+Math.abs(diff)+' мин.');
+    document.getElementById('shiftPromptSub').textContent='Вашата смена започнува '+label+'. Дали сакате да се пријавите?';
+    document.getElementById('shiftPromptBadge').textContent=myShift.name+' · '+myShift.start_time.slice(0,5)+' – '+myShift.end_time.slice(0,5);
+    openModal('shiftPromptModal');
+  }
 }
 
 /* ── STATS ── */
