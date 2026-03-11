@@ -163,6 +163,23 @@
     #toast.show{transform:translateY(0);opacity:1}
     #toast.success{background:var(--teal-dark)}
     #toast.error{background:var(--red)}
+    /* AVATAR */
+    .user-avatar{overflow:hidden}
+    .user-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+    .avatar-upload-wrap{display:flex;flex-direction:column;align-items:center;gap:.7rem;margin-bottom:1.2rem;padding-bottom:1.2rem;border-bottom:1px solid rgba(42,122,122,.08)}
+    .avatar-preview{width:80px;height:80px;border-radius:50%;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:var(--teal);overflow:hidden;border:3px solid rgba(42,122,122,.15);flex-shrink:0}
+    .avatar-preview img{width:100%;height:100%;object-fit:cover}
+    .avatar-upload-btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:6px;padding:.45rem .9rem;background:var(--teal-light);color:var(--teal);border:1px solid rgba(42,122,122,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s}
+    .avatar-upload-btn:hover{background:var(--teal);color:#fff}
+    .avatar-upload-btn input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+    .avatar-upload-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2;flex-shrink:0}
+    .info-row{display:flex;justify-content:space-between;align-items:center;padding:.42rem 0;border-bottom:1px solid rgba(42,122,122,.06);font-size:.81rem}
+    .info-row:last-child{border-bottom:none}
+    .info-row-label{color:var(--text-light);font-weight:600}
+    .info-row-val{color:var(--text);font-weight:700;text-align:right}
+    .info-row-val.good{color:var(--green)}
+    .info-row-val.warn{color:var(--amber)}
+    .info-row-val.bad{color:var(--red)}
     /* MOBILE */
     .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:199;opacity:0;pointer-events:none;transition:opacity .3s}
     .sidebar-overlay.show{opacity:1;pointer-events:auto}
@@ -225,6 +242,7 @@
       <div class="user-role" id="sidebarUserRole">…</div>
     </div>
   </div>
+
   <nav class="sidebar-nav">
     <div class="nav-section-label">Мени</div>
     <a class="nav-link active" data-page="dashboard" onclick="navigate('dashboard')">
@@ -348,22 +366,32 @@
     <div class="two-col">
       <div class="card">
         <div class="card-header"><span class="card-title">Лични податоци</span></div>
+        <!-- Avatar upload -->
+        <div class="avatar-upload-wrap">
+          <div class="avatar-preview" id="profileAvatarPreview">–</div>
+          <label class="avatar-upload-btn">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Промени слика
+            <input type="file" id="avatarFileInput" accept="image/*"/>
+          </label>
+          <span id="avatarUploadStatus" style="font-size:.72rem;color:var(--text-light)"></span>
+        </div>
         <div class="f-group"><label class="f-label">Целосно ime</label><input type="text" id="pFullName" class="f-input"/></div>
         <div class="f-group"><label class="f-label">Е-пошта</label><input type="email" id="pEmail" class="f-input" disabled style="opacity:.55"/></div>
         <div class="f-group"><label class="f-label">Телефон</label><input type="tel" id="pPhone" class="f-input" placeholder="+389 70 000 000"/></div>
         <div class="f-group"><label class="f-label">Позиција</label><input type="text" id="pJobTitle" class="f-input"/></div>
         <div class="f-group"><label class="f-label">Датум на вработување</label><input type="date" id="pEmployedDate" class="f-input"/></div>
         <div class="f-group"><label class="f-label">Денови одмор</label><input type="number" id="pLeaveDays" class="f-input" min="0" max="60"/></div>
+        <!-- Password compact row -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem .9rem;background:var(--cream);border-radius:9px;border:2px solid rgba(42,122,122,.1);margin-bottom:1rem;gap:.7rem;flex-wrap:wrap">
+          <span style="font-size:.82rem;color:var(--text-mid);font-weight:600">Лозинка — испрати линк за ресетирање на е-пошта</span>
+          <button class="btn-secondary" type="button" id="pwdResetBtn" style="flex-shrink:0"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-key"/></svg>Испрати</button>
+        </div>
         <button class="btn-primary" type="button" id="saveProfileBtn"><svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-check"/></svg>Зачувај</button>
       </div>
       <div class="card">
-        <div class="card-header"><span class="card-title">Лозинка</span></div>
-        <p style="font-size:.85rem;color:var(--text-light);margin-bottom:1rem;line-height:1.6">Ќе добиете линк за ресетирање на вашата е-пошта.</p>
-        <button class="btn-primary" type="button" id="pwdResetBtn"><svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-key"/></svg>Испрати линк</button>
-        <div style="margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid rgba(42,122,122,.08)">
-          <div style="font-family:'Playfair Display',serif;font-size:.92rem;color:var(--text);margin-bottom:.65rem">Информации</div>
-          <div style="font-size:.81rem;color:var(--text-mid);display:flex;flex-direction:column;gap:.4rem" id="accountInfo"></div>
-        </div>
+        <div class="card-header"><span class="card-title">Информации за профилот</span></div>
+        <div id="accountInfo"></div>
       </div>
     </div>
   </section>
@@ -500,12 +528,14 @@ async function loadProfile(){
   var res=await sb.from('profiles').select('*').eq('id',currentUser.id).single();
   if(res.error||!res.data){showToast('Грешка при вчитување: '+(res.error?res.error.message:''),'error');return;}
   currentProfile=res.data;
-  applyRoleUI(res.data.role,res.data.full_name);
+  applyRoleUI(res.data.role,res.data.full_name,res.data.avatar_url);
 }
-function applyRoleUI(role,name){
+function applyRoleUI(role,name,avatarUrl){
   document.getElementById('sidebarUserName').textContent=name||currentUser.email;
   document.getElementById('sidebarUserRole').textContent=role==='doctor'?'Доктор':'Медицинска сестра';
-  document.getElementById('avatarInitial').textContent=(name||'?')[0].toUpperCase();
+  var av=document.getElementById('avatarInitial');
+  if(avatarUrl){av.innerHTML='<img src="'+avatarUrl+'" alt=""/>';}
+  else{av.textContent=(name||'?')[0].toUpperCase();}
   document.getElementById('roleBadge').textContent=role==='doctor'?'Доктор':'Мед. сестра';
   if(role==='doctor'){
     document.querySelectorAll('.doctor-only').forEach(function(el){el.style.display=el.classList.contains('nav-section-label')?'block':'flex';});
@@ -668,20 +698,100 @@ function statusLabel(s){return{pending:'Во чекање',in_progress:'Во т�
 function loadSettingsPage(){
   if(!currentProfile)return;
   var p=currentProfile;
+  var isNurse=p.role!=='doctor';
   document.getElementById('pFullName').value=p.full_name||'';
   document.getElementById('pEmail').value=currentUser.email||'';
   document.getElementById('pPhone').value=p.phone||'';
-  document.getElementById('pJobTitle').value=p.job_title||'';
-  document.getElementById('pEmployedDate').value=p.employed_date||'';
-  document.getElementById('pLeaveDays').value=p.leave_days!=null?p.leave_days:20;
-  document.getElementById('accountInfo').innerHTML='<div>Улога: <strong>'+(p.role==='doctor'?'Доктор':'Медицинска сестра')+'</strong></div><div>Вработен/а од: <strong>'+(p.employed_date?formatDate(p.employed_date):'–')+'</strong></div><div>Денови одмор: <strong>'+((p.leave_days!=null?p.leave_days:20))+' денови</strong></div>';
+  // Nurse: lock job title, employed date, leave days
+  var jobTitleEl=document.getElementById('pJobTitle');
+  var empDateEl=document.getElementById('pEmployedDate');
+  var leaveDaysEl=document.getElementById('pLeaveDays');
+  jobTitleEl.value=p.job_title||'';
+  empDateEl.value=p.employed_date||'';
+  leaveDaysEl.value=p.leave_days!=null?p.leave_days:20;
+  if(isNurse){
+    jobTitleEl.disabled=true;jobTitleEl.style.opacity='.55';
+    empDateEl.disabled=true;empDateEl.style.opacity='.55';
+    leaveDaysEl.disabled=true;leaveDaysEl.style.opacity='.55';
+  } else {
+    jobTitleEl.disabled=false;jobTitleEl.style.opacity='';
+    empDateEl.disabled=false;empDateEl.style.opacity='';
+    leaveDaysEl.disabled=false;leaveDaysEl.style.opacity='';
+  }
+  // Avatar preview
+  var prev=document.getElementById('profileAvatarPreview');
+  if(p.avatar_url){prev.innerHTML='<img src="'+p.avatar_url+'" alt=""/>';}
+  else{prev.textContent=(p.full_name||'?')[0].toUpperCase();}
+  // Rich info panel
+  renderAccountInfo(p);
+  // Avatar file input listener (attach once)
+  var fileInput=document.getElementById('avatarFileInput');
+  fileInput.onchange=function(){uploadAvatar(this.files[0]);};
+}
+async function renderAccountInfo(p){
+  var leaveDays=p.leave_days!=null?p.leave_days:20;
+  var now=new Date(),year=now.getFullYear(),month=now.getMonth()+1;
+  var from=year+'-'+String(month).padStart(2,'0')+'-01';
+  var to=year+'-'+String(month).padStart(2,'0')+'-'+String(new Date(year,month,0).getDate()).padStart(2,'0');
+  var logsRes=await sb.from('work_logs').select('*').eq('user_id',currentUser.id).gte('date',from).lte('date',to);
+  var allLogsRes=await sb.from('work_logs').select('*').eq('user_id',currentUser.id);
+  var logs=logsRes.data||[],allLogs=allLogsRes.data||[];
+  var usedHoliday=allLogs.filter(function(l){return l.log_type==='holiday';}).length;
+  var remaining=Math.max(0,leaveDays-usedHoliday);
+  var totalSick=allLogs.filter(function(l){return l.log_type==='sick';}).length;
+  var workDaysMonth=logs.filter(function(l){return l.log_type==='work'&&l.end_time;}).length;
+  var totalHrsMonth=logs.filter(function(l){return l.end_time&&l.log_type==='work';}).reduce(function(a,l){return a+calcHours(l.start_time,l.end_time);},0);
+  var avgHrs=workDaysMonth>0?(totalHrsMonth/workDaysMonth).toFixed(1):0;
+  var taskRes=await sb.from('tasks').select('id',{count:'exact',head:true}).eq('assignee_id',currentUser.id).in('status',['pending','in_progress']);
+  var tasksDone=await sb.from('tasks').select('id',{count:'exact',head:true}).eq('assignee_id',currentUser.id).eq('status','completed');
+  var yearsEmp='–';
+  if(p.employed_date){var ed=new Date(p.employed_date),diff=now-ed,yrs=Math.floor(diff/31536000000),mos=Math.floor((diff%31536000000)/2592000000);yearsEmp=(yrs>0?yrs+' год. ':'')+(mos>0?mos+' мес.':'< 1 мес.');}
+  var remClass=remaining<=3?'bad':remaining<=7?'warn':'good';
+  document.getElementById('accountInfo').innerHTML=
+    '<div class="info-row"><span class="info-row-label">Улога</span><span class="info-row-val">'+(p.role==='doctor'?'Доктор':'Медицинска сестра')+'</span></div>'+
+    '<div class="info-row"><span class="info-row-label">Вработен/а од</span><span class="info-row-val">'+(p.employed_date?formatDate(p.employed_date):'–')+'</span></div>'+
+    '<div class="info-row"><span class="info-row-label">Стаж</span><span class="info-row-val">'+yearsEmp+'</span></div>'+
+    '<div class="info-row"><span class="info-row-label">Денови одмор (вкупно)</span><span class="info-row-val">'+leaveDays+' ден.</span></div>'+
+    '<div class="info-row"><span class="info-row-label">Искористен одмор</span><span class="info-row-val">'+usedHoliday+' ден.</span></div>'+
+    '<div class="info-row"><span class="info-row-label">Преостанат одмор</span><span class="info-row-val '+remClass+'">'+remaining+' ден.</span></div>'+
+    '<div class="info-row"><span class="info-row-label">Вкупно боледување</span><span class="info-row-val">'+(totalSick>0?'<span class="bad">'+totalSick+' ден.</span>':totalSick+' ден.')+'</span></div>'+
+    '<div class="info-row"><span class="info-row-label">Работни денови (овој мес.)</span><span class="info-row-val">'+workDaysMonth+'</span></div>'+
+    '<div class="info-row"><span class="info-row-label">Работни часови (овој мес.)</span><span class="info-row-val">'+Math.round(totalHrsMonth)+' ч.</span></div>'+
+    '<div class="info-row"><span class="info-row-label">Просек часови / ден</span><span class="info-row-val">'+avgHrs+' ч.</span></div>'+
+    '<div class="info-row"><span class="info-row-label">Активни задачи</span><span class="info-row-val">'+(taskRes.count||0)+'</span></div>'+
+    '<div class="info-row"><span class="info-row-label">Завршени задачи</span><span class="info-row-val good">'+(tasksDone.count||0)+'</span></div>';
+}
+async function uploadAvatar(file){
+  if(!file)return;
+  var status=document.getElementById('avatarUploadStatus');
+  status.textContent='Се прикачува…';
+  var ext=file.name.split('.').pop();
+  var path=currentUser.id+'.'+ext;
+  var res=await sb.storage.from('avatars').upload(path,file,{upsert:true,contentType:file.type});
+  if(res.error){status.textContent='Грешка: '+res.error.message;return;}
+  var urlRes=sb.storage.from('avatars').getPublicUrl(path);
+  var url=urlRes.data.publicUrl+'?t='+Date.now();
+  await sb.from('profiles').update({avatar_url:url}).eq('id',currentUser.id);
+  currentProfile.avatar_url=url;
+  // Update sidebar
+  var av=document.getElementById('avatarInitial');av.innerHTML='<img src="'+url+'" alt=""/>';
+  // Update profile preview
+  document.getElementById('profileAvatarPreview').innerHTML='<img src="'+url+'" alt=""/>';
+  status.textContent='Зачувано!';
+  setTimeout(function(){status.textContent='';},3000);
 }
 async function saveProfile(){
   var btn=document.getElementById('saveProfileBtn');btn.disabled=true;
-  var updates={full_name:document.getElementById('pFullName').value.trim(),phone:document.getElementById('pPhone').value.trim(),job_title:document.getElementById('pJobTitle').value.trim(),employed_date:document.getElementById('pEmployedDate').value||null,leave_days:parseInt(document.getElementById('pLeaveDays').value)||20};
+  var isNurse=currentProfile&&currentProfile.role!=='doctor';
+  var updates={full_name:document.getElementById('pFullName').value.trim(),phone:document.getElementById('pPhone').value.trim()};
+  if(!isNurse){
+    updates.job_title=document.getElementById('pJobTitle').value.trim();
+    updates.employed_date=document.getElementById('pEmployedDate').value||null;
+    updates.leave_days=parseInt(document.getElementById('pLeaveDays').value)||20;
+  }
   var res=await sb.from('profiles').update(updates).eq('id',currentUser.id);btn.disabled=false;
   if(res.error){showToast('Грешка: '+res.error.message,'error');return;}
-  currentProfile=Object.assign({},currentProfile,updates);applyRoleUI(currentProfile.role,currentProfile.full_name);loadSettingsPage();showToast('Зачувано!','success');
+  currentProfile=Object.assign({},currentProfile,updates);applyRoleUI(currentProfile.role,currentProfile.full_name,currentProfile.avatar_url);loadSettingsPage();showToast('Зачувано!','success');
 }
 async function sendPasswordReset(){
   var btn=document.getElementById('pwdResetBtn');btn.disabled=true;

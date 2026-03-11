@@ -670,7 +670,7 @@ async function clockIn() {
   var today   = new Date().toISOString().slice(0, 10);
   var nowTime = new Date().toTimeString().slice(0, 8);
   document.getElementById('btnClockIn').disabled = true;
-  var res = await sb.from('work_logs').insert({ user_id: currentUser.id, date: today, start_time: nowTime, log_type: 'work' }).select().single();
+  var res = await sb.from('work_logs').upsert({ user_id: currentUser.id, date: today, start_time: nowTime, log_type: 'work' }, { onConflict: 'user_id,date', ignoreDuplicates: true }).select().single();
   if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); document.getElementById('btnClockIn').disabled = false; return; }
   activeClock = res.data.id;
   setClockedIn(true, 'work');

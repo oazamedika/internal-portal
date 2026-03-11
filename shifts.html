@@ -228,6 +228,7 @@
       .main{margin-left:0;padding:1rem}
       .hamburger-btn{display:block}
       .two-col{grid-template-columns:1fr}
+      .btn-back-label{display:none}
       .form-row,.form-row-3{grid-template-columns:1fr}
     }
     @media(max-width:480px){
@@ -307,7 +308,7 @@
     <div class="topbar-title">Управување со смени</div>
   </div>
   <div class="topbar-right">
-    <a class="btn-back" href="work-hours.html"><svg><use href="#i-back"/></svg>Назад кон работни часови</a>
+    <a class="btn-back" href="work-hours.html"><svg><use href="#i-back"/></svg><span class="btn-back-label">Назад кон работни часови</span></a>
     <span class="topbar-badge">Доктор</span>
   </div>
 </header>
@@ -547,6 +548,7 @@ var pendingDeleteFn = null;
   var name = prof.data.full_name || currentUser.email;
   document.getElementById('sidebarUserName').textContent = name;
   document.getElementById('avatarInitial').textContent   = (name||'?')[0].toUpperCase();
+  document.getElementById('sidebarUserRole').textContent = 'Доктор';
 
   await Promise.all([loadShifts(), loadStaff(), loadHolidays()]);
   await loadAssignments();
