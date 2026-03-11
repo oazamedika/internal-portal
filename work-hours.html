@@ -734,7 +734,7 @@ async function loadTeamLogs() {
   var staff = document.getElementById('teamStaffFilter').value;
   if (!month) return;
   var r = monthRange(month);
-  var q = sb.from('work_logs').select('*, profiles(full_name)').gte('date', r.from).lte('date', r.to).order('date', { ascending: false });
+  var q = sb.from('work_logs').select('*, profiles!work_logs_user_id_fkey(full_name)').gte('date', r.from).lte('date', r.to).order('date', { ascending: false });
   if (staff) q = q.eq('user_id', staff);
   var res  = await q;
   var data = res.data || [];
@@ -788,7 +788,7 @@ async function loadLeaveList() {
   var el     = document.getElementById('leaveListBody');
   el.innerHTML = '<div class="skeleton"></div>';
   var r  = monthRange(month);
-  var q  = sb.from('work_logs').select('*, profiles(full_name)').in('log_type',['sick','holiday']).gte('date',r.from).lte('date',r.to).order('date',{ascending:false});
+  var q = sb.from('work_logs').select('*, profiles!work_logs_user_id_fkey(full_name)').in('log_type',['sick','holiday']).gte('date',r.from).lte('date',r.to).order('date',{ascending:false});
   if (worker) q = q.eq('user_id', worker);
   var res  = await q;
   var data = res.data || [];
@@ -845,7 +845,7 @@ async function loadBacklogList() {
   var tbody  = document.getElementById('backlogListBody');
   tbody.innerHTML = '<tr><td colspan="6"><div class="skeleton"></div></td></tr>';
   var r  = monthRange(month);
-  var q  = sb.from('work_logs').select('*, profiles(full_name)').gte('date',r.from).lte('date',r.to).order('date',{ascending:false});
+  var q = sb.from('work_logs').select('*, profiles!work_logs_user_id_fkey(full_name)').gte('date',r.from).lte('date',r.to).order('date',{ascending:false});
   if (worker) q = q.eq('user_id', worker);
   var res  = await q;
   var data = res.data || [];
