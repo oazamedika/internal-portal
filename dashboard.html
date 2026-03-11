@@ -382,6 +382,7 @@
         <div class="f-group"><label class="f-label">Позиција</label><input type="text" id="pJobTitle" class="f-input"/></div>
         <div class="f-group"><label class="f-label">Датум на вработување</label><input type="date" id="pEmployedDate" class="f-input"/></div>
         <div class="f-group"><label class="f-label">Денови одмор</label><input type="number" id="pLeaveDays" class="f-input" min="0" max="60"/></div>
+        <div class="f-group"><label class="f-label">Претходен стаж</label><div style="display:flex;gap:.6rem"><input type="number" id="pPriorYears" class="f-input" placeholder="Години" min="0" max="50" style="flex:1"/><input type="number" id="pPriorMonths" class="f-input" placeholder="Месеци" min="0" max="11" style="flex:1"/></div></div>
         <!-- Password compact row -->
         <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem .9rem;background:var(--cream);border-radius:9px;border:2px solid rgba(42,122,122,.1);margin-bottom:1rem;gap:.7rem;flex-wrap:wrap">
           <span style="font-size:.82rem;color:var(--text-mid);font-weight:600">Лозинка — испрати линк за ресетирање на е-пошта</span>
@@ -424,6 +425,7 @@
         <div class="f-group"><label class="f-label">Позиција</label><input id="newJobTitle" type="text" class="f-input" placeholder="пр. Медицинска сестра"/></div>
         <div class="f-group"><label class="f-label">Датум на вработување</label><input id="newEmployedDate" type="date" class="f-input"/></div>
         <div class="f-group"><label class="f-label">Денови одмор</label><input id="newLeaveDays" type="number" class="f-input" value="20" min="0" max="60"/></div>
+        <div class="f-group"><label class="f-label">Претходен стаж</label><div style="display:flex;gap:.6rem"><input id="newPriorYears" type="number" class="f-input" placeholder="Години" min="0" max="50" style="flex:1"/><input id="newPriorMonths" type="number" class="f-input" placeholder="Месеци" min="0" max="11" style="flex:1"/></div></div>
         <button class="btn-primary" type="button" id="createEmpBtn"><svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><use href="#i-plus"/></svg>Создај сметка</button>
         <p style="font-size:.72rem;color:var(--text-light);margin-top:.55rem;line-height:1.5">Вработениот ќе добие е-мејл за потврда.</p>
       </div>
@@ -449,10 +451,11 @@
       <input type="hidden" id="editUserId"/>
       <div class="f-group"><label class="f-label">Целосно ime</label><input type="text" id="editFullName" class="f-input"/></div>
       <div class="f-group"><label class="f-label">Телефон</label><input type="tel" id="editPhone" class="f-input"/></div>
+      <div class="f-group"><label class="f-label">Улога</label><select id="editRole" class="f-select"><option value="nurse">Медицинска сестра</option><option value="doctor">Доктор</option></select></div>
       <div class="f-group"><label class="f-label">Позиција</label><input type="text" id="editJobTitle" class="f-input"/></div>
       <div class="f-group"><label class="f-label">Датум на вработување</label><input type="date" id="editEmployedDate" class="f-input"/></div>
       <div class="f-group"><label class="f-label">Денови одмор</label><input type="number" id="editLeaveDays" class="f-input" min="0" max="60"/></div>
-      <div class="f-group"><label class="f-label">Улога</label><select id="editRole" class="f-select"><option value="nurse">Медицинска сестра</option><option value="doctor">Доктор</option></select></div>
+      <div class="f-group"><label class="f-label">Претходен стаж (пред Оаза Медика)</label><div style="display:flex;gap:.6rem"><input type="number" id="editPriorYears" class="f-input" placeholder="Години" min="0" max="50" style="flex:1"/><input type="number" id="editPriorMonths" class="f-input" placeholder="Месеци" min="0" max="11" style="flex:1"/></div></div>
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" type="button" id="cancelEditModal">Откажи</button>
@@ -709,14 +712,22 @@ function loadSettingsPage(){
   jobTitleEl.value=p.job_title||'';
   empDateEl.value=p.employed_date||'';
   leaveDaysEl.value=p.leave_days!=null?p.leave_days:20;
+  var priorYearsEl=document.getElementById('pPriorYears');
+  var priorMonthsEl=document.getElementById('pPriorMonths');
+  priorYearsEl.value=p.prior_staz_years||0;
+  priorMonthsEl.value=p.prior_staz_months||0;
   if(isNurse){
     jobTitleEl.disabled=true;jobTitleEl.style.opacity='.55';
     empDateEl.disabled=true;empDateEl.style.opacity='.55';
     leaveDaysEl.disabled=true;leaveDaysEl.style.opacity='.55';
+    priorYearsEl.disabled=true;priorYearsEl.style.opacity='.55';
+    priorMonthsEl.disabled=true;priorMonthsEl.style.opacity='.55';
   } else {
     jobTitleEl.disabled=false;jobTitleEl.style.opacity='';
     empDateEl.disabled=false;empDateEl.style.opacity='';
     leaveDaysEl.disabled=false;leaveDaysEl.style.opacity='';
+    priorYearsEl.disabled=false;priorYearsEl.style.opacity='';
+    priorMonthsEl.disabled=false;priorMonthsEl.style.opacity='';
   }
   // Avatar preview
   var prev=document.getElementById('profileAvatarPreview');
@@ -744,13 +755,27 @@ async function renderAccountInfo(p){
   var avgHrs=workDaysMonth>0?(totalHrsMonth/workDaysMonth).toFixed(1):0;
   var taskRes=await sb.from('tasks').select('id',{count:'exact',head:true}).eq('assignee_id',currentUser.id).in('status',['pending','in_progress']);
   var tasksDone=await sb.from('tasks').select('id',{count:'exact',head:true}).eq('assignee_id',currentUser.id).eq('status','completed');
-  var yearsEmp='–';
-  if(p.employed_date){var ed=new Date(p.employed_date),diff=now-ed,yrs=Math.floor(diff/31536000000),mos=Math.floor((diff%31536000000)/2592000000);yearsEmp=(yrs>0?yrs+' год. ':'')+(mos>0?mos+' мес.':'< 1 мес.');}
+  var yearsEmp='–', stazOaza='–', stazTotal='–';
+  if(p.employed_date){
+    var ed=new Date(p.employed_date),diff=now-ed;
+    var totalMs=diff;
+    var oazaYrs=Math.floor(totalMs/31536000000);
+    var oazaMos=Math.floor((totalMs%31536000000)/2592000000);
+    stazOaza=(oazaYrs>0?oazaYrs+' год. ':'')+(oazaMos>0?oazaMos+' мес.':oazaYrs===0?'< 1 мес.':'');
+    // Total staz = oaza staz + prior staz
+    var priorY=p.prior_staz_years||0, priorM=p.prior_staz_months||0;
+    var totalMos=oazaYrs*12+oazaMos+priorY*12+priorM;
+    var totY=Math.floor(totalMos/12), totM=totalMos%12;
+    stazTotal=(totY>0?totY+' год. ':'')+(totM>0?totM+' мес.':totY===0?'< 1 мес.':'');
+    yearsEmp=stazOaza;
+  }
   var remClass=remaining<=3?'bad':remaining<=7?'warn':'good';
   document.getElementById('accountInfo').innerHTML=
     '<div class="info-row"><span class="info-row-label">Улога</span><span class="info-row-val">'+(p.role==='doctor'?'Доктор':'Медицинска сестра')+'</span></div>'+
     '<div class="info-row"><span class="info-row-label">Вработен/а од</span><span class="info-row-val">'+(p.employed_date?formatDate(p.employed_date):'–')+'</span></div>'+
-    '<div class="info-row"><span class="info-row-label">Стаж</span><span class="info-row-val">'+yearsEmp+'</span></div>'+
+    '<div class="info-row"><span class="info-row-label">Стаж во Оаза Медика</span><span class="info-row-val">'+stazOaza+'</span></div>'+
+    '<div class="info-row"><span class="info-row-label">Претходен стаж</span><span class="info-row-val">'+((p.prior_staz_years||0)>0||(p.prior_staz_months||0)>0?(p.prior_staz_years||0)+' год. '+(p.prior_staz_months||0)+' мес.':'–')+'</span></div>'+
+    '<div class="info-row"><span class="info-row-label">Вкупен стаж</span><span class="info-row-val good">'+stazTotal+'</span></div>'+
     '<div class="info-row"><span class="info-row-label">Денови одмор (вкупно)</span><span class="info-row-val">'+leaveDays+' ден.</span></div>'+
     '<div class="info-row"><span class="info-row-label">Искористен одмор</span><span class="info-row-val">'+usedHoliday+' ден.</span></div>'+
     '<div class="info-row"><span class="info-row-label">Преостанат одмор</span><span class="info-row-val '+remClass+'">'+remaining+' ден.</span></div>'+
@@ -788,6 +813,8 @@ async function saveProfile(){
     updates.job_title=document.getElementById('pJobTitle').value.trim();
     updates.employed_date=document.getElementById('pEmployedDate').value||null;
     updates.leave_days=parseInt(document.getElementById('pLeaveDays').value)||20;
+    updates.prior_staz_years=parseInt(document.getElementById('pPriorYears').value)||0;
+    updates.prior_staz_months=parseInt(document.getElementById('pPriorMonths').value)||0;
   }
   var res=await sb.from('profiles').update(updates).eq('id',currentUser.id);btn.disabled=false;
   if(res.error){showToast('Грешка: '+res.error.message,'error');return;}
@@ -828,25 +855,44 @@ async function loadAdminUsers(){
 }
 function openEditUser(id){
   var s=allStaff.find(function(u){return u.id===id;});if(!s){loadAdminUsers();showToast('Освежете ја листата.','error');return;}
-  document.getElementById('editUserId').value=s.id;document.getElementById('editFullName').value=s.full_name||'';document.getElementById('editPhone').value=s.phone||'';document.getElementById('editJobTitle').value=s.job_title||'';document.getElementById('editEmployedDate').value=s.employed_date||'';document.getElementById('editLeaveDays').value=s.leave_days!=null?s.leave_days:20;document.getElementById('editRole').value=s.role||'nurse';
+  document.getElementById('editUserId').value=s.id;
+  document.getElementById('editFullName').value=s.full_name||'';
+  document.getElementById('editPhone').value=s.phone||'';
+  document.getElementById('editJobTitle').value=s.job_title||'';
+  document.getElementById('editEmployedDate').value=s.employed_date||'';
+  document.getElementById('editLeaveDays').value=s.leave_days!=null?s.leave_days:20;
+  document.getElementById('editRole').value=s.role||'nurse';
+  document.getElementById('editPriorYears').value=s.prior_staz_years||0;
+  document.getElementById('editPriorMonths').value=s.prior_staz_months||0;
   openModal('editUserModal');
 }
 async function saveEditUser(){
   var id=document.getElementById('editUserId').value,btn=document.getElementById('saveEditBtn');btn.disabled=true;
-  var updates={full_name:document.getElementById('editFullName').value.trim(),phone:document.getElementById('editPhone').value.trim(),job_title:document.getElementById('editJobTitle').value.trim(),employed_date:document.getElementById('editEmployedDate').value||null,leave_days:parseInt(document.getElementById('editLeaveDays').value)||20,role:document.getElementById('editRole').value};
+  var updates={
+    full_name:document.getElementById('editFullName').value.trim(),
+    phone:document.getElementById('editPhone').value.trim(),
+    job_title:document.getElementById('editJobTitle').value.trim(),
+    employed_date:document.getElementById('editEmployedDate').value||null,
+    leave_days:parseInt(document.getElementById('editLeaveDays').value)||20,
+    role:document.getElementById('editRole').value,
+    prior_staz_years:parseInt(document.getElementById('editPriorYears').value)||0,
+    prior_staz_months:parseInt(document.getElementById('editPriorMonths').value)||0
+  };
   var res=await sb.from('profiles').update(updates).eq('id',id);btn.disabled=false;
   if(res.error){showToast('Грешка: '+res.error.message,'error');return;}
-  allStaff=allStaff.map(function(s){return s.id===id?Object.assign({},s,updates):s;});closeModal('editUserModal');loadAdminUsers();await loadStaffList();showToast('Зачувано!','success');
+  allStaff=allStaff.map(function(s){return s.id===id?Object.assign({},s,updates):s;});
+  closeModal('editUserModal');loadAdminUsers();await loadStaffList();showToast('Зачувано!','success');
 }
 async function createEmployee(){
   var name=document.getElementById('newName').value.trim(),email=document.getElementById('newEmail').value.trim(),password=document.getElementById('newPassword').value,role=document.getElementById('newRole').value,phone=document.getElementById('newPhone').value.trim(),jobTitle=document.getElementById('newJobTitle').value.trim(),empDate=document.getElementById('newEmployedDate').value,leaveDays=parseInt(document.getElementById('newLeaveDays').value)||20;
+  var priorYears=parseInt(document.getElementById('newPriorYears').value)||0,priorMonths=parseInt(document.getElementById('newPriorMonths').value)||0;
   if(!name||!email||!password){showToast('Пополнете ги задолжителните полиња (*).','error');return;}if(password.length<6){showToast('Лозинката мора да има мин. 6 знаци.','error');return;}
   var btn=document.getElementById('createEmpBtn');btn.disabled=true;
   var authRes=await sb.auth.signUp({email,password,options:{data:{full_name:name,role}}});
   if(authRes.error){showToast('Грешка: '+authRes.error.message,'error');btn.disabled=false;return;}
-  if(authRes.data&&authRes.data.user)await sb.from('profiles').update({phone,job_title:jobTitle,employed_date:empDate||null,leave_days:leaveDays}).eq('id',authRes.data.user.id);
+  if(authRes.data&&authRes.data.user)await sb.from('profiles').update({phone,job_title:jobTitle,employed_date:empDate||null,leave_days:leaveDays,prior_staz_years:priorYears,prior_staz_months:priorMonths}).eq('id',authRes.data.user.id);
   btn.disabled=false;showToast('Сметката за '+name+' е создадена!','success');
-  ['newName','newEmail','newPassword','newPhone','newJobTitle','newEmployedDate'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('newLeaveDays').value=20;
+  ['newName','newEmail','newPassword','newPhone','newJobTitle','newEmployedDate','newPriorYears','newPriorMonths'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('newLeaveDays').value=20;
   await loadAdminUsers();await loadStaffList();
 }
 
