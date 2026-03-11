@@ -715,31 +715,31 @@ function buildReportHTML() {
     var isSat     = dow === 6;
     var isSun     = dow === 0;
 
-    var dateCell = '<td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.<br/>' + dayNameMkShort(dow) + '</td>';
+    var dateCell = '<td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.' + '</td>';
 
 
     if (isSick) {
-      tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.<br/>' + dayNameMkShort(dow) + '</td>' +
+      tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.' + '</td>' +
         '<td colspan="6" class="merged-sick">Боледување</td></tr>';
       continue;
     }
     if (isHol) {
-      tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.<br/>' + dayNameMkShort(dow) + '</td>' +
+      tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.' + '</td>' +
         '<td colspan="6" class="merged-holiday">Годишен одмор</td></tr>';
       continue;
     }
     if (isStateHol) {
-      tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.<br/>' + dayNameMkShort(dow) + '</td>' +
+      tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.' + '</td>' +
         '<td colspan="6" class="merged-state-holiday">' + esc(stateHolidays[dateStr]) + '</td></tr>';
       continue;
     }
     if (isSun) {
-      tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.<br/>' + dayNameMkShort(dow) + '</td>' +
+      tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.' + '</td>' +
         '<td colspan="6" class="merged-sunday">Недела</td></tr>';
       continue;
     }
     if (isSat) {
-      tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.<br/>' + dayNameMkShort(dow) + '</td>' +
+      tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.' + '</td>' +
         '<td colspan="6" class="merged-saturday">Сабота</td></tr>';
       continue;
     }
@@ -784,11 +784,7 @@ function buildReportHTML() {
     '<div class="rp-title-block">' +
       '<div class="rp-title">И З В Е Ш Т А Ј</div>' +
       '<div class="rp-subtitle">за редовноста на вработени</div>' +
-      '<div class="rp-meta">' +
-        '<strong>Вработен/а:</strong> ' + esc(staff ? staff.full_name : '–') + '<br/>' +
-        '<strong>Работно место:</strong> ' + esc(staff && staff.job_title ? staff.job_title : '–') + '<br/>' +
-        '<strong>Период:</strong> ' + monthNameMk(mo) + ' ' + year +
-      '</div>' +
+      '<div class="rp-meta"><strong>Вработен/а:</strong> ' + esc(staff ? staff.full_name : '–') + '&nbsp;&nbsp;|&nbsp;&nbsp;<strong>Работно место:</strong> ' + esc(staff && staff.job_title ? staff.job_title : '–') + '&nbsp;&nbsp;|&nbsp;&nbsp;<strong>Период:</strong> ' + monthNameMk(mo) + ' ' + year + '</div>' +
     '</div>' +
 
     // Table
