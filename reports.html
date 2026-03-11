@@ -733,16 +733,17 @@ async function generateReport() {
     if (isStateHol) special = '<span class="pill" style="background:var(--green-light);color:var(--green)">' + esc(stateHolidays[dateStr]) + '</span>';
     else if (dow === 0) special = '<span class="pill" style="background:#f0f4ff;color:#1e3a8a">Недела</span>';
     else if (dow === 6) special = '<span class="pill" style="background:#f0f4ff;color:#1e3a8a">Сабота</span>';
-    var endDisplay = log && log.end_time ? log.end_time.slice(0,5) : '–';
-    var rowNightHrs = (log && log.start_time && log.end_time) ? calcNightHours(log.start_time, log.end_time) : 0;
+    var endDisplay = log && log.end_time && log.log_type === 'work' ? log.end_time.slice(0,5) : '–';
+    var rowHrs     = (log && log.log_type === 'work' && log.start_time && log.end_time) ? calcHours(log.start_time, log.end_time, false) : null;
+    var rowNightHrs = (log && log.log_type === 'work' && log.start_time && log.end_time) ? calcNightHours(log.start_time, log.end_time) : 0;
     var nightCell = rowNightHrs > 0
       ? '<span style="color:#6d28d9;font-weight:700">' + rowNightHrs.toFixed(1) + ' ч.</span>'
       : '–';
     rows += '<tr style="border-bottom:1px solid rgba(42,122,122,.06)">' +
       '<td style="padding:.42rem .7rem;font-weight:600;white-space:nowrap">' + String(d).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.' + (special ? ' ' + special : '') + '</td>' +
-      '<td style="padding:.42rem .7rem;text-align:center">' + (log && log.start_time ? log.start_time.slice(0, 5) : '–') + '</td>' +
+      '<td style="padding:.42rem .7rem;text-align:center">' + (log && log.log_type === 'work' && log.start_time ? log.start_time.slice(0, 5) : '–') + '</td>' +
       '<td style="padding:.42rem .7rem;text-align:center">' + endDisplay + '</td>' +
-      '<td style="padding:.42rem .7rem;text-align:center">' + (log && log.start_time && log.end_time ? calcHours(log.start_time, log.end_time, false).toFixed(1) + ' ч.' : '–') + '</td>' +
+      '<td style="padding:.42rem .7rem;text-align:center">' + (rowHrs !== null ? rowHrs.toFixed(1) + ' ч.' : '–') + '</td>' +
       '<td style="padding:.42rem .7rem;text-align:center">' + nightCell + '</td>' +
       '<td style="padding:.42rem .7rem;text-align:center">' + (typePill || '–') + '</td>' +
     '</tr>';

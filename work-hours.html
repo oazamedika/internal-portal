@@ -403,12 +403,7 @@
           <div class="f-group"><label class="f-label">Пријава</label><input type="time" id="backlogStart" class="f-input"/></div>
           <div class="f-group"><label class="f-label">Одјава</label><input type="time" id="backlogEnd" class="f-input"/></div>
         </div>
-        <div class="f-group">
-          <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--text-mid)">
-            <input type="checkbox" id="backlogOvernight" style="width:16px;height:16px;accent-color:var(--teal)"/>
-            Ноќна смена (одјавата е следниот ден)
-          </label>
-        </div>
+
         <div class="f-group"><label class="f-label">Тип</label>
           <select id="backlogType" class="f-select"><option value="work">Работа</option><option value="sick">Боледување</option><option value="holiday">Годишен одмор</option></select>
         </div>
@@ -467,12 +462,7 @@
         <div class="f-group"><label class="f-label">Пријава</label><input type="time" id="modalEditStart" class="f-input"/></div>
         <div class="f-group"><label class="f-label">Одјава</label><input type="time" id="modalEditEnd" class="f-input"/></div>
       </div>
-      <div class="f-group">
-        <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--text-mid)">
-          <input type="checkbox" id="modalEditOvernight" style="width:16px;height:16px;accent-color:var(--teal)"/>
-          Ноќна смена (одјавата е следниот ден)
-        </label>
-      </div>
+
       <div class="f-group"><label class="f-label">Тип</label>
         <select id="modalEditType" class="f-select"><option value="work">Работа</option><option value="sick">Боледување</option><option value="holiday">Годишен одмор</option></select>
       </div>
@@ -809,7 +799,7 @@ async function addLeave() {
   var cur  = new Date(from + 'T00:00:00');
   var end  = new Date(to   + 'T00:00:00');
   while (cur <= end) {
-    rows.push({ user_id: workerId, date: cur.toISOString().slice(0,10), log_type: type, start_time: '00:00:00', end_time: null, is_backdated: true, edited_by: currentUser.id, edited_at: new Date().toISOString() });
+    rows.push({ user_id: workerId, date: cur.toISOString().slice(0,10), log_type: type, start_time: null, end_time: null, is_backdated: true, edited_by: currentUser.id, edited_at: new Date().toISOString() });
     cur.setDate(cur.getDate() + 1);
   }
 
@@ -846,18 +836,22 @@ async function loadLeaveList() {
 
 // ── BACKLOG / EDIT ──
 async function saveBacklog() {
-  var editId    = document.getElementById('editLogId').value;
-  var worker    = document.getElementById('backlogWorker').value;
-  var date      = document.getElementById('backlogDate').value;
-  var start     = document.getElementById('backlogStart').value;
-  var end       = document.getElementById('backlogEnd').value;
-  var type      = document.getElementById('backlogType').value;
-  var overnight = document.getElementById('backlogOvernight').checked;
+  var editId = document.getElementById('editLogId').value;
+  var worker = document.getElementById('backlogWorker').value;
+  var date   = document.getElementById('backlogDate').value;
+  var start  = document.getElementById('backlogStart').value;
+  var end    = document.getElementById('backlogEnd').value;
+  var type   = document.getElementById('backlogType').value;
   if (!worker || !date) { showToast('Изберете вработен и датум.', 'error'); return; }
 
-  // Compute end_date: if overnight, next calendar day after date
+  // Sick/holiday — no times
+  if (type === 'sick' || type === 'holiday') {
+    start = ''; end = '';
+  }
+
+  // Auto-detect overnight: if end time < start time, end_date = date + 1
   var endDate = null;
-  if (overnight && date) {
+  if (start && end && parseInt(end.replace(':','')) < parseInt(start.replace(':',''))) {
     var d = new Date(date + 'T00:00:00');
     d.setDate(d.getDate() + 1);
     endDate = d.toISOString().slice(0, 10);
@@ -866,7 +860,7 @@ async function saveBacklog() {
   var payload = { user_id: worker, date: date, start_time: start ? start+':00' : null, end_time: end ? end+':00' : null, end_date: endDate, log_type: type, is_backdated: true, edited_by: currentUser.id, edited_at: new Date().toISOString() };
   var res = editId
     ? await sb.from('work_logs').update(payload).eq('id', editId)
-    : await sb.from('work_logs').upsert(payload, { onConflict: 'user_id,date' });
+    : await sb.from('work_logs').insert(payload);
 
   if (res.error) { showToast('Грешка: ' + res.error.message, 'error'); return; }
   showToast(editId ? 'Ажурирано!' : 'Додадено!', 'success');
@@ -881,10 +875,9 @@ function resetBacklogForm() {
   document.getElementById('backlogStart').value = '';
   document.getElementById('backlogEnd').value   = '';
   document.getElementById('backlogType').value  = 'work';
-  document.getElementById('backlogOvernight').checked = false;
   if (allStaff.length) document.getElementById('backlogWorker').value = allStaff[0].id;
-  document.getElementById('backlogFormTitle').textContent     = 'Додај евиденција';
-  document.getElementById('cancelBacklogBtn').style.display   = 'none';
+  document.getElementById('backlogFormTitle').textContent   = 'Додај евиденција';
+  document.getElementById('cancelBacklogBtn').style.display = 'none';
 }
 
 async function loadBacklogList() {
@@ -923,22 +916,22 @@ function openEditLog(id, date, start, end, type, endDate) {
   document.getElementById('modalEditStart').value = start;
   document.getElementById('modalEditEnd').value   = end;
   document.getElementById('modalEditType').value  = type;
-  // Set overnight checkbox: true if end_date set, or if end_time < start_time (implicit overnight)
-  var isOvernight = !!(endDate && endDate !== date) || !!(start && end && parseInt(end.replace(':','')) < parseInt(start.replace(':','')));
-  document.getElementById('modalEditOvernight').checked = isOvernight;
   openModal('editLogModal');
 }
 
 async function saveEditLog() {
-  var id        = document.getElementById('modalEditId').value;
-  var date      = document.getElementById('modalEditDate').value;
-  var start     = document.getElementById('modalEditStart').value;
-  var end       = document.getElementById('modalEditEnd').value;
-  var type      = document.getElementById('modalEditType').value;
-  var overnight = document.getElementById('modalEditOvernight').checked;
+  var id    = document.getElementById('modalEditId').value;
+  var date  = document.getElementById('modalEditDate').value;
+  var start = document.getElementById('modalEditStart').value;
+  var end   = document.getElementById('modalEditEnd').value;
+  var type  = document.getElementById('modalEditType').value;
 
+  // Sick/holiday — no times
+  if (type === 'sick' || type === 'holiday') { start = ''; end = ''; }
+
+  // Auto-detect overnight: if end < start, end_date = date + 1
   var endDate = null;
-  if (overnight && date) {
+  if (start && end && parseInt(end.replace(':','')) < parseInt(start.replace(':',''))) {
     var d = new Date(date + 'T00:00:00');
     d.setDate(d.getDate() + 1);
     endDate = d.toISOString().slice(0, 10);
