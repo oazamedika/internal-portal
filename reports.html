@@ -26,9 +26,9 @@
 
     /* SIDEBAR */
     .sidebar{width:var(--sidebar);background:linear-gradient(165deg,var(--teal-dark) 0%,var(--green) 70%,#0f3d1c 100%);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .3s ease;overflow:hidden}
-    .sidebar-logo{padding:1rem 1.1rem .85rem;display:flex;align-items:center;gap:9px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .sidebar-logo{padding:1rem 1.1rem .85rem;display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
     .sidebar-logo img{height:34px;width:auto;filter:brightness(0) invert(1);opacity:.92;flex-shrink:0}
-    .sidebar-logo-text{font-size:.6rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+    .sidebar-logo-text{font-size:.6rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;text-align:center}
     .sidebar-user{margin:.65rem .85rem .4rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:.6rem .8rem;display:flex;align-items:center;gap:8px;flex-shrink:0}
     .user-avatar{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0}
     .user-info{flex:1;overflow:hidden}
@@ -633,22 +633,59 @@ async function generateReport() {
   var from = month + '-01';
   var to = month + '-' + String(new Date(year, mo, 0).getDate()).padStart(2, '0');
 
-  var logsRes = await sb.from('work_logs').select('*').eq('user_id', empId).gte('date', from).lte('date', to).order('date');
+  // Also fetch the last day of previous month in case of overnight shift starting there
+  var prevDate = new Date(year, mo - 1, 0); // last day of prev month
+  var prevFrom = prevDate.toISOString().slice(0, 10);
+
+  var logsRes = await sb.from('work_logs').select('*').eq('user_id', empId).gte('date', prevFrom).lte('date', to).order('date');
   btn.disabled = false;
   btn.innerHTML = '<svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-bar"/></svg> Генерирај';
 
   if (logsRes.error) { showToast('Грешка: ' + logsRes.error.message, 'error'); return; }
 
   var staff = allStaff.find(function(s) { return s.id === empId; });
-  var logs = logsRes.data || [];
+  var allFetchedLogs = logsRes.data || [];
 
-  // Build a day-indexed map
+  // Build a day-indexed map — split overnight shifts into two entries
   var logMap = {};
-  logs.forEach(function(l) { logMap[l.date] = l; });
+  allFetchedLogs.forEach(function(l) {
+    var overnight = !!(l.end_date && l.end_date !== l.date);
+    if (overnight && l.log_type === 'work') {
+      // Day 1 entry: start_time → 23:59, mark as night_part1
+      logMap[l.date] = Object.assign({}, l, {
+        end_time: '23:59:00',
+        end_date: null,
+        _nightPart: 1,
+        _origEnd: l.end_time,
+        _origEndDate: l.end_date
+      });
+      // Day 2 entry: 00:00 → end_time, only if end_date is within report month
+      logMap[l.end_date] = Object.assign({}, l, {
+        date: l.end_date,
+        start_time: '00:00:00',
+        end_date: null,
+        _nightPart: 2,
+        _origStart: l.start_time,
+        _origStartDate: l.date
+      });
+    } else {
+      logMap[l.date] = l;
+    }
+  });
 
-  // Summary stats
+  // Summary stats — only count logs whose start date is within the report month
+  var logs = allFetchedLogs.filter(function(l) { return l.date >= from && l.date <= to; });
   var workLogs = logs.filter(function(l) { return l.log_type === 'work' && l.end_time; });
-  var totalHrs = workLogs.reduce(function(a, l) { return a + calcHours(l.start_time, l.end_time, !!(l.end_date && l.end_date !== l.date)); }, 0);
+  // For total hours, use split logMap entries so overnight hours are counted correctly
+  var totalHrs = 0;
+  Object.keys(logMap).forEach(function(dateStr) {
+    if (dateStr < from || dateStr > to) return;
+    var l = logMap[dateStr];
+    if (l.log_type === 'work' && l.start_time && l.end_time) {
+      totalHrs += calcHours(l.start_time, l.end_time, false);
+    }
+  });
+
   var sickDays = logs.filter(function(l) { return l.log_type === 'sick'; }).length;
   var holDays  = logs.filter(function(l) { return l.log_type === 'holiday'; }).length;
 
@@ -672,16 +709,17 @@ async function generateReport() {
     var dow = new Date(dateStr + 'T00:00:00').getDay();
     var isWeekend = dow === 0 || dow === 6;
     var isStateHol = !!stateHolidays[dateStr];
-    var typePill = log ? '<span class="pill pill-' + log.log_type + '">' + typeLabelMk(log.log_type) + '</span>' : '';
+    var typePill = log ? '<span class="pill pill-' + log.log_type + '">' + typeLabelMk(log.log_type) + (log._nightPart ? ' 🌙' : '') + '</span>' : '';
     var special = '';
     if (isStateHol) special = '<span class="pill" style="background:var(--green-light);color:var(--green)">' + esc(stateHolidays[dateStr]) + '</span>';
     else if (dow === 0) special = '<span class="pill" style="background:#f0f4ff;color:#1e3a8a">Недела</span>';
     else if (dow === 6) special = '<span class="pill" style="background:#f0f4ff;color:#1e3a8a">Сабота</span>';
+    var endDisplay = log && log.end_time ? log.end_time.slice(0,5) : '–';
     rows += '<tr style="border-bottom:1px solid rgba(42,122,122,.06)">' +
       '<td style="padding:.42rem .7rem;font-weight:600;white-space:nowrap">' + String(d).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.' + (special ? ' ' + special : '') + '</td>' +
       '<td style="padding:.42rem .7rem;text-align:center">' + (log && log.start_time ? log.start_time.slice(0, 5) : '–') + '</td>' +
-      '<td style="padding:.42rem .7rem;text-align:center">' + (log && log.end_time ? log.end_time.slice(0, 5) : '–') + '</td>' +
-      '<td style="padding:.42rem .7rem;text-align:center">' + (log && log.start_time && log.end_time ? calcHours(log.start_time, log.end_time, !!(log.end_date && log.end_date !== log.date)).toFixed(1) + ' ч.' : '–') + '</td>' +
+      '<td style="padding:.42rem .7rem;text-align:center">' + endDisplay + '</td>' +
+      '<td style="padding:.42rem .7rem;text-align:center">' + (log && log.start_time && log.end_time ? calcHours(log.start_time, log.end_time, false).toFixed(1) + ' ч.' : '–') + '</td>' +
       '<td style="padding:.42rem .7rem;text-align:center">' + (typePill || '–') + '</td>' +
     '</tr>';
   }
@@ -728,99 +766,52 @@ function buildReportHTML() {
         '<td colspan="6" class="merged-holiday">Годишен одмор</td></tr>';
       continue;
     }
+    // Helper: build a full work row for this day using the (possibly split) log
+    function workRow(l) {
+      var hrs = (l.start_time && l.end_time) ? calcHours(l.start_time, l.end_time, false) : null;
+      var hrsDisplay = hrs !== null ? hrs.toFixed(1) : '–';
+      var isNight = isNightWork(l.start_time, l.end_time, false);
+      return dateCell +
+        '<td>' + (l.start_time ? l.start_time.slice(0,5) : '') + '</td>' +
+        '<td>' + (l.end_time   ? l.end_time.slice(0,5)   : '') + '</td>' +
+        '<td>' + hrsDisplay + '</td>' +
+        '<td class="' + (isStateHol ? 'td-yn-yes' : 'td-yn-no') + '">' + (isStateHol ? 'Да' : 'Не') + '</td>' +
+        '<td class="' + (isSun     ? 'td-yn-yes' : 'td-yn-no') + '">' + (isSun     ? 'Да' : 'Не') + '</td>' +
+        '<td class="' + (isNight   ? 'td-yn-yes' : 'td-yn-no') + '">' + (isNight   ? 'Да' : 'Не') + '</td>';
+    }
+
     if (isStateHol) {
-      // If they worked on the state holiday, show full row with Работа на празник = Да
       if (log && log.log_type === 'work' && log.start_time) {
-        var overnight = !!(log.end_date && log.end_date !== log.date);
-        var hrs = log.end_time ? calcHours(log.start_time, log.end_time, overnight) : null;
-        var hrsDisplay = hrs !== null ? hrs.toFixed(1) : '–';
-        var endTimeDisplay = log.end_time ? log.end_time.slice(0,5) + (overnight ? '*' : '') : '';
-        var isNight = isNightWork(log.start_time, log.end_time, overnight);
-        tableRows += '<tr>' + dateCell +
-          '<td>' + log.start_time.slice(0,5) + '</td>' +
-          '<td>' + endTimeDisplay + '</td>' +
-          '<td>' + hrsDisplay + '</td>' +
-          '<td class="td-yn-yes">Да</td>' +
-          '<td class="' + (isSun ? 'td-yn-yes' : 'td-yn-no') + '">' + (isSun ? 'Да' : 'Не') + '</td>' +
-          '<td class="' + (isNight ? 'td-yn-yes' : 'td-yn-no') + '">' + (isNight ? 'Да' : 'Не') + '</td>' +
-          '</tr>';
+        tableRows += '<tr>' + workRow(log) + '</tr>';
       } else {
-        tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.' + '</td>' +
-          '<td colspan="6" class="merged-state-holiday">' + esc(stateHolidays[dateStr]) + '</td></tr>';
+        tableRows += '<tr>' + dateCell + '<td colspan="6" class="merged-state-holiday">' + esc(stateHolidays[dateStr]) + '</td></tr>';
       }
       continue;
     }
     if (isSun) {
-      // If they worked on Sunday, show full row with Работа во недела = Да
       if (log && log.log_type === 'work' && log.start_time) {
-        var overnight = !!(log.end_date && log.end_date !== log.date);
-        var hrs = log.end_time ? calcHours(log.start_time, log.end_time, overnight) : null;
-        var hrsDisplay = hrs !== null ? hrs.toFixed(1) : '–';
-        var endTimeDisplay = log.end_time ? log.end_time.slice(0,5) + (overnight ? '*' : '') : '';
-        var isNight = isNightWork(log.start_time, log.end_time, overnight);
-        tableRows += '<tr>' + dateCell +
-          '<td>' + log.start_time.slice(0,5) + '</td>' +
-          '<td>' + endTimeDisplay + '</td>' +
-          '<td>' + hrsDisplay + '</td>' +
-          '<td class="' + (isStateHol ? 'td-yn-yes' : 'td-yn-no') + '">' + (isStateHol ? 'Да' : 'Не') + '</td>' +
-          '<td class="td-yn-yes">Да</td>' +
-          '<td class="' + (isNight ? 'td-yn-yes' : 'td-yn-no') + '">' + (isNight ? 'Да' : 'Не') + '</td>' +
-          '</tr>';
+        tableRows += '<tr>' + workRow(log) + '</tr>';
       } else {
-        tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.' + '</td>' +
-          '<td colspan="6" class="merged-sunday">Недела</td></tr>';
+        tableRows += '<tr>' + dateCell + '<td colspan="6" class="merged-sunday">Недела</td></tr>';
       }
       continue;
     }
     if (isSat) {
-      // If they worked on Saturday, show full row
       if (log && log.log_type === 'work' && log.start_time) {
-        var overnight = !!(log.end_date && log.end_date !== log.date);
-        var hrs = log.end_time ? calcHours(log.start_time, log.end_time, overnight) : null;
-        var hrsDisplay = hrs !== null ? hrs.toFixed(1) : '–';
-        var endTimeDisplay = log.end_time ? log.end_time.slice(0,5) + (overnight ? '*' : '') : '';
-        var isNight = isNightWork(log.start_time, log.end_time, overnight);
-        tableRows += '<tr>' + dateCell +
-          '<td>' + log.start_time.slice(0,5) + '</td>' +
-          '<td>' + endTimeDisplay + '</td>' +
-          '<td>' + hrsDisplay + '</td>' +
-          '<td class="' + (isStateHol ? 'td-yn-yes' : 'td-yn-no') + '">' + (isStateHol ? 'Да' : 'Не') + '</td>' +
-          '<td class="td-yn-no">Не</td>' +
-          '<td class="' + (isNight ? 'td-yn-yes' : 'td-yn-no') + '">' + (isNight ? 'Да' : 'Не') + '</td>' +
-          '</tr>';
+        tableRows += '<tr>' + workRow(log) + '</tr>';
       } else {
-        tableRows += '<tr><td class="td-date">' + String(day).padStart(2,'0') + '.' + String(mo).padStart(2,'0') + '.' + '</td>' +
-          '<td colspan="6" class="merged-saturday">Сабота</td></tr>';
+        tableRows += '<tr>' + dateCell + '<td colspan="6" class="merged-saturday">Сабота</td></tr>';
       }
       continue;
     }
 
-    // Regular day
+    // Regular weekday
     if (!log || !log.start_time) {
       tableRows += '<tr>' + dateCell + '<td colspan="6" style="text-align:center;font-style:italic;color:#000">Нема податоци</td></tr>';
       continue;
     }
 
-    var overnight = !!(log.end_date && log.end_date !== log.date);
-    var hrs = log.end_time ? calcHours(log.start_time, log.end_time, overnight) : null;
-    var hrsDisplay = hrs !== null ? hrs.toFixed(1) : '–';
-    var endTimeDisplay = log.end_time ? log.end_time.slice(0,5) + (overnight ? '*' : '') : '';
-
-    // Night work: any overlap with 23:00–05:00
-    var isNight = isNightWork(log.start_time, log.end_time, overnight);
-    // Work on state holiday
-    var isWorkOnHol = isStateHol;
-    // Work on sunday
-    var isWorkOnSun = (dow === 0) && log.log_type === 'work';
-
-    tableRows += '<tr>' + dateCell +
-      '<td>' + (log.start_time ? log.start_time.slice(0,5) : '') + '</td>' +
-      '<td>' + endTimeDisplay + '</td>' +
-      '<td>' + hrsDisplay + '</td>' +
-      '<td class="' + (isWorkOnHol ? 'td-yn-yes' : 'td-yn-no') + '">' + (isWorkOnHol ? 'Да' : 'Не') + '</td>' +
-      '<td class="' + (isWorkOnSun ? 'td-yn-yes' : 'td-yn-no') + '">' + (isWorkOnSun ? 'Да' : 'Не') + '</td>' +
-      '<td class="' + (isNight ? 'td-yn-yes' : 'td-yn-no') + '">' + (isNight ? 'Да' : 'Не') + '</td>' +
-      '</tr>';
+    tableRows += '<tr>' + workRow(log) + '</tr>';
   }
 
   var genDate = new Date();
@@ -880,18 +871,18 @@ function buildReportHTML() {
 
 function isNightWork(start, end, overnight) {
   if (!start) return false;
-  // A shift is considered night work if it crosses or is within 23:00–05:00
   var sp = start.split(':');
   var sMin = parseInt(sp[0]) * 60 + parseInt(sp[1]);
   var nightStart = 23 * 60; // 1380
   var nightEnd   = 5  * 60; // 300
-  if (sMin >= nightStart) return true; // starts at or after 23:00
-  if (overnight) return true;           // any overnight shift touches night hours
+  if (sMin >= nightStart) return true;  // starts at or after 23:00
+  if (sMin === 0) return true;          // starts at 00:00 — tail of a night shift
+  if (overnight) return true;
   if (!end) return false;
   var ep = end.split(':');
   var eMin = parseInt(ep[0]) * 60 + parseInt(ep[1]);
   if (eMin <= nightEnd && eMin > 0) return true; // ends before 05:00
-  if (eMin > nightStart) return true;             // ends after 23:00
+  if (eMin > nightStart) return true;            // ends after 23:00
   return false;
 }
 
