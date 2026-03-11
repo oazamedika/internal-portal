@@ -437,13 +437,13 @@ async function loadProfile(){
   var res=await sb.from('profiles').select('*').eq('id',currentUser.id).single();
   if(res.error||!res.data){showToast('Грешка при вчитување профил.','error');return;}
   currentProfile=res.data;
-  applyRoleUI(res.data.role,res.data.full_name);
+  applyRoleUI(res.data.role,res.data.full_name,res.data.avatar_url);
 }
-function applyRoleUI(role,name){
+function applyRoleUI(role,name,avatarUrl){
   document.getElementById('sidebarUserName').textContent=name||currentUser.email;
   document.getElementById('sidebarUserRole').textContent=role==='doctor'?'Доктор':'Медицинска сестра';
   var _av=document.getElementById('avatarInitial');
-  if(res.data.avatar_url){_av.innerHTML='<img src="'+res.data.avatar_url+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>';}
+  if(avatarUrl){_av.innerHTML='<img src="'+avatarUrl+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>';}
   else{_av.textContent=(name||'?')[0].toUpperCase();}
   document.getElementById('roleBadge').textContent=role==='doctor'?'Доктор':'Мед. сестра';
   document.getElementById('tasksSub').textContent=role==='doctor'?'Создавај и управувај со задачи за тимот':'Ваши задачи доделени од докторот';
