@@ -320,6 +320,17 @@
       </div>
     </div>
 
+    <!-- ALREADY LOGGED BANNER -->
+    <div id="alreadyLoggedBanner" style="display:none;align-items:flex-start;gap:.85rem;background:var(--green-light);border:1px solid rgba(26,92,42,.18);border-radius:var(--radius);padding:1rem 1.2rem;margin-bottom:1.2rem">
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(26,92,42,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="18" height="18" stroke="var(--green)" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div>
+        <div style="font-size:.9rem;font-weight:700;color:var(--green);margin-bottom:.2rem">Веќе постои запишана смена за денес</div>
+        <div id="alreadyLoggedDetail" style="font-size:.8rem;color:var(--text-mid);line-height:1.5"></div>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-header">
         <span class="card-title">Историја</span>
@@ -610,7 +621,26 @@ async function checkTodayStatus() {
   }
 
   if (openLog) { activeClock = openLog.id; setClockedIn(true, 'work'); }
-  else { setClockedIn(false); }
+  else {
+    // Check if today's work is already fully logged
+    var doneLog = logs.find(function(l){ return l.log_type === 'work' && l.start_time && l.end_time; });
+    if (doneLog && !todayLeave) {
+      var overnight = doneLog.end_date && doneLog.end_date !== doneLog.date;
+      var endStr = doneLog.end_time.slice(0,5) + (overnight ? ' (+1)' : '');
+      var banner = document.getElementById('alreadyLoggedBanner');
+      if (banner) {
+        banner.style.display = 'flex';
+        document.getElementById('alreadyLoggedDetail').textContent =
+          'Работната смена за денес е веќе логирана (' + doneLog.start_time.slice(0,5) + ' – ' + endStr + '). Доколку има грешка, обратете се до одговорното лице.';
+      }
+      document.getElementById('btnClockIn').disabled = true;
+      document.getElementById('btnClockOut').disabled = true;
+      document.getElementById('clockDot').className = 'status-dot out';
+      document.getElementById('clockStatusText').textContent = 'Смената е евидентирана: ' + doneLog.start_time.slice(0,5) + ' – ' + endStr;
+    } else {
+      setClockedIn(false);
+    }
+  }
 
   await loadMyShift();
 }

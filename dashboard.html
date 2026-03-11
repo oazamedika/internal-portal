@@ -323,6 +323,16 @@
         </button>
       </div>
     </div>
+    <!-- ALREADY LOGGED BANNER -->
+    <div id="alreadyLoggedBanner" style="display:none;align-items:flex-start;gap:.85rem;background:var(--green-light);border:1px solid rgba(26,92,42,.18);border-radius:var(--radius);padding:1rem 1.2rem;margin-bottom:1.3rem">
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(26,92,42,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="18" height="18" stroke="var(--green)" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div>
+        <div style="font-size:.9rem;font-weight:700;color:var(--green);margin-bottom:.2rem">Веќе постои запишана смена за денес</div>
+        <div id="alreadyLoggedDetail" style="font-size:.8rem;color:var(--text-mid);line-height:1.5"></div>
+      </div>
+    </div>
     <div class="stats-grid" id="statsGrid">
       <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
     </div>
@@ -568,9 +578,19 @@ function startClock(){
 }
 async function checkTodayClock(){
   var today=new Date().toISOString().slice(0,10);
+  var yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
   var res=await sb.from('work_logs').select('*').eq('user_id',currentUser.id).eq('date',today);
   var logs=res.data||[];
   var openLog=logs.find(function(l){return l.log_type==='work'&&!l.end_time;});
+
+  // Check for an overnight open log from yesterday
+  if(!openLog){
+    var yRes=await sb.from('work_logs').select('*').eq('user_id',currentUser.id).eq('date',yesterday);
+    var yLogs=yRes.data||[];
+    var yOpen=yLogs.find(function(l){return l.log_type==='work'&&!l.end_time&&!l.end_date;});
+    if(yOpen)openLog=yOpen;
+  }
+
   var sickLog=logs.find(function(l){return l.log_type==='sick';});
   var holLog =logs.find(function(l){return l.log_type==='holiday';});
   if(sickLog||holLog){
@@ -582,7 +602,33 @@ async function checkTodayClock(){
     }
   }
   if(openLog){activeClock=openLog.id;setClockedIn(true,openLog.log_type);}
-  else if(!todayLeave) setClockedIn(false);
+  else if(!todayLeave){
+    // Check if today's shift is already fully logged (completed work log exists for today)
+    var doneLog=logs.find(function(l){return l.log_type==='work'&&l.start_time&&l.end_time;});
+    if(doneLog){
+      showAlreadyLoggedBanner(doneLog);
+    } else {
+      setClockedIn(false);
+    }
+  }
+}
+
+function showAlreadyLoggedBanner(log){
+  // Disable clock-in, show info banner
+  document.getElementById('btnClockIn').disabled=true;
+  document.getElementById('btnClockOut').disabled=true;
+  document.getElementById('clockDot').className='status-dot out';
+  var overnight=log.end_date&&log.end_date!==log.date;
+  var endStr=log.end_time?log.end_time.slice(0,5)+(overnight?' (+1)':''):'–';
+  document.getElementById('clockStatusText').textContent=
+    'Смената е евидентирана: '+log.start_time.slice(0,5)+' – '+endStr;
+  // Show banner below clock widget
+  var banner=document.getElementById('alreadyLoggedBanner');
+  if(banner){
+    banner.style.display='flex';
+    document.getElementById('alreadyLoggedDetail').textContent=
+      'Работната смена за денес е веќе логирана ('+log.start_time.slice(0,5)+' – '+endStr+'). Доколку има грешка, обратете се до одговорното лице.';
+  }
 }
 function setClockedIn(on,type){
   type=type||'work';
@@ -602,10 +648,19 @@ async function clockIn(){
 async function clockOut(){
   if(!activeClock)return;
   var now=new Date().toTimeString().slice(0,8);
+  var today=new Date().toISOString().slice(0,10);
   document.getElementById('btnClockOut').disabled=true;
-  var res=await sb.from('work_logs').update({end_time:now}).eq('id',activeClock);
+  // Fetch the log's start date to detect overnight crossing
+  var logRes=await sb.from('work_logs').select('date').eq('id',activeClock).single();
+  var logDate=logRes.data?logRes.data.date:today;
+  var isOvernight=(logDate!==today);
+  var updatePayload={end_time:now};
+  if(isOvernight)updatePayload.end_date=today;
+  var res=await sb.from('work_logs').update(updatePayload).eq('id',activeClock);
   if(res.error){showToast('Грешка: '+res.error.message,'error');document.getElementById('btnClockOut').disabled=false;return;}
-  activeClock=null;setClockedIn(false);showToast('Одјавени во '+now.slice(0,5)+'.','success');loadStats();loadRecentLogs();
+  activeClock=null;setClockedIn(false);
+  showToast('Одјавени во '+now.slice(0,5)+(isOvernight?' (ноќна смена)':'')+'.','success');
+  loadStats();loadRecentLogs();
 }
 
 /* ── SHIFT LOGIC ── */
