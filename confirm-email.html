@@ -2,6 +2,13 @@
 <html lang="mk">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#2a7a7a"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="Оаза Медика"/>
+  <link rel="apple-touch-icon" href="web-app-manifest-192x192.png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Потврда на е-пошта – Оаза Медика</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet" />
@@ -112,6 +119,15 @@
       .mobile-logo-text span:last-child  { font-size:.68rem; color:var(--text-light); letter-spacing:.08em; text-transform:uppercase; display:block; }
     }
   </style>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('sw.js').catch(function(e) {
+          console.warn('SW registration failed:', e);
+        });
+      });
+    }
+  </script>
 </head>
 <body>
 
