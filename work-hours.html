@@ -13,9 +13,9 @@
     h1,h2,h3,h4{font-family:'Playfair Display',serif;line-height:1.2}
     /* SIDEBAR */
     .sidebar{width:var(--sidebar);background:linear-gradient(165deg,var(--teal-dark) 0%,var(--green) 70%,#0f3d1c 100%);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .3s ease;overflow:hidden}
-    .sidebar-logo{padding:1rem 1.1rem .85rem;display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .sidebar-logo{padding:1rem 1.1rem .85rem;display:flex;align-items:center;gap:9px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
     .sidebar-logo img{height:34px;width:auto;filter:brightness(0) invert(1);opacity:.92;flex-shrink:0}
-    .sidebar-logo-text{font-size:.6rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;text-align:center}
+    .sidebar-logo-text{font-size:.6rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
     .sidebar-user{margin:.65rem .85rem .4rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:.6rem .8rem;display:flex;align-items:center;gap:8px;flex-shrink:0}
     .user-avatar{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0}
     .user-info{flex:1;overflow:hidden}
@@ -746,7 +746,7 @@ async function loadMyLogs() {
     document.getElementById('myLogTotals').style.display = 'none'; return;
   }
   tbody.innerHTML = data.map(function(l) {
-    var overnight = (!!(l.end_date && l.end_date !== l.date) || !!(l.start_time && l.end_time && l.end_time.slice(0,5) < l.start_time.slice(0,5)));
+    var overnight = (!!(l.end_date && l.end_date !== l.date) || (l.start_time && l.end_time && parseInt(l.end_time.replace(':','')) < parseInt(l.start_time.replace(':',''))));
     var hrs = (l.start_time && l.end_time) ? calcHours(l.start_time, l.end_time, overnight).toFixed(1) : '–';
     var endDisplay = l.end_time ? l.end_time.slice(0,5) + (overnight ? '<span class="pill pill-backdated" title="Завршува '+formatDate(l.end_date)+'">+1</span>' : '') : '–';
     return '<tr>' +
@@ -777,7 +777,7 @@ async function loadTeamLogs() {
   var tbody = document.getElementById('teamLogsBody');
   if (!data.length) { tbody.innerHTML = emptyRow(6, 'Нема евиденции'); document.getElementById('teamLogTotals').style.display='none'; return; }
   tbody.innerHTML = data.map(function(l) {
-    var overnight = (!!(l.end_date && l.end_date !== l.date) || !!(l.start_time && l.end_time && l.end_time.slice(0,5) < l.start_time.slice(0,5)));
+    var overnight = (!!(l.end_date && l.end_date !== l.date) || (l.start_time && l.end_time && parseInt(l.end_time.replace(':','')) < parseInt(l.start_time.replace(':',''))));
     var hrs = (l.start_time && l.end_time) ? calcHours(l.start_time, l.end_time, overnight).toFixed(1) : '–';
     var endDisplay = l.end_time ? l.end_time.slice(0,5) + (overnight ? '<span class="pill pill-backdated" title="Завршува '+formatDate(l.end_date)+'">+1</span>' : '') : '–';
     return '<tr>' +
@@ -899,7 +899,7 @@ async function loadBacklogList() {
   var data = res.data || [];
   if (!data.length) { tbody.innerHTML = emptyRow(6, 'Нема евиденции'); return; }
   tbody.innerHTML = data.map(function(l) {
-    var overnight = (!!(l.end_date && l.end_date !== l.date) || !!(l.start_time && l.end_time && l.end_time.slice(0,5) < l.start_time.slice(0,5)));
+    var overnight = (!!(l.end_date && l.end_date !== l.date) || (l.start_time && l.end_time && parseInt(l.end_time.replace(':','')) < parseInt(l.start_time.replace(':',''))));
     var endDisplay = l.end_time ? l.end_time.slice(0,5) + (overnight ? '<span class="pill pill-backdated">+1</span>' : '') : '–';
     return '<tr>' +
       '<td>' + formatDate(l.date) + '</td>' +
@@ -924,7 +924,7 @@ function openEditLog(id, date, start, end, type, endDate) {
   document.getElementById('modalEditEnd').value   = end;
   document.getElementById('modalEditType').value  = type;
   // Set overnight checkbox: true if end_date set, or if end_time < start_time (implicit overnight)
-  var isOvernight = !!(endDate && endDate !== date) || !!(start && end && end < start);
+  var isOvernight = !!(endDate && endDate !== date) || !!(start && end && parseInt(end.replace(':','')) < parseInt(start.replace(':','')));
   document.getElementById('modalEditOvernight').checked = isOvernight;
   openModal('editLogModal');
 }
