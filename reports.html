@@ -649,7 +649,7 @@ async function generateReport() {
   // Build a day-indexed map — split overnight shifts into two entries
   var logMap = {};
   allFetchedLogs.forEach(function(l) {
-    var overnight = !!(l.end_date && l.end_date !== l.date);
+    var overnight = !!(l.end_date && l.end_date !== l.date) || !!(l.start_time && l.end_time && l.end_time.slice(0,5) < l.start_time.slice(0,5));
     if (overnight && l.log_type === 'work') {
       // Day 1 entry: start_time → 23:59, mark as night_part1
       logMap[l.date] = Object.assign({}, l, {
@@ -659,9 +659,13 @@ async function generateReport() {
         _origEnd: l.end_time,
         _origEndDate: l.end_date
       });
-      // Day 2 entry: 00:00 → end_time, only if end_date is within report month
-      logMap[l.end_date] = Object.assign({}, l, {
-        date: l.end_date,
+      // Day 2 entry: 00:00 → end_time, derive end_date if missing
+      var day2date = l.end_date || (function() {
+        var d = new Date(l.date + 'T00:00:00'); d.setDate(d.getDate() + 1);
+        return d.toISOString().slice(0, 10);
+      })();
+      logMap[day2date] = Object.assign({}, l, {
+        date: day2date,
         start_time: '00:00:00',
         end_date: null,
         _nightPart: 2,
