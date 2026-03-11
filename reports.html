@@ -6,8 +6,7 @@
   <title>Извештаи – Оаза Медика</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- html2pdf for client-side PDF generation -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  
   <script>
     const SUPABASE_URL  = 'https://pmolxspputemoyvilzyq.supabase.co';
     const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtb2x4c3BwdXRlbW95dmlsenlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwNjI0OTUsImV4cCI6MjA4ODYzODQ5NX0.f4t9wIzvhnrMeh_O4aesS94qyv71LUO1LA3lcyY7i8o';
@@ -237,6 +236,23 @@
       .rp-table th{font-size:7pt;padding:3px 3px}
       .rp-table td{padding:2.5px 3px}
     }
+    /* PRINT */
+    @media print{
+      body *{visibility:hidden}
+      #printArea,#printArea *{visibility:visible}
+      #printArea{
+        position:fixed;top:0;left:0;width:100%;height:auto;
+        background:#fff;margin:0;padding:0;
+      }
+      #reportPreview{
+        width:100% !important;
+        padding:12mm 14mm !important;
+        box-shadow:none !important;
+        border-radius:0 !important;
+        font-size:8.5pt !important;
+      }
+      .rp-footer{position:fixed;bottom:6mm;left:14mm;right:14mm}
+    }
   </style>
 </head>
 <body>
@@ -260,6 +276,7 @@
   <symbol id="i-menu"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
   <symbol id="i-ext"    viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
   <symbol id="i-refresh"viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-4.43"/></symbol>
+  <symbol id="i-print"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
 </svg>
 
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -380,9 +397,9 @@
               <svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-eye"/></svg>
               Преглед
             </button>
-            <button class="btn-primary" type="button" onclick="downloadReportPDF()">
-              <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-download"/></svg>
-              Преземи PDF
+            <button class="btn-primary" type="button" onclick="previewReport();setTimeout(printReport,300)">
+              <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-print"/></svg>
+              Печати / PDF
             </button>
             <button class="btn-secondary" type="button" onclick="saveReportRecord()">
               <svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-check"/></svg>
@@ -464,9 +481,9 @@
   <div class="pdf-toolbar">
     <span class="pdf-toolbar-title" id="pdfOverlayTitle">Преглед на извештај</span>
     <div class="pdf-toolbar-actions">
-      <button class="btn-primary" type="button" onclick="downloadReportPDF()">
-        <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-download"/></svg>
-        Преземи PDF
+      <button class="btn-primary" type="button" onclick="printReport()">
+        <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-print"/></svg>
+        Печати / Зачувај PDF
       </button>
       <button class="btn-secondary" type="button" onclick="closePDFOverlay()">
         <svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-x"/></svg>
@@ -475,9 +492,10 @@
     </div>
   </div>
   <div class="pdf-scroll">
-    <!-- The A4 report lives here and is also used for PDF generation -->
-    <div id="reportPreview">
-      <!-- Populated by buildReportHTML() -->
+    <div id="printArea">
+      <div id="reportPreview">
+        <!-- Populated by buildReportHTML() -->
+      </div>
     </div>
   </div>
 </div>
@@ -856,25 +874,11 @@ function closePDFOverlay() {
   document.getElementById('pdfOverlay').classList.remove('open');
 }
 
-function downloadReportPDF() {
+function printReport() {
   if (!currentReportData) { showToast('Прво генерирајте извештај.', 'error'); return; }
   buildReportHTML();
-  var element = document.getElementById('reportPreview');
-  var fileName = 'Izvestaj_' +
-    (currentReportData.staff ? currentReportData.staff.full_name.replace(/\s+/g, '_') : 'vraboten') +
-    '_' + currentReportData.year + '_' + String(currentReportData.mo).padStart(2, '0') + '.pdf';
-  var opt = {
-    margin:       0,
-    filename:     fileName,
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true, logging: false, windowWidth: 794, width: 794 },
-    jsPDF:        { unit: 'px', format: [794, 1123], orientation: 'portrait', hotfixes: ['px_scaling'] },
-    pagebreak:    { mode: 'avoid-all' }
-  };
-  showToast('Подготвување на PDF…', 'success');
-  html2pdf().set(opt).from(element).save().then(function() {
-    showToast('PDF е преземен!', 'success');
-  });
+  // Brief delay to ensure DOM is painted, then trigger browser print
+  setTimeout(function() { window.print(); }, 150);
 }
 
 /* ───────────────────────────────────────────────
