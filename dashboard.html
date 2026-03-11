@@ -473,6 +473,24 @@
     </div>
   </div>
 </div>
+<!-- CLOCK-OUT CONFIRM MODAL -->
+<div class="modal-overlay" id="clockOutConfirmModal">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-body" style="padding:1.6rem 1.4rem;text-align:center">
+      <div style="width:52px;height:52px;background:var(--red-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .9rem">
+        <svg width="24" height="24" stroke="var(--red)" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--text);margin-bottom:.4rem">Одјава од смена</div>
+      <div style="font-size:.86rem;color:var(--text-light);line-height:1.55;margin-bottom:1.2rem">Дали сте сигурни дека сакате да се одјавите?</div>
+      <div style="display:flex;gap:.65rem;justify-content:center;flex-wrap:wrap">
+        <button class="btn-primary" type="button" id="confirmClockOutBtn" style="background:var(--red);border-color:var(--red)">
+          <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>Одјави се
+        </button>
+        <button class="btn-secondary" type="button" onclick="closeModal('clockOutConfirmModal')">Откажи</button>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- SHIFT CLOCK-IN PROMPT MODAL -->
 <div class="modal-overlay" id="shiftPromptModal">
   <div class="modal" style="max-width:400px">
@@ -515,7 +533,8 @@ var myShift=null,promptShown=false,todayLeave=null;
   document.getElementById('hamburgerBtn').addEventListener('click',toggleSidebar);
   document.getElementById('sidebarOverlay').addEventListener('click',closeSidebar);
   document.getElementById('btnClockIn').addEventListener('click',clockIn);
-  document.getElementById('btnClockOut').addEventListener('click',clockOut);
+  document.getElementById('btnClockOut').addEventListener('click',function(){ openModal('clockOutConfirmModal'); });
+  document.getElementById('confirmClockOutBtn').addEventListener('click',function(){ closeModal('clockOutConfirmModal'); clockOut(); });
   document.getElementById('saveProfileBtn').addEventListener('click',saveProfile);
   document.getElementById('pwdResetBtn').addEventListener('click',sendPasswordReset);
   document.getElementById('createEmpBtn').addEventListener('click',createEmployee);
@@ -577,8 +596,8 @@ function startClock(){
   tick();setInterval(tick,1000);
 }
 async function checkTodayClock(){
-  var today=new Date().toISOString().slice(0,10);
-  var yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
+  var today=localDate();
+  var yesterday=localDate(new Date(Date.now()-86400000));
   var res=await sb.from('work_logs').select('*').eq('user_id',currentUser.id).eq('date',today);
   var logs=res.data||[];
   var openLog=logs.find(function(l){return l.log_type==='work'&&!l.end_time;});
@@ -639,7 +658,7 @@ function setClockedIn(on,type){
 }
 async function clockIn(){
   if(todayLeave&&currentProfile&&currentProfile.role!=='doctor'){showToast('Денес сте на '+typeLabelMk(todayLeave.log_type)+'. Не можете да се пријавите.','error');return;}
-  var today=new Date().toISOString().slice(0,10),now=new Date().toTimeString().slice(0,8);
+  var today=localDate(),now=new Date().toTimeString().slice(0,8);
   document.getElementById('btnClockIn').disabled=true;
   var res=await sb.from('work_logs').insert({user_id:currentUser.id,date:today,start_time:now,log_type:'work'}).select().single();
   if(res.error){showToast('Грешка: '+res.error.message,'error');document.getElementById('btnClockIn').disabled=false;return;}
@@ -648,7 +667,7 @@ async function clockIn(){
 async function clockOut(){
   if(!activeClock)return;
   var now=new Date().toTimeString().slice(0,8);
-  var today=new Date().toISOString().slice(0,10);
+  var today=localDate();
   document.getElementById('btnClockOut').disabled=true;
   // Fetch the log's start date to detect overnight crossing
   var logRes=await sb.from('work_logs').select('date').eq('id',activeClock).single();
@@ -672,7 +691,7 @@ async function loadMyShift(){
     var rid=resolveRotation(ws);
     if(rid&&rid!==ws.shift_id){var rr=await sb.from('shifts').select('*').eq('id',rid).single();if(rr.data)shift=rr.data;}
   }
-  var today=new Date().toISOString().slice(0,10);
+  var today=localDate();
   var excRes=await sb.from('shift_exceptions').select('*, shifts(*)').eq('worker_id',currentUser.id).eq('date',today).maybeSingle();
   if(excRes.data){
     if(excRes.data.type==='day_off'){document.getElementById('clockShiftInfo').textContent='Денес: слободен ден';myShift=null;return;}
@@ -709,7 +728,10 @@ async function loadStats(){
   var logs=logsRes.data||[];
   var workDays=logs.filter(function(l){return l.log_type==='work'&&l.end_time;}).length;
   var sickDays=logs.filter(function(l){return l.log_type==='sick';}).length;
-  var totalHrs=logs.filter(function(l){return l.end_time;}).reduce(function(a,l){return a+calcHours(l.start_time,l.end_time);},0);
+  var totalHrs=logs.filter(function(l){return l.end_time&&l.log_type==='work';}).reduce(function(a,l){
+    var overnight=!!(l.end_date&&l.end_date!==l.date)||(l.start_time&&l.end_time&&parseInt(l.end_time.replace(':',''))<parseInt(l.start_time.replace(':','')));
+    return a+calcHours(l.start_time,l.end_time,overnight);
+  },0);
   var taskRes=await sb.from('tasks').select('id',{count:'exact',head:true}).eq('assignee_id',currentUser.id).in('status',['pending','in_progress']);
   var taskCount=taskRes.count||0;
   function si(id){return '<div class="stat-icon"><svg viewBox="0 0 24 24"><use href="#i-'+id+'"/></svg></div>';}
@@ -721,7 +743,7 @@ async function loadStats(){
   var badge=document.getElementById('tasksBadge');badge.textContent=taskCount;badge.style.display=taskCount>0?'':'none';
   if(currentProfile&&currentProfile.role==='doctor'){
     var allLogsRes=await sb.from('work_logs').select('user_id,end_time,date').gte('date',from).lte('date',to);
-    var today=new Date().toISOString().slice(0,10);
+    var today=localDate();
     var onlineSet={};(allLogsRes.data||[]).forEach(function(l){if(!l.end_time&&l.date===today)onlineSet[l.user_id]=1;});
     var online=Object.keys(onlineSet).length;
     var totRes=await sb.from('profiles').select('id',{count:'exact',head:true});
@@ -971,7 +993,8 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
 async function handleLogout(){var btn=document.getElementById('logoutBtn');btn.disabled=true;btn.textContent='Одјавување…';try{await sb.auth.signOut();}catch(e){}window.location.replace('index.html');}
 
 /* ── HELPERS ── */
-function calcHours(start,end){if(!start||!end)return 0;var sp=start.split(':'),ep=end.split(':');return((parseInt(ep[0])*60+parseInt(ep[1]))-(parseInt(sp[0])*60+parseInt(sp[1])))/60;}
+function localDate(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function calcHours(start,end,overnight){if(!start||!end)return 0;var sp=start.split(':'),ep=end.split(':');var mins=(parseInt(ep[0])*60+parseInt(ep[1]))-(parseInt(sp[0])*60+parseInt(sp[1]));if(overnight||mins<0)mins+=1440;return mins/60;}
 function formatDate(d){if(!d)return'–';var dt=new Date(d+'T00:00:00');return String(dt.getDate()).padStart(2,'0')+'.'+String(dt.getMonth()+1).padStart(2,'0')+'.'+dt.getFullYear();}
 function formatDateTime(d){if(!d)return'–';var dt=new Date(d);return String(dt.getDate()).padStart(2,'0')+'.'+String(dt.getMonth()+1).padStart(2,'0')+'.'+dt.getFullYear()+' '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');}
 function typeLabelMk(t){return{work:'Работа',sick:'Боледување',holiday:'Одмор'}[t]||t;}
