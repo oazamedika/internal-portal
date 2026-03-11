@@ -884,7 +884,7 @@ async function saveBacklog() {
   if (start && end && parseInt(end.replace(':','')) < parseInt(start.replace(':',''))) {
     var d = new Date(date + 'T00:00:00');
     d.setDate(d.getDate() + 1);
-    endDate = d.toISOString().slice(0, 10);
+    endDate = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
   }
 
   var payload = { user_id: worker, date: date, start_time: start ? start+':00' : null, end_time: end ? end+':00' : null, end_date: endDate, log_type: type, is_backdated: true, edited_by: currentUser.id, edited_at: new Date().toISOString() };
@@ -964,7 +964,7 @@ async function saveEditLog() {
   if (start && end && parseInt(end.replace(':','')) < parseInt(start.replace(':',''))) {
     var d = new Date(date + 'T00:00:00');
     d.setDate(d.getDate() + 1);
-    endDate = d.toISOString().slice(0, 10);
+    endDate = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
   }
 
   var res = await sb.from('work_logs').update({
