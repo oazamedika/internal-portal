@@ -582,7 +582,7 @@ var pendingDeleteFn = null;
   sb.auth.onAuthStateChange(function(ev){ if(ev==='SIGNED_OUT') window.location.replace('index.html'); });
 
   // Guard: doctor only
-  var prof = await sb.from('profiles').select('role,full_name').eq('id', currentUser.id).single();
+  var prof = await sb.from('profiles').select('role,full_name,avatar_url').eq('id', currentUser.id).single();
   if (!prof.data || prof.data.role !== 'doctor') { window.location.replace('work-hours.html'); return; }
   var name = prof.data.full_name || currentUser.email;
   document.getElementById('sidebarUserName').textContent = name;
