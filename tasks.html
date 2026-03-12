@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="mk">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <link rel="icon" href="favicon.ico" type="image/x-icon"/>
   <link rel="manifest" href="manifest.json"/>
   <meta name="theme-color" content="#2a7a7a"/>
@@ -9,9 +9,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
   <meta name="apple-mobile-web-app-title" content="Оаза Медика"/>
   <link rel="apple-touch-icon" href="web-app-manifest-192x192.png"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Оаза Медика – Задачи</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
@@ -20,10 +20,11 @@
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
   </script>
   <style>
-    :root{--teal:#2a7a7a;--teal-dark:#1d5e5e;--green:#1a5c2a;--green-light:#e8f5ec;--teal-light:#e4f2f2;--cream:#f9faf8;--text:#1c2a22;--text-mid:#3d5046;--text-light:#6b8070;--white:#fff;--shadow:0 4px 32px rgba(26,92,42,.10);--radius:14px;--sidebar:240px;--amber:#f59e0b;--amber-light:#fef9ec;--red:#c0392b;--red-light:#fdf0ee;--blue:#2563eb;--blue-light:#eff6ff;--purple:#7c3aed}
+    :root{--teal:#2a7a7a;--teal-dark:#1d5e5e;--green:#1a5c2a;--green-light:#e8f5ec;--teal-light:#e4f2f2;--cream:#f9faf8;--text:#1c2a22;--text-mid:#3d5046;--text-light:#6b8070;--white:#fff;--shadow:0 4px 32px rgba(26,92,42,.10);--radius:14px;--sidebar:240px;--amber:#f59e0b;--amber-light:#fef9ec;--red:#c0392b;--red-light:#fdf0ee;--blue:#2563eb;--blue-light:#eff6ff;--purple:#7c3aed;--orange:#ea580c;--orange-light:#fff7ed}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Lato',sans-serif;background:var(--cream);color:var(--text);line-height:1.6;display:flex;min-height:100vh}
     h1,h2,h3,h4{font-family:'Playfair Display',serif;line-height:1.2}
+    /* SIDEBAR */
     .sidebar{width:var(--sidebar);background:linear-gradient(165deg,var(--teal-dark) 0%,var(--green) 70%,#0f3d1c 100%);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .3s ease;overflow:hidden}
     .sidebar-logo{padding:1rem 1.1rem .85rem;display:flex;align-items:center;gap:9px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
     .sidebar-logo img{height:34px;width:auto;filter:brightness(0) invert(1);opacity:.92;flex-shrink:0}
@@ -52,6 +53,7 @@
     .btn-logout{width:100%;padding:.52rem .85rem;background:rgba(255,80,80,.15);border:1px solid rgba(255,100,100,.25);border-radius:9px;color:rgba(255,200,200,.9);font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s}
     .btn-logout:hover{background:rgba(192,57,43,.6);color:#fff;border-color:rgba(255,100,100,.5)}
     .btn-logout svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    /* TOPBAR */
     .topbar{position:fixed;top:0;left:var(--sidebar);right:0;height:56px;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-bottom:1px solid rgba(42,122,122,.1);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;z-index:100}
     .topbar-left{display:flex;align-items:center;gap:.7rem}
     .hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;color:var(--teal)}
@@ -59,10 +61,11 @@
     .topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--text)}
     .topbar-right{display:flex;align-items:center;gap:1rem}
     .topbar-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green);padding:.25rem .75rem;border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    /* MAIN */
     .main{margin-left:var(--sidebar);margin-top:56px;padding:1.5rem;flex:1;min-width:0}
     @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
     .anim{animation:fadeIn .3s ease}
-    .section-header{margin-bottom:1.4rem;display:flex;align-items:flex-start;justify-content:space-between;gap:.8rem;flex-wrap:wrap}
+    .section-header{margin-bottom:1.2rem;display:flex;align-items:flex-start;justify-content:space-between;gap:.8rem;flex-wrap:wrap}
     .section-label{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:.25rem}
     .section-title{font-size:clamp(1.4rem,2.5vw,1.9rem);color:var(--text)}
     .section-sub{font-size:.88rem;color:var(--text-light);font-weight:300;margin-top:.25rem}
@@ -70,15 +73,17 @@
     .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid rgba(42,122,122,.08);flex-wrap:wrap;gap:.5rem}
     .card-title{font-family:'Playfair Display',serif;font-size:1rem;color:var(--text)}
     .card-action{font-size:.76rem;color:var(--teal);font-weight:600;cursor:pointer;background:none;border:none;display:inline-flex;align-items:center;gap:4px;transition:color .2s}
+    /* FORM */
     .f-group{margin-bottom:.95rem}
     .f-label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);margin-bottom:.33rem}
     .f-input{width:100%;padding:.65rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.87rem;color:var(--text);background:var(--cream);outline:none;transition:border-color .2s}
     .f-input:focus{border-color:var(--teal);background:var(--white)}
     .f-select{width:100%;padding:.65rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.87rem;color:var(--text);background:var(--cream);outline:none}
-    .f-textarea{width:100%;padding:.65rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.87rem;color:var(--text);background:var(--cream);outline:none;transition:border-color .2s;resize:vertical;min-height:90px}
+    .f-textarea{width:100%;padding:.65rem .9rem;border:2px solid rgba(42,122,122,.15);border-radius:9px;font-family:'Lato',sans-serif;font-size:.87rem;color:var(--text);background:var(--cream);outline:none;transition:border-color .2s;resize:vertical;min-height:80px}
     .f-textarea:focus{border-color:var(--teal);background:var(--white)}
     .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
     .span-2{grid-column:span 2}
+    /* BUTTONS */
     .btn-primary{padding:.65rem 1.3rem;background:var(--teal);color:#fff;border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:.87rem;font-weight:700;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:7px}
     .btn-primary:hover{background:var(--teal-dark)}
     .btn-primary:disabled{background:#9bb8b8;cursor:not-allowed}
@@ -88,12 +93,20 @@
     .btn-danger:hover{background:var(--red);color:#fff}
     .btn-complete{padding:.5rem .85rem;background:var(--green-light);color:var(--green);border:1px solid rgba(26,92,42,.2);border-radius:8px;font-family:'Lato',sans-serif;font-size:.79rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
     .btn-complete:hover{background:var(--green);color:#fff}
+    /* FAB */
     .fab{position:fixed;bottom:1.5rem;right:1.5rem;z-index:150;width:52px;height:52px;border-radius:50%;background:var(--teal);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(42,122,122,.4);transition:all .2s}
     .fab:hover{background:var(--teal-dark);transform:scale(1.07)}
     .fab svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    /* VIEW TABS */
+    .view-tabs{display:flex;gap:.4rem;background:var(--cream);border-radius:10px;padding:.25rem;margin-bottom:1.2rem;width:fit-content}
+    .view-tab{padding:.4rem .9rem;border:none;border-radius:7px;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;color:var(--text-light)}
+    .view-tab.active{background:var(--white);color:var(--teal);box-shadow:0 2px 8px rgba(26,92,42,.08)}
+    .view-tab:hover:not(.active){color:var(--text-mid)}
+    /* TOOLBAR */
     .toolbar{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
     .toolbar .f-select,.toolbar .f-input{width:auto;padding:.37rem .7rem;font-size:.81rem}
     .toolbar .search-input{min-width:175px}
+    /* TABLE */
     .task-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
     table{width:100%;border-collapse:collapse;font-size:.83rem}
     thead th{text-align:left;padding:.52rem .85rem;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);border-bottom:2px solid rgba(42,122,122,.1);white-space:nowrap}
@@ -104,22 +117,32 @@
     .td-title .t-name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .td-title .t-desc{font-size:.73rem;color:var(--text-light);font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px}
     .td-title .t-recur{font-size:.68rem;color:var(--teal);font-weight:700;margin-top:1px}
+    .td-title .t-checklist{font-size:.68rem;color:var(--text-light);font-weight:400;margin-top:1px}
     .td-nowrap{white-space:nowrap}
+    /* PILLS */
     .pill{display:inline-flex;align-items:center;padding:.18rem .62rem;border-radius:50px;font-size:.7rem;font-weight:700;white-space:nowrap}
     .pill-pending{background:#f3f4f6;color:#6b7280}
     .pill-in_progress{background:var(--blue-light);color:var(--blue)}
     .pill-completed{background:var(--green-light);color:var(--green)}
     .pill-archived{background:#f3f0ff;color:var(--purple)}
     .pill-overdue{background:var(--red-light);color:var(--red)}
+    /* PRIORITY PILLS */
+    .prio-low{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+    .prio-medium{background:var(--amber-light);color:#b45309;border:1px solid #fde68a}
+    .prio-high{background:var(--orange-light);color:var(--orange);border:1px solid #fed7aa}
+    .prio-urgent{background:var(--red-light);color:var(--red);border:1px solid #fecaca}
+    /* SKELETON */
     .skeleton{background:linear-gradient(90deg,#e8eee9 25%,#d4ddd5 50%,#e8eee9 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;height:36px;margin-bottom:.45rem}
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
     .empty-state{text-align:center;padding:2rem 1rem;color:var(--text-light)}
     .empty-icon{width:40px;height:40px;margin:0 auto .6rem;background:var(--teal-light);border-radius:50%;display:flex;align-items:center;justify-content:center}
     .empty-icon svg{width:18px;height:18px;stroke:var(--teal);fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+    /* MODAL */
     .modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.52);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem}
     .modal-overlay.open{display:flex}
     .modal{background:var(--white);border-radius:18px;width:100%;max-width:580px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.22)}
-    .modal-wide{max-width:700px}
+    .modal-wide{max-width:720px}
+    .modal-xl{max-width:860px}
     .modal-header{padding:1.15rem 1.3rem .85rem;border-bottom:1px solid rgba(42,122,122,.08);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:1}
     .modal-header h3{font-family:'Playfair Display',serif;font-size:1.08rem;color:var(--text)}
     .modal-close{background:var(--teal-light);border:none;cursor:pointer;width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal);transition:background .2s;flex-shrink:0}
@@ -127,6 +150,7 @@
     .modal-close svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
     .modal-body{padding:1.15rem 1.3rem}
     .modal-footer{padding:.65rem 1.3rem 1.15rem;border-top:1px solid rgba(42,122,122,.08);display:flex;gap:.65rem;justify-content:flex-end;flex-wrap:wrap}
+    /* DETAIL */
     .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.2rem}
     .detail-item .d-label{font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-light);margin-bottom:.25rem}
     .detail-item .d-val{font-size:.88rem;color:var(--text)}
@@ -142,6 +166,7 @@
     .st-btn.active.s-in_progress{background:var(--blue-light);color:var(--blue);border-color:transparent}
     .st-btn.active.s-completed{background:var(--green-light);color:var(--green);border-color:transparent}
     .st-btn.active.s-archived{background:#f3f0ff;color:var(--purple);border-color:transparent}
+    /* RECUR */
     .recur-section{background:var(--teal-light);border-radius:10px;padding:.85rem 1rem;margin-top:.55rem}
     .recur-section .r-title{font-size:.78rem;font-weight:700;color:var(--teal-dark);margin-bottom:.65rem;display:flex;align-items:center;gap:6px}
     .recur-section .r-title svg{width:14px;height:14px;stroke:var(--teal-dark);fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
@@ -154,14 +179,100 @@
     .toggle-switch input:checked + .toggle-knob{background:var(--teal)}
     .toggle-switch input:checked + .toggle-knob:before{transform:translateX(18px)}
     .toggle-label{font-size:.82rem;font-weight:600;color:var(--text-mid)}
-    #recurOptions{display:none}
     .recur-badge{display:inline-flex;align-items:center;gap:4px;background:var(--teal-light);color:var(--teal);font-size:.68rem;font-weight:700;padding:.12rem .5rem;border-radius:50px}
+    /* CHECKLIST */
+    .checklist-wrap{margin-top:.6rem}
+    .checklist-item{display:flex;align-items:center;gap:.55rem;padding:.38rem 0;border-bottom:1px solid rgba(42,122,122,.06)}
+    .checklist-item:last-child{border-bottom:none}
+    .checklist-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--teal);cursor:pointer;flex-shrink:0}
+    .checklist-item label{font-size:.85rem;color:var(--text-mid);cursor:pointer;flex:1}
+    .checklist-item label.done{text-decoration:line-through;color:var(--text-light)}
+    .checklist-add{display:flex;gap:.5rem;margin-top:.6rem}
+    .checklist-add input{flex:1;padding:.45rem .75rem;border:1.5px solid rgba(42,122,122,.18);border-radius:8px;font-family:'Lato',sans-serif;font-size:.83rem;outline:none}
+    .checklist-add input:focus{border-color:var(--teal)}
+    .checklist-add button{padding:.45rem .85rem;background:var(--teal);color:#fff;border:none;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer}
+    .checklist-add button:hover{background:var(--teal-dark)}
+    .checklist-progress{height:5px;background:rgba(42,122,122,.12);border-radius:50px;margin-bottom:.65rem;overflow:hidden}
+    .checklist-progress-bar{height:100%;background:var(--teal);border-radius:50px;transition:width .3s}
+    /* COMMENTS */
+    .comments-section{margin-top:1.2rem;border-top:1px solid rgba(42,122,122,.08);padding-top:1rem}
+    .comment-item{display:flex;gap:.7rem;margin-bottom:.85rem}
+    .comment-avatar{width:28px;height:28px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.72rem;font-weight:700;flex-shrink:0}
+    .comment-body{flex:1;background:var(--cream);border-radius:10px;padding:.55rem .8rem}
+    .comment-meta{font-size:.7rem;color:var(--text-light);margin-bottom:.25rem;display:flex;justify-content:space-between}
+    .comment-text{font-size:.84rem;color:var(--text-mid);line-height:1.55}
+    .comment-form{display:flex;gap:.6rem;margin-top:.7rem;align-items:flex-end}
+    .comment-form textarea{flex:1;padding:.55rem .8rem;border:1.5px solid rgba(42,122,122,.18);border-radius:9px;font-family:'Lato',sans-serif;font-size:.84rem;resize:none;outline:none;min-height:60px}
+    .comment-form textarea:focus{border-color:var(--teal)}
+    .comment-form button{padding:.55rem 1rem;background:var(--teal);color:#fff;border:none;border-radius:9px;font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap}
+    /* TEMPLATE */
+    .template-card{background:var(--cream);border:1px solid rgba(42,122,122,.12);border-radius:10px;padding:.85rem 1rem;margin-bottom:.65rem;display:flex;align-items:center;justify-content:space-between;gap:.7rem;cursor:pointer;transition:all .2s}
+    .template-card:hover{border-color:var(--teal);background:var(--teal-light)}
+    .template-card-info strong{font-size:.88rem;color:var(--text);display:block}
+    .template-card-info span{font-size:.74rem;color:var(--text-light)}
+    .template-actions{display:flex;gap:.4rem;flex-shrink:0}
+    /* CALENDAR VIEWS */
+    .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+    .cal-nav-title{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--text)}
+    .cal-nav-btn{background:none;border:1.5px solid rgba(42,122,122,.2);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--teal-dark);transition:all .2s}
+    .cal-nav-btn:hover{background:var(--teal-light)}
+    .cal-nav-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    /* DAY VIEW */
+    .day-timeline{position:relative;padding-left:52px}
+    .day-hour{display:flex;align-items:flex-start;min-height:48px;position:relative}
+    .day-hour-label{position:absolute;left:-52px;width:44px;text-align:right;font-size:.7rem;color:var(--text-light);font-weight:600;top:0;padding-top:2px}
+    .day-hour-line{position:absolute;left:0;right:0;top:0;border-top:1px solid rgba(42,122,122,.07)}
+    .day-events{flex:1;padding:.1rem 0 .1rem .7rem;display:flex;flex-direction:column;gap:.3rem}
+    .day-event{background:var(--teal-light);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:.3rem .65rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+    .day-event:hover{background:var(--teal);color:#fff}
+    .day-event:hover .day-event-time{color:rgba(255,255,255,.7)}
+    .day-event.prio-urgent-ev{border-left-color:var(--red);background:var(--red-light)}
+    .day-event.prio-high-ev{border-left-color:var(--orange);background:var(--orange-light)}
+    .day-event-title{font-size:.8rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .day-event:hover .day-event-title{color:#fff}
+    .day-event-time{font-size:.7rem;color:var(--text-light);white-space:nowrap;flex-shrink:0}
+    .day-allday{background:var(--amber-light);border:1px solid #fde68a;border-radius:8px;padding:.4rem .75rem;margin-bottom:.65rem;font-size:.82rem;color:#92400e;font-weight:600;cursor:pointer}
+    /* WEEK VIEW */
+    .week-grid{display:grid;grid-template-columns:44px repeat(7,1fr);border:1px solid rgba(42,122,122,.1);border-radius:12px;overflow:hidden}
+    .week-header{background:var(--cream);padding:.5rem .3rem;text-align:center;font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-light);border-bottom:2px solid rgba(42,122,122,.1);border-right:1px solid rgba(42,122,122,.07)}
+    .week-header.today-col{background:var(--teal-light);color:var(--teal)}
+    .week-time-col{padding:.4rem .3rem;text-align:right;font-size:.65rem;color:var(--text-light);border-right:1px solid rgba(42,122,122,.07);border-bottom:1px solid rgba(42,122,122,.05)}
+    .week-cell{padding:.25rem .2rem;border-right:1px solid rgba(42,122,122,.07);border-bottom:1px solid rgba(42,122,122,.05);min-height:36px;vertical-align:top}
+    .week-cell.today-col{background:rgba(42,122,122,.03)}
+    .week-task-chip{font-size:.67rem;font-weight:600;padding:.12rem .4rem;border-radius:5px;margin-bottom:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;background:var(--teal-light);color:var(--teal-dark);transition:background .15s}
+    .week-task-chip:hover{background:var(--teal);color:#fff}
+    .week-task-chip.chip-urgent{background:var(--red-light);color:var(--red)}
+    .week-task-chip.chip-high{background:var(--orange-light);color:var(--orange)}
+    .week-task-chip.chip-completed{background:var(--green-light);color:var(--green);text-decoration:line-through}
+    /* MONTH VIEW */
+    .month-grid{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid rgba(42,122,122,.1);border-radius:12px;overflow:hidden}
+    .month-day-header{background:var(--cream);padding:.45rem .5rem;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-light);border-bottom:2px solid rgba(42,122,122,.1);border-right:1px solid rgba(42,122,122,.07);text-align:center}
+    .month-cell{border-right:1px solid rgba(42,122,122,.07);border-bottom:1px solid rgba(42,122,122,.06);padding:.35rem .4rem;min-height:90px;vertical-align:top;cursor:default}
+    .month-cell.other-month .month-day-num{color:rgba(42,122,122,.3)}
+    .month-cell.today-cell{background:rgba(42,122,122,.04)}
+    .month-day-num{font-size:.78rem;font-weight:700;color:var(--text-mid);margin-bottom:.25rem;display:flex;align-items:center;gap:4px}
+    .month-day-num.today-num{background:var(--teal);color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem}
+    .month-task-chip{font-size:.65rem;font-weight:600;padding:.1rem .38rem;border-radius:4px;margin-bottom:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;background:var(--teal-light);color:var(--teal-dark);transition:background .15s}
+    .month-task-chip:hover{background:var(--teal);color:#fff}
+    .month-task-chip.chip-urgent{background:var(--red-light);color:var(--red)}
+    .month-task-chip.chip-high{background:var(--orange-light);color:var(--orange)}
+    .month-task-chip.chip-completed{background:var(--green-light);color:var(--green)}
+    .month-more{font-size:.65rem;color:var(--teal);font-weight:700;cursor:pointer;padding:.1rem .3rem}
+    /* TOAST */
     #toast{position:fixed;bottom:1.2rem;right:1.2rem;z-index:9999;background:var(--text);color:#fff;padding:.78rem 1.2rem;border-radius:11px;font-size:.84rem;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.22,.68,0,1.1);max-width:310px;pointer-events:none}
     #toast.show{transform:translateY(0);opacity:1}
     #toast.success{background:var(--teal-dark)}
     #toast.error{background:var(--red)}
+    /* SIDEBAR OVERLAY */
     .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:199;opacity:0;pointer-events:none;transition:opacity .3s}
     .sidebar-overlay.show{opacity:1;pointer-events:auto}
+    /* MY/ALL TOGGLE */
+    .scope-toggle{display:flex;gap:.35rem;background:var(--cream);border-radius:8px;padding:.2rem;margin-left:auto}
+    .scope-btn{padding:.32rem .75rem;border:none;border-radius:6px;font-family:'Lato',sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;background:transparent;color:var(--text-light);transition:all .2s}
+    .scope-btn.active{background:var(--white);color:var(--teal);box-shadow:0 1px 6px rgba(0,0,0,.07)}
+    /* EXPORT BTN */
+    .export-row{display:flex;gap:.5rem;justify-content:flex-end;margin-bottom:.7rem}
+    /* RESPONSIVE */
     @media(max-width:900px){
       .sidebar{width:260px;transform:translateX(-100%);display:flex}
       .sidebar.open{transform:translateX(0)}
@@ -173,6 +284,7 @@
       .span-2{grid-column:span 1}
       .detail-grid{grid-template-columns:1fr}
       .recur-row{grid-template-columns:1fr}
+      .week-grid{grid-template-columns:32px repeat(7,1fr)}
     }
     @media(max-width:600px){
       .main{padding:.75rem}
@@ -181,38 +293,42 @@
       .fab{bottom:1rem;right:1rem}
       thead th:nth-child(n+4){display:none}
       tbody td:nth-child(n+4){display:none}
+      .month-cell{min-height:60px}
+      .week-task-chip{display:none}
     }
   </style>
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('sw.js').catch(function(e) {
-          console.warn('SW registration failed:', e);
-        });
-      });
-    }
+    if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(e){console.warn('SW registration failed:',e);});});}
   </script>
 </head>
 <body>
 <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
-  <symbol id="i-home"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
-  <symbol id="i-clock"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
-  <symbol id="i-tasks"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
-  <symbol id="i-user"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
-  <symbol id="i-users"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
-  <symbol id="i-bar"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
-  <symbol id="i-gear"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
-  <symbol id="i-logout" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
-  <symbol id="i-plus"   viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
-  <symbol id="i-check"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
-  <symbol id="i-edit"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
-  <symbol id="i-trash"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></symbol>
-  <symbol id="i-x"      viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
-  <symbol id="i-menu"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
-  <symbol id="i-ext"    viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
-  <symbol id="i-archive"viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></symbol>
-  <symbol id="i-repeat" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></symbol>
+  <symbol id="i-home"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+  <symbol id="i-clock"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-tasks"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
+  <symbol id="i-user"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-users"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-bar"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+  <symbol id="i-gear"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="i-logout"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+  <symbol id="i-plus"    viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="i-check"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-edit"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+  <symbol id="i-trash"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></symbol>
+  <symbol id="i-x"       viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+  <symbol id="i-menu"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+  <symbol id="i-ext"     viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+  <symbol id="i-archive" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></symbol>
+  <symbol id="i-repeat"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></symbol>
+  <symbol id="i-chat"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-template"viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></symbol>
+  <symbol id="i-cal"     viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+  <symbol id="i-download"viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+  <symbol id="i-chevl"   viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></symbol>
+  <symbol id="i-chevr"   viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></symbol>
+  <symbol id="i-list"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
 </svg>
+
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 <aside class="sidebar" id="sidebar">
   <a href="https://oazamedika.mk" class="sidebar-logo">
@@ -246,6 +362,7 @@
     <button class="btn-logout" id="logoutBtn" type="button"><svg><use href="#i-logout"/></svg>Одјавете се</button>
   </div>
 </aside>
+
 <header class="topbar">
   <div class="topbar-left">
     <button class="hamburger-btn" id="hamburgerBtn" type="button"><svg><use href="#i-menu"/></svg></button>
@@ -253,6 +370,7 @@
   </div>
   <div class="topbar-right"><span class="topbar-badge" id="roleBadge">…</span></div>
 </header>
+
 <main class="main">
   <div class="anim">
     <div class="section-header">
@@ -261,60 +379,136 @@
         <h2 class="section-title">Задачи</h2>
         <p class="section-sub" id="tasksSub">Вчитување…</p>
       </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Активни задачи</span>
-        <div class="toolbar">
-          <input type="search" id="searchInput" class="f-input search-input" placeholder="Пребарај…"/>
-          <select id="filterStatus" class="f-select">
-            <option value="all">Сите статуси</option>
-            <option value="pending">Во чекање</option>
-            <option value="in_progress">Во тек</option>
-            <option value="completed">Завршени</option>
-          </select>
-          <select id="filterAssignee" class="f-select doctor-only"><option value="">Сите вработени</option></select>
+      <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+        <!-- My/All scope toggle — doctor only -->
+        <div class="scope-toggle doctor-only" id="scopeToggle">
+          <button class="scope-btn active" id="scopeAll" onclick="setScope('all')">Сите</button>
+          <button class="scope-btn" id="scopeMy" onclick="setScope('mine')">Мои</button>
         </div>
-      </div>
-      <div class="task-table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Наслов</th>
-              <th>Статус</th>
-              <th>Рок</th>
-              <th class="doctor-only" id="colAssignee">Доделено на</th>
-              <th class="doctor-only" id="colCreator">Создадено од</th>
-              <th>Акции</th>
-            </tr>
-          </thead>
-          <tbody id="tasksBody"><tr><td colspan="6"><div class="skeleton"></div></td></tr></tbody>
-        </table>
+        <!-- Template button — doctor only -->
+        <button class="btn-secondary doctor-only" id="templatesBtn" onclick="openModal('templatesModal')">
+          <svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-template"/></svg>Шаблони
+        </button>
       </div>
     </div>
-    <div class="card doctor-only" id="archivedCard">
-      <div class="card-header">
-        <span class="card-title">Архивирани задачи</span>
-        <button class="card-action" type="button" id="toggleArchiveBtn">Прикажи ▾</button>
-      </div>
-      <div id="archivedSection" style="display:none">
+
+    <!-- VIEW TABS -->
+    <div class="view-tabs">
+      <button class="view-tab active" id="tabList"    onclick="switchView('list')">
+        <svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px"><use href="#i-list"/></svg>Листа
+      </button>
+      <button class="view-tab" id="tabDay"    onclick="switchView('day')">Ден</button>
+      <button class="view-tab" id="tabWeek"   onclick="switchView('week')">Недела</button>
+      <button class="view-tab" id="tabMonth"  onclick="switchView('month')">Месец</button>
+    </div>
+
+    <!-- ═══ LIST VIEW ════════════════════════════════════════════════════════ -->
+    <div id="viewList">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Активни задачи</span>
+          <div class="toolbar">
+            <input type="search" id="searchInput" class="f-input search-input" placeholder="Пребарај…"/>
+            <select id="filterStatus" class="f-select">
+              <option value="all">Сите статуси</option>
+              <option value="pending">Во чекање</option>
+              <option value="in_progress">Во тек</option>
+              <option value="completed">Завршени</option>
+            </select>
+            <select id="filterPriority" class="f-select">
+              <option value="all">Сите приоритети</option>
+              <option value="urgent">Итно</option>
+              <option value="high">Висок</option>
+              <option value="medium">Среден</option>
+              <option value="low">Низок</option>
+            </select>
+            <select id="filterAssignee" class="f-select doctor-only"><option value="">Сите вработени</option></select>
+          </div>
+        </div>
+        <div class="export-row doctor-only">
+          <button class="btn-secondary" onclick="exportCSV()">
+            <svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-download"/></svg>Извоз CSV
+          </button>
+        </div>
         <div class="task-table-wrap">
           <table>
-            <thead><tr><th>Наслов</th><th>Доделено на</th><th>Создадено од</th><th>Завршено на</th><th>Создадено на</th><th>Акции</th></tr></thead>
-            <tbody id="archivedBody"><tr><td colspan="6" style="text-align:center;color:var(--text-light);padding:1.1rem">Нема архивирани задачи</td></tr></tbody>
+            <thead>
+              <tr>
+                <th>Наслов</th>
+                <th>Статус</th>
+                <th>Приоритет</th>
+                <th>Рок</th>
+                <th class="doctor-only" id="colAssignee">Доделено на</th>
+                <th class="doctor-only" id="colCreator">Создадено од</th>
+                <th>Акции</th>
+              </tr>
+            </thead>
+            <tbody id="tasksBody"><tr><td colspan="7"><div class="skeleton"></div></td></tr></tbody>
           </table>
         </div>
       </div>
+
+      <!-- Archived card — doctor only -->
+      <div class="card doctor-only" id="archivedCard">
+        <div class="card-header">
+          <span class="card-title">Архивирани задачи</span>
+          <button class="card-action" type="button" id="toggleArchiveBtn">Прикажи ▾</button>
+        </div>
+        <div id="archivedSection" style="display:none">
+          <div class="task-table-wrap">
+            <table>
+              <thead><tr><th>Наслов</th><th>Приоритет</th><th>Повторување</th><th>Доделено на</th><th>Создадено од</th><th>Завршено на</th><th>Акции</th></tr></thead>
+              <tbody id="archivedBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- ═══ DAY VIEW ═════════════════════════════════════════════════════════ -->
+    <div id="viewDay" style="display:none">
+      <div class="card">
+        <div class="cal-nav">
+          <button class="cal-nav-btn" onclick="shiftDay(-1)"><svg><use href="#i-chevl"/></svg></button>
+          <span class="cal-nav-title" id="dayTitle">–</span>
+          <button class="cal-nav-btn" onclick="shiftDay(1)"><svg><use href="#i-chevr"/></svg></button>
+        </div>
+        <div id="dayAllDay"></div>
+        <div class="day-timeline" id="dayTimeline"></div>
+      </div>
+    </div>
+
+    <!-- ═══ WEEK VIEW ════════════════════════════════════════════════════════ -->
+    <div id="viewWeek" style="display:none">
+      <div class="card">
+        <div class="cal-nav">
+          <button class="cal-nav-btn" onclick="shiftWeek(-1)"><svg><use href="#i-chevl"/></svg></button>
+          <span class="cal-nav-title" id="weekTitle">–</span>
+          <button class="cal-nav-btn" onclick="shiftWeek(1)"><svg><use href="#i-chevr"/></svg></button>
+        </div>
+        <div class="week-grid" id="weekGrid"></div>
+      </div>
+    </div>
+
+    <!-- ═══ MONTH VIEW ═══════════════════════════════════════════════════════ -->
+    <div id="viewMonth" style="display:none">
+      <div class="card">
+        <div class="cal-nav">
+          <button class="cal-nav-btn" onclick="shiftMonth(-1)"><svg><use href="#i-chevl"/></svg></button>
+          <span class="cal-nav-title" id="monthTitle">–</span>
+          <button class="cal-nav-btn" onclick="shiftMonth(1)"><svg><use href="#i-chevr"/></svg></button>
+        </div>
+        <div class="month-grid" id="monthGrid"></div>
+      </div>
+    </div>
+
   </div>
 </main>
 
 <!-- FAB -->
-<button class="fab doctor-only" id="fabNewTask" title="Нова задача">
-  <svg><use href="#i-plus"/></svg>
-</button>
+<button class="fab doctor-only" id="fabNewTask" title="Нова задача"><svg><use href="#i-plus"/></svg></button>
 
-<!-- CREATE TASK MODAL -->
+<!-- ═══════════ CREATE TASK MODAL ═══════════════════════════════════════════ -->
 <div class="modal-overlay" id="createModal">
   <div class="modal">
     <div class="modal-header">
@@ -329,7 +523,7 @@
         </div>
         <div class="f-group span-2">
           <label class="f-label">Опис <small style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.7rem;color:var(--text-light)">(Markdown)</small></label>
-          <textarea id="newDescription" class="f-textarea" placeholder="Детален опис, чек-листа, упатства…"></textarea>
+          <textarea id="newDescription" class="f-textarea" placeholder="Детален опис, упатства…"></textarea>
         </div>
         <div class="f-group">
           <label class="f-label">Доделено на <span style="color:var(--red)">*</span></label>
@@ -342,22 +536,37 @@
             <option value="in_progress">Во тек</option>
           </select>
         </div>
-        <div class="f-group span-2">
+        <div class="f-group">
+          <label class="f-label">Приоритет</label>
+          <select id="newPriority" class="f-select">
+            <option value="medium">Среден</option>
+            <option value="low">Низок</option>
+            <option value="high">Висок</option>
+            <option value="urgent">Итно</option>
+          </select>
+        </div>
+        <div class="f-group">
           <label class="f-label">Рок (датум и час)</label>
           <input id="newDueDate" type="datetime-local" class="f-input"/>
+        </div>
+      </div>
+      <!-- CHECKLIST -->
+      <div style="margin-bottom:.9rem">
+        <label class="f-label">Чек-листа (под-задачи)</label>
+        <div id="newChecklistItems"></div>
+        <div class="checklist-add">
+          <input type="text" id="newChecklistInput" placeholder="Додади ставка…"/>
+          <button type="button" onclick="addChecklistItem('new')">+</button>
         </div>
       </div>
       <!-- RECURRING -->
       <div class="recur-section">
         <div class="r-title"><svg viewBox="0 0 24 24"><use href="#i-repeat"/></svg> Повторувачка задача</div>
         <div class="toggle-row">
-          <label class="toggle-switch">
-            <input type="checkbox" id="recurEnabled"/>
-            <span class="toggle-knob"></span>
-          </label>
+          <label class="toggle-switch"><input type="checkbox" id="recurEnabled"/><span class="toggle-knob"></span></label>
           <span class="toggle-label">Овозможи повторување</span>
         </div>
-        <div id="recurOptions">
+        <div id="recurOptions" style="display:none">
           <div class="recur-row">
             <div class="f-group">
               <label class="f-label">Фреквенција</label>
@@ -370,18 +579,15 @@
             <div class="f-group" id="recurDayGroup">
               <label class="f-label">Ден во неделата</label>
               <select id="recurDay" class="f-select">
-                <option value="1">Понеделник</option>
-                <option value="2">Вторник</option>
-                <option value="3">Среда</option>
-                <option value="4">Четврток</option>
-                <option value="5">Петок</option>
-                <option value="6">Сабота</option>
+                <option value="1">Понеделник</option><option value="2">Вторник</option>
+                <option value="3">Среда</option><option value="4">Четврток</option>
+                <option value="5">Петок</option><option value="6">Сабота</option>
                 <option value="0">Недела</option>
               </select>
             </div>
             <div class="f-group" id="recurDateGroup" style="display:none">
               <label class="f-label">Ден во месецот</label>
-              <input id="recurDate" type="number" class="f-input" min="1" max="31" value="1" placeholder="1–31"/>
+              <input id="recurDate" type="number" class="f-input" min="1" max="31" value="1"/>
             </div>
           </div>
           <div class="f-group">
@@ -400,7 +606,7 @@
   </div>
 </div>
 
-<!-- TASK DETAIL / EDIT MODAL -->
+<!-- ═══════════ TASK DETAIL / EDIT MODAL ════════════════════════════════════ -->
 <div class="modal-overlay" id="taskModal">
   <div class="modal modal-wide">
     <div class="modal-header">
@@ -412,33 +618,127 @@
   </div>
 </div>
 
-<div id="toast"></div>
-<script>
-var currentUser=null,currentProfile=null,allTasks=[],archivedTasks=[],allStaff=[],editingTaskId=null;
+<!-- ═══════════ TEMPLATES MODAL ══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="templatesModal">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <h3>Шаблони за задачи</h3>
+      <button class="modal-close" type="button" onclick="closeModal('templatesModal')"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:.85rem">
+        <button class="btn-primary" onclick="openModal('createTemplateModal')">
+          <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><use href="#i-plus"/></svg>Нов шаблон
+        </button>
+      </div>
+      <div id="templatesList"><div style="color:var(--text-light);font-size:.85rem">Вчитување…</div></div>
+    </div>
+  </div>
+</div>
 
+<!-- ═══════════ CREATE TEMPLATE MODAL ══════════════════════════════════════ -->
+<div class="modal-overlay" id="createTemplateModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Нов шаблон</h3>
+      <button class="modal-close" type="button" onclick="closeModal('createTemplateModal')"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="f-group">
+        <label class="f-label">Наслов на шаблонот <span style="color:var(--red)">*</span></label>
+        <input id="tplTitle" type="text" class="f-input" placeholder="пр. Дневна проверка на опрема"/>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Опис (Markdown)</label>
+        <textarea id="tplDescription" class="f-textarea" placeholder="Детален опис…"></textarea>
+      </div>
+      <div class="form-grid">
+        <div class="f-group">
+          <label class="f-label">Приоритет</label>
+          <select id="tplPriority" class="f-select">
+            <option value="medium">Среден</option><option value="low">Низок</option>
+            <option value="high">Висок</option><option value="urgent">Итно</option>
+          </select>
+        </div>
+        <div class="f-group">
+          <label class="f-label">Доделување (стандардно)</label>
+          <select id="tplRole" class="f-select">
+            <option value="">— Без стандард —</option>
+            <option value="doctor">Доктор</option>
+            <option value="nurse">Мед. сестра</option>
+          </select>
+        </div>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Чек-листа</label>
+        <div id="tplChecklistItems"></div>
+        <div class="checklist-add">
+          <input type="text" id="tplChecklistInput" placeholder="Додади ставка…"/>
+          <button type="button" onclick="addChecklistItem('tpl')">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" type="button" onclick="closeModal('createTemplateModal')">Откажи</button>
+      <button class="btn-primary" type="button" onclick="saveTemplate()">
+        <svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><use href="#i-check"/></svg>Зачувај шаблон
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════════════════════════════════ -->
+<script>
+/* ── STATE ─────────────────────────────────────────────────────────────── */
+var currentUser=null, currentProfile=null;
+var allTasks=[], archivedTasks=[], allStaff=[], allTemplates=[];
+var editingTaskId=null;
+var currentView='list';
+var taskScope='all'; // 'all' or 'mine'
+var calDay=new Date(), calWeekStart=null, calMonth=new Date();
+
+/* ── HELPERS: timezone-safe datetime ───────────────────────────────────── */
+// Convert a UTC ISO string from Supabase → local datetime-local string
+function utcToLocal(iso){
+  if(!iso)return'';
+  var d=new Date(iso);
+  var pad=function(n){return String(n).padStart(2,'0');};
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());
+}
+// Convert a datetime-local string (local time) → UTC ISO for storage
+function localToUtc(val){
+  if(!val)return null;
+  return new Date(val).toISOString();
+}
+
+/* ── INIT ───────────────────────────────────────────────────────────────── */
 (async function init(){
   document.getElementById('logoutBtn').addEventListener('click',handleLogout);
   document.getElementById('hamburgerBtn').addEventListener('click',toggleSidebar);
   document.getElementById('sidebarOverlay').addEventListener('click',closeSidebar);
   document.getElementById('searchInput').addEventListener('input',renderTasks);
   document.getElementById('filterStatus').addEventListener('change',renderTasks);
+  document.getElementById('filterPriority').addEventListener('change',renderTasks);
   document.getElementById('filterAssignee').addEventListener('change',renderTasks);
   document.getElementById('closeTaskModal').addEventListener('click',function(){closeModal('taskModal');});
   document.getElementById('taskModal').addEventListener('click',function(e){if(e.target===this)closeModal('taskModal');});
   document.getElementById('toggleArchiveBtn').addEventListener('click',toggleArchive);
-  document.getElementById('fabNewTask').addEventListener('click',function(){openModal('createModal');});
+  document.getElementById('fabNewTask').addEventListener('click',function(){resetCreateForm();openModal('createModal');});
   document.getElementById('closeCreateModal').addEventListener('click',function(){closeModal('createModal');});
   document.getElementById('cancelCreateModal').addEventListener('click',function(){closeModal('createModal');});
   document.getElementById('createModal').addEventListener('click',function(e){if(e.target===this)closeModal('createModal');});
   document.getElementById('submitCreateTask').addEventListener('click',createTask);
-  document.getElementById('recurEnabled').addEventListener('change',function(){
-    document.getElementById('recurOptions').style.display=this.checked?'block':'none';
-  });
+  document.getElementById('recurEnabled').addEventListener('change',function(){document.getElementById('recurOptions').style.display=this.checked?'block':'none';});
   document.getElementById('recurFreq').addEventListener('change',function(){
-    var isWeekly=this.value==='weekly',isMonthly=this.value==='monthly';
-    document.getElementById('recurDayGroup').style.display=isWeekly?'block':'none';
-    document.getElementById('recurDateGroup').style.display=isMonthly?'block':'none';
+    document.getElementById('recurDayGroup').style.display=this.value==='weekly'?'block':'none';
+    document.getElementById('recurDateGroup').style.display=this.value==='monthly'?'block':'none';
   });
+  document.getElementById('newChecklistInput').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addChecklistItem('new');}});
+  document.getElementById('tplChecklistInput').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addChecklistItem('tpl');}});
 
   var res=await sb.auth.getSession();
   if(!res.data||!res.data.session){window.location.replace('index.html');return;}
@@ -447,8 +747,10 @@ var currentUser=null,currentProfile=null,allTasks=[],archivedTasks=[],allStaff=[
   await loadProfile();
   await loadStaff();
   await loadTasks();
+  if(currentProfile&&currentProfile.role==='doctor') loadTemplates();
 })();
 
+/* ── PROFILE / ROLE ─────────────────────────────────────────────────────── */
 async function loadProfile(){
   var res=await sb.from('profiles').select('*').eq('id',currentUser.id).single();
   if(res.error||!res.data){showToast('Грешка при вчитување профил.','error');return;}
@@ -458,17 +760,13 @@ async function loadProfile(){
 function applyRoleUI(role,name,avatarUrl){
   document.getElementById('sidebarUserName').textContent=name||currentUser.email;
   document.getElementById('sidebarUserRole').textContent=role==='doctor'?'Доктор':'Медицинска сестра';
-  var _av=document.getElementById('avatarInitial');
-  if(avatarUrl){_av.innerHTML='<img src="'+avatarUrl+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>';}
-  else{_av.textContent=(name||'?')[0].toUpperCase();}
+  var av=document.getElementById('avatarInitial');
+  if(avatarUrl){av.innerHTML='<img src="'+avatarUrl+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>';}
+  else{av.textContent=(name||'?')[0].toUpperCase();}
   document.getElementById('roleBadge').textContent=role==='doctor'?'Доктор':'Мед. сестра';
   document.getElementById('tasksSub').textContent=role==='doctor'?'Создавај и управувај со задачи за тимот':'Ваши задачи доделени од докторот';
   if(role==='doctor'){
-    // Remove the hiding class entirely so CSS !important no longer applies
-    document.querySelectorAll('.doctor-only').forEach(function(el){
-      el.classList.remove('doctor-only');
-    });
-    // Explicitly show specific elements that need inline style
+    document.querySelectorAll('.doctor-only').forEach(function(el){el.classList.remove('doctor-only');});
     document.getElementById('colAssignee').style.display='';
     document.getElementById('colCreator').style.display='';
     document.getElementById('archivedCard').style.display='block';
@@ -477,6 +775,7 @@ function applyRoleUI(role,name,avatarUrl){
   }
 }
 
+/* ── STAFF ──────────────────────────────────────────────────────────────── */
 async function loadStaff(){
   var res=await sb.from('profiles').select('id,full_name,role').order('full_name');
   allStaff=res.data||[];
@@ -484,26 +783,35 @@ async function loadStaff(){
   document.getElementById('newAssignee').innerHTML='<option value="">— Изберете —</option>'+opts;
   document.getElementById('filterAssignee').innerHTML='<option value="">Сите вработени</option>'+opts;
 }
-
-// Build a name-lookup map from allStaff (loaded before tasks)
 function staffName(id){
   if(!id)return'–';
   var s=allStaff.find(function(x){return x.id===id;});
   return s?s.full_name:'–';
 }
 
+/* ── SCOPE TOGGLE ───────────────────────────────────────────────────────── */
+function setScope(s){
+  taskScope=s;
+  document.getElementById('scopeAll').classList.toggle('active',s==='all');
+  document.getElementById('scopeMy').classList.toggle('active',s==='mine');
+  renderTasks();
+  renderCurrentCalView();
+}
+
+/* ── LOAD TASKS ─────────────────────────────────────────────────────────── */
 async function loadTasks(){
   var isDoc=currentProfile&&currentProfile.role==='doctor';
-  // Simple select – no problematic FK join aliases
   var q=sb.from('tasks').select('*').not('status','eq','archived').order('due_date',{ascending:true,nullsFirst:false});
-  if(!isDoc)q=q.eq('assignee_id',currentUser.id);
+  if(!isDoc) q=q.eq('assignee_id',currentUser.id);
   var res=await q;
   if(res.error){showToast('Грешка: '+res.error.message,'error');return;}
   allTasks=res.data||[];
   var active=allTasks.filter(function(t){return t.status==='pending'||t.status==='in_progress';}).length;
-  var badge=document.getElementById('tasksBadge');badge.textContent=active;badge.style.display=active>0?'':'none';
+  var badge=document.getElementById('tasksBadge');
+  badge.textContent=active;badge.style.display=active>0?'':'none';
   renderTasks();
-  if(isDoc)loadArchived();
+  renderCurrentCalView();
+  if(isDoc) loadArchived();
 }
 
 async function loadArchived(){
@@ -512,33 +820,48 @@ async function loadArchived(){
   renderArchived();
 }
 
-function renderTasks(){
+/* ── RENDER LIST ────────────────────────────────────────────────────────── */
+function getFilteredTasks(){
   var search=document.getElementById('searchInput').value.toLowerCase();
   var status=document.getElementById('filterStatus').value;
+  var priority=document.getElementById('filterPriority').value;
   var assignee=document.getElementById('filterAssignee').value;
-  var list=allTasks.filter(function(t){
-    if(status!=='all'&&t.status!==status)return false;
-    if(assignee&&t.assignee_id!==assignee)return false;
-    if(search&&!t.title.toLowerCase().includes(search)&&!(t.description||'').toLowerCase().includes(search))return false;
+  return allTasks.filter(function(t){
+    if(status!=='all'&&t.status!==status) return false;
+    if(priority!=='all'&&(t.priority||'medium')!==priority) return false;
+    if(assignee&&t.assignee_id!==assignee) return false;
+    if(taskScope==='mine'&&t.assignee_id!==currentUser.id) return false;
+    if(search&&!t.title.toLowerCase().includes(search)&&!(t.description||'').toLowerCase().includes(search)) return false;
     return true;
   });
+}
+
+function renderTasks(){
+  var list=getFilteredTasks();
   var isDoc=currentProfile&&currentProfile.role==='doctor';
   var tbody=document.getElementById('tasksBody');
-  if(!list.length){tbody.innerHTML='<tr><td colspan="6"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24"><use href="#i-tasks"/></svg></div><p>Нема задачи</p></div></td></tr>';return;}
+  if(!list.length){
+    tbody.innerHTML='<tr><td colspan="7"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24"><use href="#i-tasks"/></svg></div><p>Нема задачи</p></div></td></tr>';
+    return;
+  }
   tbody.innerHTML=list.map(function(t){
     var overdue=t.due_date&&new Date(t.due_date)<new Date()&&t.status!=='completed';
     var statusPill=overdue?'<span class="pill pill-overdue">Задоцнето</span>':'<span class="pill pill-'+t.status+'">'+statusLabel(t.status)+'</span>';
+    var prio=t.priority||'medium';
+    var prioPill='<span class="pill prio-'+prio+'">'+prioLabel(prio)+'</span>';
+    var checklist=t.checklist&&t.checklist.length?'<div class="t-checklist">☑ '+t.checklist.filter(function(c){return c.done;}).length+'/'+t.checklist.length+'</div>':'';
     var recurHtml=t.recur_freq?'<div class="t-recur">↻ '+recurLabel(t.recur_freq,t.recur_day,t.recur_date)+'</div>':'';
     return '<tr onclick="openTaskDetail(\''+t.id+'\')">'+
-      '<td class="td-title"><span class="t-name">'+esc(t.title)+'</span>'+(t.description?'<span class="t-desc">'+esc(t.description.slice(0,60))+'</span>':'')+recurHtml+'</td>'+
+      '<td class="td-title"><span class="t-name">'+esc(t.title)+'</span>'+(t.description?'<span class="t-desc">'+esc(t.description.slice(0,60))+'</span>':'')+recurHtml+checklist+'</td>'+
       '<td>'+statusPill+'</td>'+
+      '<td>'+prioPill+'</td>'+
       '<td class="td-nowrap">'+(t.due_date?formatDateTime(t.due_date):'–')+'</td>'+
-      (isDoc?'<td class="td-nowrap">'+esc(staffName(t.assignee_id))+'</td>':'') +
-      (isDoc?'<td class="td-nowrap">'+esc(staffName(t.creator_id))+'</td>':'') +
+      (isDoc?'<td class="td-nowrap">'+esc(staffName(t.assignee_id))+'</td>':'')+
+      (isDoc?'<td class="td-nowrap">'+esc(staffName(t.creator_id))+'</td>':'')+
       '<td onclick="event.stopPropagation()" style="white-space:nowrap">'+
-        (t.status!=='completed'?'<button class="btn-complete" style="margin-right:4px" title="Означи како завршена" onclick="quickComplete(\''+t.id+'\')"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-check"/></svg>Завршена</button>':'') +
-        (isDoc?'<button class="btn-secondary" style="margin-right:4px" onclick="openEditModal(\''+t.id+'\')"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-edit"/></svg></button>':'') +
-        (isDoc?'<button class="btn-danger" onclick="archiveTask(\''+t.id+'\')"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-archive"/></svg></button>':'') +
+        (t.status!=='completed'?'<button class="btn-complete" style="margin-right:4px" onclick="quickComplete(\''+t.id+'\')"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-check"/></svg>Завршена</button>':'')+
+        (isDoc?'<button class="btn-secondary" style="margin-right:4px" onclick="openEditModal(\''+t.id+'\')"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-edit"/></svg></button>':'')+
+        (isDoc?'<button class="btn-danger" onclick="archiveTask(\''+t.id+'\')"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-archive"/></svg></button>':'')+
       '</td>'+
     '</tr>';
   }).join('');
@@ -546,15 +869,21 @@ function renderTasks(){
 
 function renderArchived(){
   var tbody=document.getElementById('archivedBody');
-  if(!archivedTasks.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--text-light);padding:1.1rem">Нема архивирани задачи</td></tr>';return;}
+  if(!archivedTasks.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text-light);padding:1.1rem">Нема архивирани задачи</td></tr>';return;}
   tbody.innerHTML=archivedTasks.map(function(t){
+    var prio=t.priority||'medium';
+    var recurHtml=t.recur_freq?'<span class="recur-badge">↻ '+recurLabel(t.recur_freq,t.recur_day,t.recur_date)+'</span>':'–';
     return '<tr>'+
       '<td class="td-title"><span class="t-name">'+esc(t.title)+'</span></td>'+
+      '<td><span class="pill prio-'+prio+'">'+prioLabel(prio)+'</span></td>'+
+      '<td>'+recurHtml+'</td>'+
       '<td>'+esc(staffName(t.assignee_id))+'</td>'+
       '<td>'+esc(staffName(t.creator_id))+'</td>'+
       '<td class="td-nowrap">'+(t.completed_at?formatDateTime(t.completed_at):'–')+'</td>'+
-      '<td class="td-nowrap">'+formatDateTime(t.created_at)+'</td>'+
-      '<td><button class="btn-danger" onclick="deleteTask(\''+t.id+'\')"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-trash"/></svg></button></td>'+
+      '<td style="display:flex;gap:.4rem">'+
+        '<button class="btn-secondary" onclick="unarchiveTask(\''+t.id+'\')">Врати</button>'+
+        '<button class="btn-danger" onclick="deleteTask(\''+t.id+'\')"><svg width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-trash"/></svg></button>'+
+      '</td>'+
     '</tr>';
   }).join('');
 }
@@ -567,13 +896,24 @@ function toggleArchive(){
   btn.textContent=open?'Прикажи ▾':'Скриј ▴';
 }
 
-// ── CREATE ──
+/* ── CREATE ─────────────────────────────────────────────────────────────── */
+function resetCreateForm(){
+  ['newTitle','newDescription','newDueDate','recurUntil'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('newAssignee').value='';
+  document.getElementById('newStatus').value='pending';
+  document.getElementById('newPriority').value='medium';
+  document.getElementById('recurEnabled').checked=false;
+  document.getElementById('recurOptions').style.display='none';
+  document.getElementById('newChecklistItems').innerHTML='';
+}
+
 async function createTask(){
   var title=document.getElementById('newTitle').value.trim();
   var desc=document.getElementById('newDescription').value.trim();
   var assignee=document.getElementById('newAssignee').value;
   var status=document.getElementById('newStatus').value;
-  var due=document.getElementById('newDueDate').value;
+  var priority=document.getElementById('newPriority').value;
+  var due=document.getElementById('newDueDate').value; // local datetime string
   if(!title){showToast('Насловот е задолжителен.','error');return;}
   if(!assignee){showToast('Изберете вработен.','error');return;}
   var recurEnabled=document.getElementById('recurEnabled').checked;
@@ -581,6 +921,7 @@ async function createTask(){
   var recurDay=recurEnabled&&recurFreq==='weekly'?parseInt(document.getElementById('recurDay').value):null;
   var recurDate=recurEnabled&&recurFreq==='monthly'?parseInt(document.getElementById('recurDate').value):null;
   var recurUntil=recurEnabled?document.getElementById('recurUntil').value||null:null;
+  var checklist=getChecklistData('new');
   var btn=document.getElementById('submitCreateTask');btn.disabled=true;
   var payload={
     user_id:     currentUser.id,
@@ -589,11 +930,13 @@ async function createTask(){
     title:       title,
     description: desc||null,
     status:      status,
-    due_date:    due||null,
+    priority:    priority,
+    due_date:    localToUtc(due),  // ← FIX: store as UTC
     recur_freq:  recurFreq,
     recur_day:   recurDay,
     recur_date:  recurDate,
     recur_until: recurUntil,
+    checklist:   checklist.length?checklist:null,
     created_at:  new Date().toISOString(),
     updated_at:  new Date().toISOString()
   };
@@ -602,26 +945,61 @@ async function createTask(){
   if(res.error){showToast('Грешка: '+res.error.message,'error');return;}
   showToast('Задачата е создадена!','success');
   closeModal('createModal');
-  // reset form
-  ['newTitle','newDescription','newDueDate','recurUntil'].forEach(function(id){document.getElementById(id).value='';});
-  document.getElementById('newAssignee').value='';
-  document.getElementById('newStatus').value='pending';
-  document.getElementById('recurEnabled').checked=false;
-  document.getElementById('recurOptions').style.display='none';
   await loadTasks();
 }
 
-// ── DETAIL VIEW ──
+/* ── CHECKLIST HELPERS ──────────────────────────────────────────────────── */
+function addChecklistItem(prefix){
+  var input=document.getElementById(prefix==='new'?'newChecklistInput':'tplChecklistInput');
+  var text=input.value.trim();
+  if(!text)return;
+  var container=document.getElementById(prefix==='new'?'newChecklistItems':'tplChecklistItems');
+  var id='chk_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+  var div=document.createElement('div');
+  div.className='checklist-item';
+  div.dataset.id=id;
+  div.innerHTML='<input type="checkbox" id="'+id+'"/><label for="'+id+'">'+esc(text)+'</label>'+
+    '<button type="button" style="background:none;border:none;cursor:pointer;color:var(--text-light);font-size:.8rem;padding:0 4px;margin-left:auto" onclick="this.parentElement.remove()">×</button>';
+  container.appendChild(div);
+  input.value='';
+  input.focus();
+}
+
+function getChecklistData(prefix){
+  var container=document.getElementById(prefix==='new'?'newChecklistItems':'tplChecklistItems');
+  return Array.from(container.querySelectorAll('.checklist-item')).map(function(el){
+    var lbl=el.querySelector('label');
+    var chk=el.querySelector('input[type=checkbox]');
+    return{text:lbl?lbl.textContent:'',done:chk?chk.checked:false};
+  });
+}
+
+function renderChecklistEditor(items,prefix){
+  var container=document.getElementById(prefix+'ChecklistItems');
+  container.innerHTML='';
+  (items||[]).forEach(function(item){
+    var id='chk_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+    var div=document.createElement('div');
+    div.className='checklist-item';
+    div.innerHTML='<input type="checkbox" id="'+id+'"'+(item.done?' checked':'')+'/>'+
+      '<label for="'+id+'">'+esc(item.text)+'</label>'+
+      '<button type="button" style="background:none;border:none;cursor:pointer;color:var(--text-light);font-size:.8rem;padding:0 4px;margin-left:auto" onclick="this.parentElement.remove()">×</button>';
+    container.appendChild(div);
+  });
+}
+
+/* ── DETAIL VIEW ────────────────────────────────────────────────────────── */
 function openTaskDetail(id){
-  var t=allTasks.find(function(x){return x.id===id;});
+  var t=allTasks.find(function(x){return x.id===id;})||archivedTasks.find(function(x){return x.id===id;});
   if(!t)return;
   var isDoc=currentProfile&&currentProfile.role==='doctor';
   var overdue=t.due_date&&new Date(t.due_date)<new Date()&&t.status!=='completed';
+  var prio=t.priority||'medium';
   document.getElementById('taskModalTitle').textContent=t.title;
-  var html='';
-  html+='<div class="detail-grid">';
+  var html='<div class="detail-grid">';
   html+='<div class="detail-item"><div class="d-label">Статус</div><div class="d-val"><span class="pill pill-'+t.status+'">'+statusLabel(t.status)+'</span></div></div>';
-  html+='<div class="detail-item"><div class="d-label">Рок</div><div class="d-val '+(overdue?'style="color:var(--red);font-weight:700"':'')+'">'+(t.due_date?formatDateTime(t.due_date):'–')+'</div></div>';
+  html+='<div class="detail-item"><div class="d-label">Приоритет</div><div class="d-val"><span class="pill prio-'+prio+'">'+prioLabel(prio)+'</span></div></div>';
+  html+='<div class="detail-item"><div class="d-label">Рок</div><div class="d-val'+(overdue?' style="color:var(--red);font-weight:700"':'')+'">'+(t.due_date?formatDateTime(t.due_date):'–')+'</div></div>';
   if(isDoc){
     html+='<div class="detail-item"><div class="d-label">Доделено на</div><div class="d-val">'+esc(staffName(t.assignee_id))+'</div></div>';
     html+='<div class="detail-item"><div class="d-label">Создадено од</div><div class="d-val">'+esc(staffName(t.creator_id))+'</div></div>';
@@ -629,25 +1007,96 @@ function openTaskDetail(id){
     html+='<div class="detail-item"><div class="d-label">Изменето на</div><div class="d-val">'+(t.updated_at?formatDateTime(t.updated_at):'–')+'</div></div>';
   }
   if(t.completed_at)html+='<div class="detail-item"><div class="d-label">Завршено на</div><div class="d-val">'+formatDateTime(t.completed_at)+'</div></div>';
-  if(t.recur_freq)html+='<div class="detail-item"><div class="d-label">Повторување</div><div class="d-val"><span class="recur-badge"><svg width="11" height="11" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-repeat"/></svg>'+recurLabel(t.recur_freq,t.recur_day,t.recur_date)+'</span>'+(t.recur_until?' до '+formatDate(t.recur_until):'')+'</div></div>';
+  if(t.recur_freq)html+='<div class="detail-item"><div class="d-label">Повторување</div><div class="d-val"><span class="recur-badge">↻ '+recurLabel(t.recur_freq,t.recur_day,t.recur_date)+'</span>'+(t.recur_until?' до '+formatDate(t.recur_until):'')+'</div></div>';
   html+='</div>';
-  if(t.description){html+='<div style="margin-bottom:1.2rem"><div class="d-label" style="font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-light);margin-bottom:.5rem">Опис</div><div class="md-content">'+marked.parse(t.description)+'</div></div>';}
-  if(!isDoc){
-    html+='<div><div class="d-label" style="font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-light);margin-bottom:.35rem">Промени статус</div>';
+  if(t.description)html+='<div style="margin-bottom:1.2rem"><div class="d-label" style="font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-light);margin-bottom:.5rem">Опис</div><div class="md-content">'+marked.parse(t.description)+'</div></div>';
+  // CHECKLIST
+  if(t.checklist&&t.checklist.length){
+    var done=t.checklist.filter(function(c){return c.done;}).length;
+    var pct=Math.round(done/t.checklist.length*100);
+    html+='<div style="margin-bottom:1.2rem"><div class="d-label" style="font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-light);margin-bottom:.5rem">Чек-листа ('+done+'/'+t.checklist.length+')</div>';
+    html+='<div class="checklist-progress"><div class="checklist-progress-bar" style="width:'+pct+'%"></div></div>';
+    html+='<div class="checklist-wrap" id="checklistView">';
+    t.checklist.forEach(function(item,idx){
+      html+='<div class="checklist-item"><input type="checkbox" id="ci'+idx+'"'+(item.done?' checked':'')+' onchange="toggleChecklistItem(\''+id+'\','+idx+',this.checked)"/><label for="ci'+idx+'" class="'+(item.done?'done':'')+'">'+esc(item.text)+'</label></div>';
+    });
+    html+='</div></div>';
+  }
+  // STATUS CHANGER (nurses and non-archived)
+  if(!isDoc&&t.status!=='archived'){
+    html+='<div style="margin-bottom:1rem"><div class="d-label" style="font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-light);margin-bottom:.35rem">Промени статус</div>';
     html+='<div class="status-changer">';
     ['pending','in_progress','completed'].forEach(function(s){html+='<button class="st-btn'+(t.status===s?' active s-'+s:'')+'" onclick="quickStatusChange(\''+id+'\',\''+s+'\')">'+statusLabel(s)+'</button>';});
     html+='</div></div>';
   }
+  // COMMENTS
+  html+=renderCommentsSection(id);
   document.getElementById('taskModalBody').innerHTML=html;
+  loadComments(id);
   var footer='';
-  if(isDoc)footer='<button class="btn-danger" onclick="archiveTask(\''+id+'\');closeModal(\'taskModal\')"><svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-archive"/></svg>Архивирај</button><button class="btn-primary" onclick="closeModal(\'taskModal\');openEditModal(\''+id+'\')"><svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-edit"/></svg>Уреди</button>';
+  if(isDoc&&t.status!=='archived')footer='<button class="btn-danger" onclick="archiveTask(\''+id+'\');closeModal(\'taskModal\')"><svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-archive"/></svg>Архивирај</button><button class="btn-primary" onclick="closeModal(\'taskModal\');openEditModal(\''+id+'\')"><svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-edit"/></svg>Уреди</button>';
   document.getElementById('taskModalFooter').innerHTML=footer;
   openModal('taskModal');
 }
 
-// ── EDIT MODAL ──
+/* ── CHECKLIST TOGGLE ───────────────────────────────────────────────────── */
+async function toggleChecklistItem(taskId,idx,done){
+  var t=allTasks.find(function(x){return x.id===taskId;})||archivedTasks.find(function(x){return x.id===taskId;});
+  if(!t||!t.checklist)return;
+  var updated=t.checklist.map(function(c,i){return i===idx?{text:c.text,done:done}:c;});
+  await sb.from('tasks').update({checklist:updated,updated_at:new Date().toISOString()}).eq('id',taskId);
+  t.checklist=updated;
+  // Update progress bar without closing modal
+  var done2=updated.filter(function(c){return c.done;}).length;
+  var pct=Math.round(done2/updated.length*100);
+  var bar=document.querySelector('.checklist-progress-bar');
+  if(bar)bar.style.width=pct+'%';
+  var lbl=document.querySelector('.d-label');
+  // update label text quietly
+}
+
+/* ── COMMENTS ───────────────────────────────────────────────────────────── */
+function renderCommentsSection(taskId){
+  return '<div class="comments-section">'+
+    '<div class="d-label" style="font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-light);margin-bottom:.7rem">Коментари</div>'+
+    '<div id="commentsList" style="min-height:30px"><div style="color:var(--text-light);font-size:.8rem">Вчитување…</div></div>'+
+    '<div class="comment-form">'+
+      '<textarea id="commentInput" placeholder="Напишете коментар…"></textarea>'+
+      '<button onclick="submitComment(\''+taskId+'\')">Испрати</button>'+
+    '</div>'+
+  '</div>';
+}
+
+async function loadComments(taskId){
+  var res=await sb.from('task_comments').select('*').eq('task_id',taskId).order('created_at',{ascending:true});
+  var list=document.getElementById('commentsList');
+  if(!list)return;
+  if(!res.data||!res.data.length){list.innerHTML='<div style="color:var(--text-light);font-size:.8rem;padding:.3rem 0">Нема коментари сè уште.</div>';return;}
+  list.innerHTML=res.data.map(function(c){
+    var initials=(staffName(c.user_id)||'?')[0].toUpperCase();
+    return '<div class="comment-item">'+
+      '<div class="comment-avatar">'+initials+'</div>'+
+      '<div class="comment-body">'+
+        '<div class="comment-meta"><span>'+esc(staffName(c.user_id))+'</span><span>'+formatDateTime(c.created_at)+'</span></div>'+
+        '<div class="comment-text">'+esc(c.body)+'</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+async function submitComment(taskId){
+  var inp=document.getElementById('commentInput');
+  var body=inp?inp.value.trim():'';
+  if(!body)return;
+  var res=await sb.from('task_comments').insert({task_id:taskId,user_id:currentUser.id,body:body,created_at:new Date().toISOString()});
+  if(res.error){showToast('Грешка при испраќање коментар.','error');return;}
+  if(inp)inp.value='';
+  loadComments(taskId);
+}
+
+/* ── EDIT MODAL ─────────────────────────────────────────────────────────── */
 function openEditModal(id){
-  var t=allTasks.find(function(x){return x.id===id;});
+  var t=allTasks.find(function(x){return x.id===id;})||archivedTasks.find(function(x){return x.id===id;});
   if(!t)return;
   editingTaskId=id;
   var staffOpts=allStaff.map(function(s){return '<option value="'+s.id+'"'+(t.assignee_id===s.id?' selected':'')+'>'+esc(s.full_name)+'</option>';}).join('');
@@ -657,10 +1106,16 @@ function openEditModal(id){
     '<div class="f-group span-2"><label class="f-label">Опис</label><textarea id="editDescription" class="f-textarea">'+esc(t.description||'')+'</textarea></div>'+
     '<div class="f-group"><label class="f-label">Доделено на</label><select id="editAssignee" class="f-select"><option value="">—</option>'+staffOpts+'</select></div>'+
     '<div class="f-group"><label class="f-label">Статус</label><select id="editStatus" class="f-select">'+
-      ['pending','in_progress','completed','archived'].map(function(s){return '<option value="'+s+'"'+(t.status===s?' selected':'')+'>'+statusLabel(s)+'</option>';}).join('')+
+      ['pending','in_progress','completed','archived'].map(function(s){return'<option value="'+s+'"'+(t.status===s?' selected':'')+'>'+statusLabel(s)+'</option>';}).join('')+
     '</select></div>'+
-    '<div class="f-group span-2"><label class="f-label">Рок</label><input id="editDueDate" type="datetime-local" class="f-input" value="'+(t.due_date?t.due_date.slice(0,16):'')+'"/></div>'+
+    '<div class="f-group"><label class="f-label">Приоритет</label><select id="editPriority" class="f-select">'+
+      ['low','medium','high','urgent'].map(function(p){return'<option value="'+p+'"'+((t.priority||'medium')===p?' selected':'')+'>'+prioLabel(p)+'</option>';}).join('')+
+    '</select></div>'+
+    // FIX: use utcToLocal() to convert before binding to input
+    '<div class="f-group"><label class="f-label">Рок</label><input id="editDueDate" type="datetime-local" class="f-input" value="'+utcToLocal(t.due_date)+'"/></div>'+
     '</div>'+
+    '<div style="margin-bottom:.9rem"><label class="f-label">Чек-листа</label><div id="editChecklistItems"></div>'+
+    '<div class="checklist-add"><input type="text" id="editChecklistInput" placeholder="Додади ставка…"/><button type="button" onclick="addChecklistItem(\'edit\')">+</button></div></div>'+
     '<div class="recur-section">'+
       '<div class="r-title"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-repeat"/></svg> Повторување</div>'+
       '<div class="toggle-row"><label class="toggle-switch"><input type="checkbox" id="editRecurEnabled"'+(recurEnabled?' checked':'')+'><span class="toggle-knob"></span></label><span class="toggle-label">Овозможи повторување</span></div>'+
@@ -675,8 +1130,10 @@ function openEditModal(id){
     '</div>';
   document.getElementById('taskModalTitle').textContent='Уреди задача';
   document.getElementById('taskModalBody').innerHTML=body;
+  // Render checklist editor
+  renderChecklistEditor(t.checklist||[],'edit');
+  document.getElementById('editChecklistInput').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addChecklistItem('edit');}});
   document.getElementById('taskModalFooter').innerHTML='<button class="btn-secondary" onclick="closeModal(\'taskModal\')">Откажи</button><button class="btn-primary" onclick="saveEdit()"><svg width="13" height="13" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-check"/></svg>Зачувај</button>';
-  // wire toggles
   document.getElementById('editRecurEnabled').addEventListener('change',function(){document.getElementById('editRecurOptions').style.display=this.checked?'block':'none';});
   document.getElementById('editRecurFreq').addEventListener('change',function(){document.getElementById('editRecurDayGroup').style.display=this.value==='weekly'?'block':'none';document.getElementById('editRecurDateGroup').style.display=this.value==='monthly'?'block':'none';});
   openModal('taskModal');
@@ -691,16 +1148,19 @@ async function saveEdit(){
   var recurDate=recurEnabled&&recurFreq==='monthly'?parseInt(document.getElementById('editRecurDate').value):null;
   var recurUntil=recurEnabled?document.getElementById('editRecurUntil').value||null:null;
   var newStatus=document.getElementById('editStatus').value;
+  var checklist=getChecklistData('edit');
   var updates={
     title:       title,
     description: document.getElementById('editDescription').value.trim()||null,
     assignee_id: document.getElementById('editAssignee').value,
     status:      newStatus,
-    due_date:    document.getElementById('editDueDate').value||null,
+    priority:    document.getElementById('editPriority').value,
+    due_date:    localToUtc(document.getElementById('editDueDate').value), // FIX: UTC convert
     recur_freq:  recurFreq,
     recur_day:   recurDay,
     recur_date:  recurDate,
     recur_until: recurUntil,
+    checklist:   checklist.length?checklist:null,
     updated_at:  new Date().toISOString()
   };
   if(newStatus==='completed')updates.completed_at=new Date().toISOString();
@@ -711,6 +1171,7 @@ async function saveEdit(){
   await loadTasks();
 }
 
+/* ── QUICK ACTIONS ──────────────────────────────────────────────────────── */
 async function quickStatusChange(id,newStatus){
   var updates={status:newStatus,updated_at:new Date().toISOString()};
   if(newStatus==='completed')updates.completed_at=new Date().toISOString();
@@ -736,6 +1197,13 @@ async function archiveTask(id){
   await loadTasks();
 }
 
+async function unarchiveTask(id){
+  var res=await sb.from('tasks').update({status:'pending',updated_at:new Date().toISOString()}).eq('id',id);
+  if(res.error){showToast('Грешка.','error');return;}
+  showToast('Задачата е вратена.','success');
+  await loadTasks();
+}
+
 async function deleteTask(id){
   if(!confirm('Трајно избришете ја оваа задача? Ова не може да се поврати.'))return;
   var res=await sb.from('tasks').delete().eq('id',id);
@@ -744,8 +1212,307 @@ async function deleteTask(id){
   await loadTasks();
 }
 
-function statusLabel(s){return{pending:'Во чекање',in_progress:'Во тек',completed:'Завршена',archived:'Архивирана'}[s]||s;}
+/* ── TEMPLATES ──────────────────────────────────────────────────────────── */
+async function loadTemplates(){
+  var res=await sb.from('task_templates').select('*').eq('creator_id',currentUser.id).order('created_at',{ascending:false});
+  allTemplates=res.data||[];
+  renderTemplates();
+}
 
+function renderTemplates(){
+  var el=document.getElementById('templatesList');
+  if(!el)return;
+  if(!allTemplates.length){el.innerHTML='<div style="color:var(--text-light);font-size:.85rem;padding:.5rem 0">Нема зачувани шаблони. Создадете го вашиот прв шаблон!</div>';return;}
+  el.innerHTML=allTemplates.map(function(tpl){
+    var prio=tpl.priority||'medium';
+    return '<div class="template-card">'+
+      '<div class="template-card-info">'+
+        '<strong>'+esc(tpl.title)+'</strong>'+
+        '<span><span class="pill prio-'+prio+'" style="margin-right:4px">'+prioLabel(prio)+'</span>'+(tpl.checklist&&tpl.checklist.length?tpl.checklist.length+' ставки':'Без чек-листа')+'</span>'+
+      '</div>'+
+      '<div class="template-actions">'+
+        '<button class="btn-primary" style="font-size:.75rem;padding:.4rem .8rem" onclick="useTemplate(\''+tpl.id+'\')">Употреби</button>'+
+        '<button class="btn-danger" style="font-size:.75rem;padding:.4rem .8rem" onclick="deleteTemplate(\''+tpl.id+'\')"><svg width="11" height="11" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#i-trash"/></svg></button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+async function saveTemplate(){
+  var title=document.getElementById('tplTitle').value.trim();
+  if(!title){showToast('Насловот е задолжителен.','error');return;}
+  var checklist=getChecklistData('tpl');
+  var payload={
+    creator_id:  currentUser.id,
+    title:       title,
+    description: document.getElementById('tplDescription').value.trim()||null,
+    priority:    document.getElementById('tplPriority').value,
+    default_role:document.getElementById('tplRole').value||null,
+    checklist:   checklist.length?checklist:null,
+    created_at:  new Date().toISOString()
+  };
+  var res=await sb.from('task_templates').insert(payload);
+  if(res.error){showToast('Грешка: '+res.error.message,'error');return;}
+  showToast('Шаблонот е зачуван!','success');
+  document.getElementById('tplTitle').value='';
+  document.getElementById('tplDescription').value='';
+  document.getElementById('tplChecklistItems').innerHTML='';
+  closeModal('createTemplateModal');
+  await loadTemplates();
+}
+
+function useTemplate(id){
+  var tpl=allTemplates.find(function(t){return t.id===id;});
+  if(!tpl)return;
+  closeModal('templatesModal');
+  resetCreateForm();
+  document.getElementById('newTitle').value=tpl.title;
+  document.getElementById('newDescription').value=tpl.description||'';
+  document.getElementById('newPriority').value=tpl.priority||'medium';
+  if(tpl.checklist&&tpl.checklist.length){
+    renderChecklistEditor(tpl.checklist,'new');
+  }
+  // Pre-filter assignee by role if default_role is set
+  if(tpl.default_role){
+    var matchStaff=allStaff.filter(function(s){return s.role===tpl.default_role;});
+    if(matchStaff.length===1) document.getElementById('newAssignee').value=matchStaff[0].id;
+  }
+  openModal('createModal');
+}
+
+async function deleteTemplate(id){
+  if(!confirm('Избриши го овој шаблон?'))return;
+  await sb.from('task_templates').delete().eq('id',id);
+  showToast('Шаблонот е избришан.','success');
+  await loadTemplates();
+}
+
+/* ── EXPORT CSV ─────────────────────────────────────────────────────────── */
+function exportCSV(){
+  var list=getFilteredTasks().concat(archivedTasks);
+  var rows=[['Наслов','Статус','Приоритет','Рок','Доделено на','Создадено од','Создадено на','Завршено на','Повторување']];
+  list.forEach(function(t){
+    rows.push([
+      t.title,
+      statusLabel(t.status),
+      prioLabel(t.priority||'medium'),
+      t.due_date?formatDateTime(t.due_date):'',
+      staffName(t.assignee_id),
+      staffName(t.creator_id),
+      formatDateTime(t.created_at),
+      t.completed_at?formatDateTime(t.completed_at):'',
+      t.recur_freq?recurLabel(t.recur_freq,t.recur_day,t.recur_date):''
+    ]);
+  });
+  var csv=rows.map(function(r){return r.map(function(c){return'"'+(c||'').replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download='zadaci_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();URL.revokeObjectURL(url);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CALENDAR VIEWS
+══════════════════════════════════════════════════════════════════════════ */
+var MK_DAYS=['Нед','Пон','Вто','Сре','Чет','Пет','Саб'];
+var MK_MONTHS=['Јануари','Февруари','Март','Април','Мај','Јуни','Јули','Август','Септември','Октомври','Ноември','Декември'];
+
+function switchView(v){
+  currentView=v;
+  ['list','day','week','month'].forEach(function(name){
+    document.getElementById('view'+cap(name)).style.display=name===v?'block':'none';
+    document.getElementById('tab'+cap(name)).classList.toggle('active',name===v);
+  });
+  renderCurrentCalView();
+}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+
+function renderCurrentCalView(){
+  if(currentView==='day')  renderDay();
+  if(currentView==='week') renderWeek();
+  if(currentView==='month')renderMonth();
+}
+
+// Tasks for calendar — apply scope filter
+function calTasks(){
+  return allTasks.filter(function(t){
+    if(taskScope==='mine'&&t.assignee_id!==currentUser.id)return false;
+    return true;
+  });
+}
+
+function taskDate(t){return t.due_date?new Date(t.due_date):null;}
+
+function localDateStr(d){
+  // Returns YYYY-MM-DD in LOCAL time
+  var pad=function(n){return String(n).padStart(2,'0');};
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+}
+
+/* ─── DAY VIEW ─────────────────────────────────────────────────────────── */
+function shiftDay(n){calDay=new Date(calDay.getTime()+n*86400000);renderDay();}
+
+function renderDay(){
+  var today=new Date();
+  var isToday=localDateStr(calDay)===localDateStr(today);
+  document.getElementById('dayTitle').textContent=
+    MK_DAYS[calDay.getDay()]+', '+calDay.getDate()+' '+MK_MONTHS[calDay.getMonth()]+' '+calDay.getFullYear()+
+    (isToday?' (Денес)':'');
+
+  var dayStr=localDateStr(calDay);
+  var dayTasks=calTasks().filter(function(t){
+    var d=taskDate(t);
+    return d&&localDateStr(d)===dayStr;
+  });
+  var allDayTasks=calTasks().filter(function(t){return!t.due_date&&localDateStr(new Date(t.created_at))===dayStr;});
+
+  // All-day strip
+  var allDayEl=document.getElementById('dayAllDay');
+  allDayEl.innerHTML=allDayTasks.map(function(t){
+    return '<div class="day-allday" onclick="openTaskDetail(\''+t.id+'\')">'+esc(t.title)+' (без рок)</div>';
+  }).join('');
+
+  // Hourly timeline
+  var timeline=document.getElementById('dayTimeline');
+  var html='';
+  for(var h=0;h<24;h++){
+    var hourTasks=dayTasks.filter(function(t){return new Date(t.due_date).getHours()===h;});
+    var label=(h===0?'12 AM':h<12?h+' AM':h===12?'12 PM':(h-12)+' PM');
+    html+='<div class="day-hour">'+
+      '<div class="day-hour-label">'+label+'</div>'+
+      '<div class="day-hour-line"></div>'+
+      '<div class="day-events">'+
+        hourTasks.map(function(t){
+          var prio=t.priority||'medium';
+          var evClass='day-event'+(prio==='urgent'?' prio-urgent-ev':prio==='high'?' prio-high-ev':'');
+          var mins=String(new Date(t.due_date).getMinutes()).padStart(2,'0');
+          return '<div class="'+evClass+'" onclick="openTaskDetail(\''+t.id+'\')">'+
+            '<span class="day-event-title">'+esc(t.title)+'</span>'+
+            '<span class="day-event-time">'+h+':'+mins+'</span>'+
+          '</div>';
+        }).join('')+
+      '</div>'+
+    '</div>';
+  }
+  timeline.innerHTML=html;
+  // Scroll to 7am
+  var targetTop=7*48;
+  setTimeout(function(){timeline.parentElement.scrollTop=targetTop;},50);
+}
+
+/* ─── WEEK VIEW ─────────────────────────────────────────────────────────── */
+function shiftWeek(n){
+  calWeekStart=new Date(calWeekStart.getTime()+n*7*86400000);
+  renderWeek();
+}
+
+function getWeekStart(d){
+  var day=d.getDay(); // 0=Sun
+  var diff=d.getDate()-(day===0?6:day-1); // Mon as start
+  var ws=new Date(d);
+  ws.setDate(diff);ws.setHours(0,0,0,0);
+  return ws;
+}
+
+function renderWeek(){
+  if(!calWeekStart)calWeekStart=getWeekStart(new Date());
+  var today=localDateStr(new Date());
+  // Title
+  var ws=calWeekStart,we=new Date(ws.getTime()+6*86400000);
+  document.getElementById('weekTitle').textContent=
+    ws.getDate()+' '+MK_MONTHS[ws.getMonth()]+' – '+we.getDate()+' '+MK_MONTHS[we.getMonth()]+' '+we.getFullYear();
+
+  var grid=document.getElementById('weekGrid');
+  var hours=[];for(var h=0;h<24;h++)hours.push(h);
+  var days=[];for(var d=0;d<7;d++){var dd=new Date(ws.getTime()+d*86400000);days.push(dd);}
+
+  var html='<div class="week-header"></div>'; // time col header
+  days.forEach(function(d){
+    var ds=localDateStr(d);
+    html+='<div class="week-header'+(ds===today?' today-col':'')+'">'+MK_DAYS[d.getDay()]+'<br><strong>'+d.getDate()+'</strong></div>';
+  });
+  hours.forEach(function(h){
+    var label=(h===0?'12 AM':h<12?h+' AM':h===12?'12 PM':(h-12)+' PM');
+    html+='<div class="week-time-col">'+label+'</div>';
+    days.forEach(function(d){
+      var ds=localDateStr(d);
+      var cellTasks=calTasks().filter(function(t){
+        var td=taskDate(t);
+        return td&&localDateStr(td)===ds&&td.getHours()===h;
+      });
+      html+='<div class="week-cell'+(ds===today?' today-col':'')+'">'+
+        cellTasks.map(function(t){
+          var prio=t.priority||'medium';
+          var chipClass='week-task-chip'+(prio==='urgent'?' chip-urgent':prio==='high'?' chip-high':t.status==='completed'?' chip-completed':'');
+          return '<span class="'+chipClass+'" onclick="openTaskDetail(\''+t.id+'\')" title="'+esc(t.title)+'">'+esc(t.title)+'</span>';
+        }).join('')+
+      '</div>';
+    });
+  });
+  grid.innerHTML=html;
+}
+
+/* ─── MONTH VIEW ────────────────────────────────────────────────────────── */
+function shiftMonth(n){
+  calMonth=new Date(calMonth.getFullYear(),calMonth.getMonth()+n,1);
+  renderMonth();
+}
+
+function renderMonth(){
+  var today=localDateStr(new Date());
+  document.getElementById('monthTitle').textContent=MK_MONTHS[calMonth.getMonth()]+' '+calMonth.getFullYear();
+
+  var firstDay=new Date(calMonth.getFullYear(),calMonth.getMonth(),1);
+  var lastDay=new Date(calMonth.getFullYear(),calMonth.getMonth()+1,0);
+  // Week starts Monday
+  var startOffset=(firstDay.getDay()===0?6:firstDay.getDay()-1);
+
+  var grid=document.getElementById('monthGrid');
+  var html='';
+  // Day headers Mon–Sun
+  ['Пон','Вто','Сре','Чет','Пет','Саб','Нед'].forEach(function(d){
+    html+='<div class="month-day-header">'+d+'</div>';
+  });
+
+  // Empty cells before first day
+  for(var i=0;i<startOffset;i++){
+    var prevDate=new Date(firstDay.getTime()-(startOffset-i)*86400000);
+    html+='<div class="month-cell other-month"><div class="month-day-num">'+prevDate.getDate()+'</div></div>';
+  }
+
+  // Days of month
+  for(var day=1;day<=lastDay.getDate();day++){
+    var cellDate=new Date(calMonth.getFullYear(),calMonth.getMonth(),day);
+    var ds=localDateStr(cellDate);
+    var isToday=ds===today;
+    var dayTasks=calTasks().filter(function(t){
+      var td=taskDate(t);
+      return td&&localDateStr(td)===ds;
+    });
+    html+='<div class="month-cell'+(isToday?' today-cell':'')+'">'+
+      '<div class="month-day-num'+(isToday?' today-num':'')+'" style="'+(isToday?'':'')+'">'+day+'</div>'+
+      dayTasks.slice(0,3).map(function(t){
+        var prio=t.priority||'medium';
+        var chipClass='month-task-chip'+(prio==='urgent'?' chip-urgent':prio==='high'?' chip-high':t.status==='completed'?' chip-completed':'');
+        return '<span class="'+chipClass+'" onclick="openTaskDetail(\''+t.id+'\')" title="'+esc(t.title)+'">'+esc(t.title)+'</span>';
+      }).join('')+
+      (dayTasks.length>3?'<div class="month-more">+' +(dayTasks.length-3)+' уште</div>':'')+
+    '</div>';
+  }
+
+  // Fill remaining cells
+  var total=startOffset+lastDay.getDate();
+  var remainder=total%7===0?0:7-(total%7);
+  for(var k=1;k<=remainder;k++){
+    html+='<div class="month-cell other-month"><div class="month-day-num">'+k+'</div></div>';
+  }
+  grid.innerHTML=html;
+}
+
+/* ── LABEL HELPERS ──────────────────────────────────────────────────────── */
+function statusLabel(s){return{pending:'Во чекање',in_progress:'Во тек',completed:'Завршена',archived:'Архивирана'}[s]||s;}
+function prioLabel(p){return{low:'Низок',medium:'Среден',high:'Висок',urgent:'Итно'}[p]||p;}
 function recurLabel(freq,day,date){
   if(freq==='daily')return'Секој ден';
   if(freq==='monthly')return'Секој месец (ден '+date+')';
@@ -753,15 +1520,17 @@ function recurLabel(freq,day,date){
   return'Секоја недела ('+days[day!=null?day:1]+')';
 }
 
+/* ── DATE FORMATTERS ────────────────────────────────────────────────────── */
 function formatDate(d){if(!d)return'–';var dt=new Date(d+'T00:00:00');return String(dt.getDate()).padStart(2,'0')+'.'+String(dt.getMonth()+1).padStart(2,'0')+'.'+dt.getFullYear();}
 function formatDateTime(d){if(!d)return'–';var dt=new Date(d);return String(dt.getDate()).padStart(2,'0')+'.'+String(dt.getMonth()+1).padStart(2,'0')+'.'+dt.getFullYear()+' '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');}
 
+/* ── MISC ───────────────────────────────────────────────────────────────── */
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show');}
-async function handleLogout(){var btn=document.getElementById('logoutBtn');btn.disabled=true;btn.textContent='Одјавување…';try{await sb.auth.signOut();}catch(e){}window.location.replace('index.html');}
+async function handleLogout(){var btn=document.getElementById('logoutBtn');btn.disabled=true;btn.textContent='Одјавување…';try{await sb.auth.signOut();}catch(e){}localStorage.removeItem('oaza_login_time');window.location.replace('index.html');}
 function showToast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className='show'+(type?' '+type:'');clearTimeout(t._tid);t._tid=setTimeout(function(){t.className=type||'';},3500);}
 </script>
 </body>
