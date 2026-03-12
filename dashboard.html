@@ -562,6 +562,22 @@ var myShift=null,promptShown=false,todayLeave=null;
   document.getElementById('shiftPromptClockInBtn').addEventListener('click',function(){ closeModal('shiftPromptModal'); clockIn(); });
   var res=await sb.auth.getSession();
   if(!res.data||!res.data.session){window.location.replace('index.html');return;}
+
+  // ── 14-hour session expiry check ────────────────────────────────────────
+  var loginTime=localStorage.getItem('oaza_login_time');
+  if(loginTime){
+    var elapsedHours=(Date.now()-parseInt(loginTime))/3600000;
+    if(elapsedHours>14){
+      await sb.auth.signOut();
+      localStorage.removeItem('oaza_login_time');
+      window.location.replace('index.html');
+      return;
+    }
+  } else {
+    // No login time recorded — store now (covers users already logged in before this update)
+    localStorage.setItem('oaza_login_time', Date.now().toString());
+  }
+  // ────────────────────────────────────────────────────────────────────────
   currentUser=res.data.session.user;
   sb.auth.onAuthStateChange(function(ev,s){if(ev==='SIGNED_OUT')window.location.replace('index.html');});
   await loadProfile();
@@ -1006,7 +1022,7 @@ function toggleSidebar(){document.getElementById('sidebar').classList.toggle('op
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show');}
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
-async function handleLogout(){var btn=document.getElementById('logoutBtn');btn.disabled=true;btn.textContent='Одјавување…';try{await sb.auth.signOut();}catch(e){}window.location.replace('index.html');}
+async function handleLogout(){var btn=document.getElementById('logoutBtn');btn.disabled=true;btn.textContent='Одјавување…';try{await sb.auth.signOut();}catch(e){}localStorage.removeItem('oaza_login_time');window.location.replace('index.html');}
 
 /* ── HELPERS ── */
 function localDate(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}

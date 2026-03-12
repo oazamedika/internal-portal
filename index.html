@@ -684,6 +684,10 @@
 
 <!-- ══════════════════════════════════════════════════════════════════════ -->
 <script>
+/* ── Config ─────────────────────────────────────────────────────────────── */
+var OTP_INTERVAL_DAYS = 7;       // require OTP once every 7 days
+var SESSION_HOURS     = 14;      // treat session as expired after 14 hours
+
 /* ── State ─────────────────────────────────────────────────────────────── */
 var currentEmail  = '';
 var resendTimeout = null;
@@ -695,7 +699,19 @@ var resendTimeout = null;
     if (data && data.session) { window.location.href = 'dashboard.html'; return; }
   }
   var { data } = await sb.auth.getSession();
-  if (data && data.session) { window.location.href = 'dashboard.html'; }
+  if (data && data.session) {
+    // Enforce 14-hour session expiry client-side
+    var loginTime = localStorage.getItem('oaza_login_time');
+    if (loginTime) {
+      var elapsed = (Date.now() - parseInt(loginTime)) / 3600000;
+      if (elapsed > SESSION_HOURS) {
+        await sb.auth.signOut();
+        localStorage.removeItem('oaza_login_time');
+        return;
+      }
+    }
+    window.location.href = 'dashboard.html';
+  }
 })();
 
 /* ── Step navigation ───────────────────────────────────────────────────── */
@@ -750,7 +766,30 @@ function togglePwd() {
   }
 }
 
-/* ── STEP 1: Email + Password → then send OTP ──────────────────────────── */
+/* ── Check if OTP is needed for this user ──────────────────────────────── */
+async function needsOtp(userId) {
+  var { data, error } = await sb
+    .from('otp_verifications')
+    .select('last_verified_at')
+    .eq('user_id', userId)
+    .single();
+
+  if (error || !data) return true; // no record → always require OTP
+
+  var lastVerified = new Date(data.last_verified_at);
+  var daysSince    = (Date.now() - lastVerified.getTime()) / 86400000;
+  return daysSince >= OTP_INTERVAL_DAYS;
+}
+
+/* ── Record successful OTP verification ────────────────────────────────── */
+async function recordOtpVerification(userId) {
+  await sb.from('otp_verifications').upsert({
+    user_id:          userId,
+    last_verified_at: new Date().toISOString()
+  }, { onConflict: 'user_id' });
+}
+
+/* ── STEP 1: Email + Password ───────────────────────────────────────────── */
 async function handleLogin() {
   clearMsg('msgEmail');
   document.getElementById('emailHint').classList.remove('show');
@@ -776,7 +815,7 @@ async function handleLogin() {
 
   setLoading('sendOtpBtn', true);
 
-  // 1. Verify credentials — sign in with password
+  // 1. Verify credentials
   var { data: authData, error: authError } = await sb.auth.signInWithPassword({ email, password });
 
   if (authError || !authData.session) {
@@ -787,8 +826,20 @@ async function handleLogin() {
     return;
   }
 
-  // 2. Credentials correct — sign back out locally (don't create session yet)
-  //    then send an OTP to the user's email for the second factor
+  var userId = authData.user.id;
+
+  // 2. Check if OTP is needed (once per 7 days)
+  var otpRequired = await needsOtp(userId);
+
+  if (!otpRequired) {
+    // OTP not needed — session is already established, just record login time and go
+    localStorage.setItem('oaza_login_time', Date.now().toString());
+    setLoading('sendOtpBtn', false);
+    window.location.href = 'dashboard.html';
+    return;
+  }
+
+  // 3. OTP required — sign out locally, then send OTP
   await sb.auth.signOut();
 
   var { error: otpError } = await sb.auth.signInWithOtp({
@@ -845,7 +896,7 @@ async function handleVerifyOtp() {
   var { data, error } = await sb.auth.verifyOtp({
     email: currentEmail,
     token: token,
-    type: 'email'
+    type:  'email'
   });
 
   setLoading('verifyOtpBtn', false);
@@ -856,6 +907,10 @@ async function handleVerifyOtp() {
     return;
   }
 
+  // Record the successful OTP verification and login time
+  await recordOtpVerification(data.user.id);
+  localStorage.setItem('oaza_login_time', Date.now().toString());
+
   window.location.href = 'dashboard.html';
 }
 
@@ -864,7 +919,7 @@ async function handleResend() {
   clearMsg('msgOtp');
   clearOtpDigits();
 
-  var resendBtn   = document.getElementById('resendBtn');
+  var resendBtn = document.getElementById('resendBtn');
   resendBtn.disabled = true;
 
   var { error } = await sb.auth.signInWithOtp({
@@ -886,7 +941,7 @@ async function handleResend() {
 function startResendTimer(seconds) {
   var btn       = document.getElementById('resendBtn');
   var timerSpan = document.getElementById('resendTimer');
-  btn.style.display   = 'none';
+  btn.style.display       = 'none';
   timerSpan.style.display = 'inline';
   var remaining = seconds;
 
@@ -926,7 +981,6 @@ async function handleForgotPassword() {
   });
 
   setLoading('forgotBtn', false);
-  // Always show success — don't reveal whether email exists
   showMsg('msgForgot', 'Доколку сметката постои, ќе добиете е-пошта со линк за ресетирање.', 'success');
 }
 
