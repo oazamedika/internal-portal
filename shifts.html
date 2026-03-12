@@ -46,6 +46,7 @@
     .btn-logout{width:100%;padding:.52rem .85rem;background:rgba(255,80,80,.15);border:1px solid rgba(255,100,100,.25);border-radius:9px;color:rgba(255,200,200,.9);font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s}
     .btn-logout:hover{background:rgba(192,57,43,.6);color:#fff}
     .btn-logout svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5}
+    .doctor-only{display:flex}
 
     /* ── TOPBAR ── */
     .topbar{position:fixed;top:0;left:var(--sidebar);right:0;height:56px;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-bottom:1px solid rgba(42,122,122,.1);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;z-index:100}
@@ -261,6 +262,7 @@
   <symbol id="i-clock"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
   <symbol id="i-tasks"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
   <symbol id="i-users"  viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-user"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
   <symbol id="i-bar"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
   <symbol id="i-gear"   viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
   <symbol id="i-logout" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
@@ -281,7 +283,7 @@
 
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
-  <a href="dashboard.html" class="sidebar-logo">
+  <a href="https://oazamedika.mk" class="sidebar-logo">
     <img src="logo_header.png" alt="Оаза Медика" onerror="this.style.display='none'"/>
     <span class="sidebar-logo-text">Портал за вработени</span>
   </a>
@@ -289,33 +291,52 @@
     <div class="user-avatar" id="avatarInitial">–</div>
     <div class="user-info">
       <div class="user-name" id="sidebarUserName">…</div>
-      <div class="user-role" id="sidebarUserRole">Доктор</div>
+      <div class="user-role" id="sidebarUserRole">…</div>
     </div>
   </div>
+
   <nav class="sidebar-nav">
     <div class="nav-section-label">Мени</div>
-    <a class="nav-link" href="dashboard.html"><span class="nav-icon"><svg><use href="#i-home"/></svg></span>Контролна табла</a>
-    <a class="nav-link" href="work-hours.html"><span class="nav-icon"><svg><use href="#i-clock"/></svg></span>Работни часови</a>
-    <a class="nav-link" href="tasks.html"><span class="nav-icon"><svg><use href="#i-tasks"/></svg></span>Задачи</a>
-    <div class="nav-section-label">Доктор</div>
-    <a class="nav-link" href="dashboard.html#team"><span class="nav-icon"><svg><use href="#i-users"/></svg></span>Тим – преглед</a>
-    <a class="nav-link" href="reports.html"><span class="nav-icon"><svg><use href="#i-bar"/></svg></span>Извештаи</a>
-    <a class="nav-link active" href="shifts.html"><span class="nav-icon"><svg><use href="#i-cal"/></svg></span>Смени</a>
-    <a class="nav-link" href="dashboard.html#admin"><span class="nav-icon"><svg><use href="#i-gear"/></svg></span>Управување со тим</a>
+    <a class="nav-link" href="dashboard.html">
+      <span class="nav-icon"><svg><use href="#i-home"/></svg></span>Контролна табла
+    </a>
+    <a class="nav-link" href="work-hours.html">
+      <span class="nav-icon"><svg><use href="#i-clock"/></svg></span>Работни часови
+    </a>
+    <a class="nav-link" href="tasks.html">
+      <span class="nav-icon"><svg><use href="#i-tasks"/></svg></span>Задачи
+    </a>
+    <a class="nav-link" href="dashboard.html#settings">
+      <span class="nav-icon"><svg><use href="#i-user"/></svg></span>Мој профил
+    </a>
+    <div class="nav-section-label doctor-only">Доктор</div>
+    <a class="nav-link doctor-only" href="dashboard.html#staff">
+      <span class="nav-icon"><svg><use href="#i-users"/></svg></span>Тим – преглед
+    </a>
+    <a class="nav-link doctor-only" href="reports.html">
+      <span class="nav-icon"><svg><use href="#i-bar"/></svg></span>Извештаи
+    </a>
+    <a class="nav-link doctor-only" href="dashboard.html#admin">
+      <span class="nav-icon"><svg><use href="#i-gear"/></svg></span>Управување со тим
+    </a>
   </nav>
   <div class="sidebar-ext">
     <div class="ext-label">Надворешни портали</div>
     <a class="btn-ext" href="https://portal.fzo.org.mk/" target="_blank" rel="noopener">
-      <img class="btn-ext-icon" src="fzom.png" alt="" onerror="this.style.display='none'"/>Портал на ФЗОМ
+      <img class="btn-ext-icon" src="fzom.png" alt="" onerror="this.style.display='none'"/>
+      Портал на ФЗОМ
       <span class="btn-ext-arrow"><svg><use href="#i-ext"/></svg></span>
     </a>
     <a class="btn-ext" href="https://app.helio.mk/" target="_blank" rel="noopener">
-      <img class="btn-ext-icon" src="helio.png" alt="" onerror="this.style.display='none'"/>Хелио Пациенти
+      <img class="btn-ext-icon" src="helio.png" alt="" onerror="this.style.display='none'"/>
+      Хелио Пациенти
       <span class="btn-ext-arrow"><svg><use href="#i-ext"/></svg></span>
     </a>
   </div>
   <div class="sidebar-bottom">
-    <button class="btn-logout" id="logoutBtn" type="button"><svg><use href="#i-logout"/></svg>Одјавете се</button>
+    <button class="btn-logout" id="logoutBtn" type="button">
+      <svg><use href="#i-logout"/></svg>Одјавете се
+    </button>
   </div>
 </aside>
 
@@ -706,10 +727,9 @@ function renderAssignList() {
   var el = document.getElementById('assignList');
   if (!allAssignments.length) { el.innerHTML = '<p style="font-size:.82rem;color:var(--text-light)">Нема доделувања.</p>'; return; }
   el.innerHTML = '<div class="worker-assign-list">' + allAssignments.map(function(ws) {
-    var sName  = ws.shifts ? ws.shifts.name : '–';
-    var sColor = ws.shifts ? (ws.shifts.color||'#2a7a7a') : '#ccc';
-    // profiles join may be null if FK hint mismatches — fall back to allStaff
-    var profData = ws.profiles || allStaff.find(function(s){ return s.id === ws.worker_id; });
+    var sName  = ws.shifts ? ws.shifts.name : (allShifts.find(function(s){ return s.id===ws.shift_id; })||{}).name || '–';
+    var sColor = ws.shifts ? (ws.shifts.color||'#2a7a7a') : (allShifts.find(function(s){ return s.id===ws.shift_id; })||{}).color || '#ccc';
+    var profData = ws.profiles || allStaff.find(function(s){ return s.id===ws.worker_id; });
     var wName  = profData ? profData.full_name : '–';
     var wRole  = profData ? profData.role : '';
     var rot    = ws.rotation_enabled ? (' <span style="font-size:.7rem;color:var(--amber);font-weight:700">РОТАЦИЈА</span>') : '';
@@ -782,20 +802,12 @@ async function saveAssignment() {
     created_by:         currentUser.id
   };
 
-  // Check if assignment already exists for this worker
   var existing = await sb.from('worker_shifts').select('id').eq('worker_id', workerId).maybeSingle();
-  var res;
-  if (existing.data) {
-    res = await sb.from('worker_shifts').update(payload).eq('worker_id', workerId);
-  } else {
-    res = await sb.from('worker_shifts').insert(payload);
-  }
+  var res = existing.data
+    ? await sb.from('worker_shifts').update(payload).eq('worker_id', workerId)
+    : await sb.from('worker_shifts').insert(payload);
 
-  if (res.error) {
-    console.error('saveAssignment error:', res.error);
-    showToast('Грешка: '+res.error.message,'error');
-    return;
-  }
+  if (res.error) { console.error('saveAssignment error:', res.error); showToast('Грешка: '+res.error.message,'error'); return; }
   showToast('Доделувањето е зачувано!','success');
   rotCycle = [];
   renderRotSlots();
@@ -934,7 +946,7 @@ function renderWeekView(workers, exceptions, range) {
 
   // Rows per worker
   workers.forEach(function(ws) {
-    var wName = ws.profiles ? ws.profiles.full_name : '–';
+    var wName = (ws.profiles && ws.profiles.full_name) || (allStaff.find(function(s){ return s.id===ws.worker_id; })||{}).full_name || '–';
     html += '<div class="week-name-cell">'+esc(wName.split(' ').slice(0,2).join(' '))+'</div>';
     days.forEach(function(d) {
       var dateStr = fmtDate(d);
@@ -1023,7 +1035,7 @@ function renderMonthView(workers, exceptions, range) {
         : workers;
       displayWorkers.forEach(function(ws) {
         var exc   = exceptions.find(function(ex){ return ex.worker_id===ws.worker_id && ex.date===dateStr; });
-        var wName = ws.profiles ? ws.profiles.full_name.split(' ')[0] : '–';
+        var wName = ((ws.profiles && ws.profiles.full_name) || (allStaff.find(function(s){ return s.id===ws.worker_id; })||{}).full_name || '–').split(' ')[0];
         if (exc) {
           if (exc.type==='day_off') {
             html += '<div class="month-shift-entry" style="background:#f3f4f6;color:#6b7280">'+esc(wName)+': слободен</div>';
@@ -1054,9 +1066,10 @@ function renderMonthView(workers, exceptions, range) {
 
 // Given a worker_shift assignment and a date string, return the effective shift object (or null for day off)
 function resolveShiftForDate(ws, dateStr) {
-  if (!ws.shifts) return null;
+  // Base shift: prefer nested join, fall back to allShifts lookup
+  var baseShift = ws.shifts || allShifts.find(function(s){ return s.id===ws.shift_id; }) || null;
   if (!ws.rotation_enabled || !ws.rotation_shifts || !ws.rotation_shifts.length || !ws.rotation_start_date) {
-    return ws.shifts;
+    return baseShift;
   }
   // compute rotation index
   var anchor  = new Date(ws.rotation_start_date + 'T00:00:00');
@@ -1067,7 +1080,7 @@ function resolveShiftForDate(ws, dateStr) {
   var idx     = Math.floor(days / period) % cycleLen;
   if (idx < 0) idx = 0;
   var shiftId = ws.rotation_shifts[idx];
-  return allShifts.find(function(s){ return s.id===shiftId; }) || ws.shifts;
+  return allShifts.find(function(s){ return s.id===shiftId; }) || baseShift;
 }
 
 // ── TABS ──
