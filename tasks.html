@@ -705,6 +705,8 @@ var calDay=new Date(), calWeekStart=null, calMonth=new Date();
 // Convert a UTC ISO string from Supabase → local datetime-local string
 function utcToLocal(iso){
   if(!iso)return'';
+  // Date-only string (old data saved without time) — treat as local, no conversion needed
+  if(/^\d{4}-\d{2}-\d{2}$/.test(iso.trim()))return iso+'T00:00';
   var d=new Date(iso);
   var pad=function(n){return String(n).padStart(2,'0');};
   return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());
@@ -712,7 +714,10 @@ function utcToLocal(iso){
 // Convert a datetime-local string (local time) → UTC ISO for storage
 function localToUtc(val){
   if(!val)return null;
-  return new Date(val).toISOString();
+  // If the value has no time component (e.g. "2026-03-12"), append T00:00
+  // so JavaScript treats it as LOCAL midnight, not UTC midnight.
+  var v=val.includes('T')?val:val+'T00:00';
+  return new Date(v).toISOString();
 }
 
 /* ── INIT ───────────────────────────────────────────────────────────────── */
@@ -1522,7 +1527,16 @@ function recurLabel(freq,day,date){
 
 /* ── DATE FORMATTERS ────────────────────────────────────────────────────── */
 function formatDate(d){if(!d)return'–';var dt=new Date(d+'T00:00:00');return String(dt.getDate()).padStart(2,'0')+'.'+String(dt.getMonth()+1).padStart(2,'0')+'.'+dt.getFullYear();}
-function formatDateTime(d){if(!d)return'–';var dt=new Date(d);return String(dt.getDate()).padStart(2,'0')+'.'+String(dt.getMonth()+1).padStart(2,'0')+'.'+dt.getFullYear()+' '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');}
+function formatDateTime(d){
+  if(!d)return'–';
+  // Date-only string (YYYY-MM-DD) — parse as local midnight, show no time
+  if(typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d.trim())){
+    var dt=new Date(d+'T00:00:00');
+    return String(dt.getDate()).padStart(2,'0')+'.'+String(dt.getMonth()+1).padStart(2,'0')+'.'+dt.getFullYear();
+  }
+  var dt=new Date(d);
+  return String(dt.getDate()).padStart(2,'0')+'.'+String(dt.getMonth()+1).padStart(2,'0')+'.'+dt.getFullYear()+' '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');
+}
 
 /* ── MISC ───────────────────────────────────────────────────────────────── */
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
