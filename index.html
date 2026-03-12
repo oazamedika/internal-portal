@@ -240,8 +240,8 @@
       margin-bottom: 1.3rem;
     }
     .otp-digit {
-      width: 48px; height: 58px;
-      text-align: center; font-size: 1.5rem; font-weight: 700;
+      width: 42px; height: 54px;
+      text-align: center; font-size: 1.4rem; font-weight: 700;
       font-family: 'Lato', sans-serif; color: var(--text);
       border: 2px solid rgba(42,122,122,0.18); border-radius: 10px;
       background: var(--cream); outline: none;
@@ -414,7 +414,7 @@
 
     /* Very small screens: shrink OTP digits */
     @media (max-width: 380px) {
-      .otp-digit { width: 40px; height: 50px; font-size: 1.3rem; }
+      .otp-digit { width: 34px; height: 44px; font-size: 1.1rem; }
     }
   </style>
 
@@ -591,7 +591,7 @@
         <div class="login-header">
           <div class="greeting">Потврда на идентитет</div>
           <h1>Внесете шифра</h1>
-          <p>Испративме 6-цифрена шифра на:</p>
+          <p>Испративме 8-цифрена шифра на:</p>
         </div>
 
         <div class="otp-email-label" id="otpEmailLabel">
@@ -611,6 +611,8 @@
           <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" id="d3" />
           <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" id="d4" />
           <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" id="d5" />
+          <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" id="d6" />
+          <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" id="d7" />
         </div>
 
         <div class="resend-row">
@@ -811,13 +813,13 @@ async function handleLogin() {
 
 /* ── STEP 2: Verify OTP ────────────────────────────────────────────────── */
 function getOtpValue() {
-  return ['d0','d1','d2','d3','d4','d5'].map(function(id) {
+  return ['d0','d1','d2','d3','d4','d5','d6','d7'].map(function(id) {
     return document.getElementById(id).value;
   }).join('');
 }
 
 function clearOtpDigits() {
-  ['d0','d1','d2','d3','d4','d5'].forEach(function(id) {
+  ['d0','d1','d2','d3','d4','d5','d6','d7'].forEach(function(id) {
     var el = document.getElementById(id);
     el.value = '';
     el.classList.remove('error');
@@ -825,7 +827,7 @@ function clearOtpDigits() {
 }
 
 function markOtpError() {
-  ['d0','d1','d2','d3','d4','d5'].forEach(function(id) {
+  ['d0','d1','d2','d3','d4','d5','d6','d7'].forEach(function(id) {
     document.getElementById(id).classList.add('error');
   });
 }
@@ -833,8 +835,8 @@ function markOtpError() {
 async function handleVerifyOtp() {
   clearMsg('msgOtp');
   var token = getOtpValue();
-  if (token.length < 6) {
-    showMsg('msgOtp', 'Внесете ја целата 6-цифрена шифра.', 'error');
+  if (token.length < 8) {
+    showMsg('msgOtp', 'Внесете ја целата 8-цифрена шифра.', 'error');
     return;
   }
 
@@ -930,7 +932,7 @@ async function handleForgotPassword() {
 
 /* ── OTP digit keyboard UX ──────────────────────────────────────────────── */
 (function setupOtpInput() {
-  var ids = ['d0','d1','d2','d3','d4','d5'];
+  var ids = ['d0','d1','d2','d3','d4','d5','d6','d7'];
 
   ids.forEach(function(id, idx) {
     var el = document.getElementById(id);
@@ -941,8 +943,8 @@ async function handleForgotPassword() {
       if (val && idx < ids.length - 1) {
         document.getElementById(ids[idx + 1]).focus();
       }
-      // Auto-verify when all 6 digits filled
-      if (getOtpValue().length === 6) {
+      // Auto-verify when all 8 digits filled
+      if (getOtpValue().length === 8) {
         handleVerifyOtp();
       }
     });
@@ -957,12 +959,12 @@ async function handleForgotPassword() {
     el.addEventListener('paste', function(e) {
       e.preventDefault();
       var paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g,'');
-      paste.slice(0, 6).split('').forEach(function(ch, i) {
+      paste.slice(0, 8).split('').forEach(function(ch, i) {
         if (ids[i]) document.getElementById(ids[i]).value = ch;
       });
-      var last = Math.min(paste.length, 5);
+      var last = Math.min(paste.length, 7);
       document.getElementById(ids[last]).focus();
-      if (paste.length >= 6) handleVerifyOtp();
+      if (paste.length >= 8) handleVerifyOtp();
     });
   });
 
