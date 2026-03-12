@@ -61,7 +61,7 @@
     .topbar-right{display:flex;align-items:center;gap:1rem}
     .topbar-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green);padding:.25rem .75rem;border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
     /* MAIN */
-    .main{margin-left:var(--sidebar);margin-top:56px;padding:1.5rem;flex:1;min-width:0}
+    .main{margin-left:var(--sidebar);margin-top:56px;padding:1.5rem;flex:1;min-width:0;overflow-x:hidden}
     .page-section{display:none}
     .page-section.active{display:block;animation:fadeIn .3s ease}
     @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -132,11 +132,11 @@
     .pill-in_progress{background:#eff6ff;color:#2563eb}
     /* TASK PREVIEW */
     .task-list{display:flex;flex-direction:column;gap:.55rem}
-    .task-item{display:flex;align-items:center;gap:.85rem;padding:.75rem .85rem;background:var(--cream);border-radius:9px;border:1px solid rgba(42,122,122,.07);transition:all .2s}
+    .task-item{display:flex;align-items:center;gap:.85rem;padding:.75rem .85rem;background:var(--cream);border-radius:9px;border:1px solid rgba(42,122,122,.07);transition:all .2s;min-width:0;overflow:hidden}
     .task-item:hover{border-color:rgba(42,122,122,.2)}
-    .task-body{flex:1;min-width:0}
-    .task-title{font-size:.86rem;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .task-due{font-size:.72rem;color:var(--text-light);margin-top:1px}
+    .task-body{flex:1;min-width:0;overflow:hidden}
+    .task-title{font-size:.86rem;font-weight:600;color:var(--text);word-break:break-word;overflow-wrap:break-word;white-space:normal}
+    .task-due{font-size:.72rem;color:var(--text-light);margin-top:1px;word-break:break-word}
     .task-due.overdue{color:var(--red);font-weight:600}
     /* EMPTY STATE */
     .empty-state{text-align:center;padding:1.6rem 1rem;color:var(--text-light)}
@@ -195,17 +195,20 @@
       .sidebar.open{transform:translateX(0)}
       .sidebar-overlay{display:block}
       .topbar{left:0}
-      .main{margin-left:0;padding:1rem}
+      .main{margin-left:0;padding:1rem;overflow-x:hidden}
       .hamburger-btn{display:block}
       .two-col{grid-template-columns:1fr}
       .clock-widget{flex-direction:column;align-items:flex-start;gap:1rem}
       .stats-grid{grid-template-columns:1fr 1fr}
+      .card{overflow:hidden}
     }
     @media(max-width:480px){
-      .main{padding:.8rem}
+      .main{padding:.8rem;overflow-x:hidden}
       #liveTime{font-size:1.9rem}
       tbody td,thead th{padding:.45rem .55rem;font-size:.77rem}
       .stats-grid{grid-template-columns:1fr 1fr}
+      .clock-widget{min-width:0;width:100%}
+      .clock-actions{flex-wrap:wrap;width:100%}
     }
   </style>
   <script>
@@ -794,14 +797,15 @@ async function loadRecentLogs(){
 /* ── UPCOMING TASKS (preview) ── */
 async function loadUpcomingTasks(){
   var isDoc=currentProfile&&currentProfile.role==='doctor';
-  var q=sb.from('tasks').select('*').in('status',['pending','in_progress']).order('due_date',{ascending:true,nullsFirst:false}).limit(4);
+  var q=sb.from('tasks').select('id,title,status,priority,due_date,due_datetime').in('status',['pending','in_progress']).order('due_datetime',{ascending:true,nullsFirst:false}).limit(4);
   if(!isDoc)q=q.eq('assignee_id',currentUser.id);
   var res=await q,tasks=res.data||[];
   var el=document.getElementById('upcomingTasksList');
   if(!tasks.length){el.innerHTML='<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24"><use href="#i-tasks"/></svg></div><p>Нема активни задачи</p></div>';return;}
   el.innerHTML=tasks.map(function(t){
-    var overdue=t.due_date&&new Date(t.due_date)<new Date();
-    return '<div class="task-item"><div class="task-body"><div class="task-title">'+esc(t.title)+'</div>'+(t.due_date?'<div class="task-due'+(overdue?' overdue':'')+'">'+(overdue?'⚠ Задоцнето: ':'Рок: ')+formatDate(t.due_date)+'</div>':'')+'</div><span class="pill pill-'+t.status+'" style="flex-shrink:0">'+statusLabel(t.status)+'</span></div>';
+    var dueVal=t.due_datetime||t.due_date;
+    var overdue=dueVal&&new Date(dueVal)<new Date();
+    return '<div class="task-item"><div class="task-body"><div class="task-title">'+esc(t.title)+'</div>'+(dueVal?'<div class="task-due'+(overdue?' overdue':'')+'">'+(overdue?'⚠ Задоцнето: ':'Рок: ')+formatDateTime(dueVal)+'</div>':'')+'</div><span class="pill pill-'+t.status+'" style="flex-shrink:0">'+statusLabel(t.status)+'</span></div>';
   }).join('');
 }
 function statusLabel(s){return{pending:'Во чекање',in_progress:'Во тек',completed:'Завршена',archived:'Архивирана'}[s]||s;}

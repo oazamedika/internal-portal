@@ -270,21 +270,21 @@
     .status-dd-item{padding:.45rem .85rem;font-size:.8rem;font-weight:600;cursor:pointer;color:var(--text-mid);transition:background .15s;white-space:nowrap}
     .status-dd-item:hover{background:var(--teal-light);color:var(--teal)}
     .status-dd-item.dd-active{color:var(--teal);background:var(--teal-light)}
-    /* DUE-SOON POPUP */
-    #dueSoonPopup{display:none;position:fixed;top:70px;right:1.2rem;z-index:8000;background:var(--white);border:1px solid rgba(192,57,43,.25);border-radius:14px;box-shadow:0 8px 32px rgba(192,57,43,.15);max-width:340px;width:calc(100vw - 2.4rem);animation:fadeIn .3s ease}
-    #dueSoonPopup.show{display:block}
-    .dsp-header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem .5rem;border-bottom:1px solid rgba(192,57,43,.1)}
-    .dsp-title{font-family:'Playfair Display',serif;font-size:.92rem;color:var(--red);display:flex;align-items:center;gap:6px}
-    .dsp-close{background:none;border:none;cursor:pointer;color:var(--text-light);font-size:1.1rem;line-height:1;padding:0 2px}
-    .dsp-close:hover{color:var(--red)}
-    .dsp-body{padding:.6rem 1rem .85rem;max-height:260px;overflow-y:auto}
-    .dsp-item{padding:.4rem 0;border-bottom:1px solid rgba(42,122,122,.06);font-size:.83rem;cursor:pointer}
+    /* DUE-SOON MODAL */
+    #dueSoonModal{display:none;position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.55);backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:1rem}
+    #dueSoonModal.show{display:flex}
+    #dueSoonModalBox{background:var(--white);border-radius:18px;width:100%;max-width:420px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.25);animation:fadeIn .3s ease}
+    .dsp-header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.2rem .65rem;border-bottom:1px solid rgba(192,57,43,.12);flex-shrink:0}
+    .dsp-title{font-family:'Playfair Display',serif;font-size:.98rem;color:var(--red);display:flex;align-items:center;gap:7px}
+    .dsp-body{padding:.65rem 1.2rem .9rem;overflow-y:auto;flex:1}
+    .dsp-item{padding:.42rem 0;border-bottom:1px solid rgba(42,122,122,.06);font-size:.83rem;cursor:pointer}
     .dsp-item:last-child{border-bottom:none}
     .dsp-item:hover .dsp-item-title{color:var(--teal);text-decoration:underline}
     .dsp-item-title{font-weight:700;color:var(--text);margin-bottom:1px}
     .dsp-item-time{font-size:.75rem;font-weight:600}
     .dsp-item-time.overdue{color:var(--red)}
     .dsp-item-time.due-soon{color:var(--amber)}
+    .dsp-footer{padding:.65rem 1.2rem 1rem;border-top:1px solid rgba(42,122,122,.08);display:flex;justify-content:flex-end;flex-shrink:0}
     /* TOAST */
     #toast{position:fixed;bottom:1.2rem;right:1.2rem;z-index:9999;background:var(--text);color:#fff;padding:.78rem 1.2rem;border-radius:11px;font-size:.84rem;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.22,.68,0,1.1);max-width:310px;pointer-events:none}
     #toast.show{transform:translateY(0);opacity:1}
@@ -716,16 +716,20 @@
 
 <div id="toast"></div>
 
-<!-- DUE-SOON POPUP -->
-<div id="dueSoonPopup">
-  <div class="dsp-header">
-    <div class="dsp-title">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      Итни рокови
+<!-- DUE-SOON MODAL -->
+<div id="dueSoonModal">
+  <div id="dueSoonModalBox">
+    <div class="dsp-header">
+      <div class="dsp-title">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Итни рокови
+      </div>
     </div>
-    <button class="dsp-close" onclick="document.getElementById('dueSoonPopup').classList.remove('show')" title="Затвори">×</button>
+    <div class="dsp-body" id="dueSoonBody"></div>
+    <div class="dsp-footer">
+      <button class="btn-primary" type="button" onclick="document.getElementById('dueSoonModal').classList.remove('show')">Во ред, разбрав</button>
+    </div>
   </div>
-  <div class="dsp-body" id="dueSoonBody"></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -846,7 +850,7 @@ function setScope(s){
 /* ── LOAD TASKS ─────────────────────────────────────────────────────────── */
 async function loadTasks(){
   var isDoc=currentProfile&&currentProfile.role==='doctor';
-  var q=sb.from('tasks').select('*').not('status','eq','archived').order('due_date',{ascending:true,nullsFirst:false});
+  var q=sb.from('tasks').select('*').not('status','eq','archived').order('due_datetime',{ascending:true,nullsFirst:false});
   if(!isDoc) q=q.eq('assignee_id',currentUser.id);
   var res=await q;
   if(res.error){showToast('Грешка: '+res.error.message,'error');return;}
@@ -890,7 +894,7 @@ function renderTasks(){
     return;
   }
   tbody.innerHTML=list.map(function(t){
-    var overdue=t.due_date&&new Date(t.due_date)<new Date()&&t.status!=='completed'&&t.status!=='archived';
+    var overdue=(t.due_datetime||t.due_date)&&new Date(t.due_datetime||t.due_date)<new Date()&&t.status!=='completed'&&t.status!=='archived';
     var statusPill=overdue?'<span class="pill pill-overdue">Задоцнето</span>':'<span class="pill pill-'+t.status+'">'+statusLabel(t.status)+'</span>';
     var prio=t.priority||'medium';
     var prioPill='<span class="pill prio-'+prio+'">'+prioLabel(prio)+'</span>';
@@ -900,7 +904,7 @@ function renderTasks(){
       '<td class="td-title"><span class="t-name">'+esc(t.title)+'</span>'+(t.description?'<span class="t-desc">'+esc(t.description.slice(0,60))+'</span>':'')+recurHtml+checklist+'</td>'+
       '<td>'+statusPill+'</td>'+
       '<td>'+prioPill+'</td>'+
-      '<td class="td-nowrap">'+(t.due_date?formatDateTime(t.due_date):'–')+'</td>'+
+      '<td class="td-nowrap">'+(t.due_datetime||t.due_date?formatDateTime(t.due_datetime||t.due_date):'–')+'</td>'+
       (isDoc?'<td class="td-nowrap">'+esc(staffName(t.assignee_id))+'</td>':'')+
       (isDoc?'<td class="td-nowrap">'+esc(staffName(t.creator_id))+'</td>':'')+
       '<td onclick="event.stopPropagation()" style="white-space:nowrap;display:flex;align-items:center;gap:2px">'+
@@ -987,7 +991,8 @@ async function createTask(){
     description: desc||null,
     status:      status,
     priority:    priority,
-    due_date:    localToUtc(due),  // ← FIX: store as UTC
+    due_date:    due?due.slice(0,10):null,
+    due_datetime:localToUtc(due),
     recur_freq:  recurFreq,
     recur_day:   recurDay,
     recur_date:  recurDate,
@@ -1049,13 +1054,13 @@ function openTaskDetail(id){
   var t=allTasks.find(function(x){return x.id===id;})||archivedTasks.find(function(x){return x.id===id;});
   if(!t)return;
   var isDoc=currentProfile&&currentProfile.role==='doctor';
-  var overdue=t.due_date&&new Date(t.due_date)<new Date()&&t.status!=='completed';
+  var overdue=(t.due_datetime||t.due_date)&&new Date(t.due_datetime||t.due_date)<new Date()&&t.status!=='completed';
   var prio=t.priority||'medium';
   document.getElementById('taskModalTitle').textContent=t.title;
   var html='<div class="detail-grid">';
   html+='<div class="detail-item"><div class="d-label">Статус</div><div class="d-val"><span class="pill pill-'+t.status+'">'+statusLabel(t.status)+'</span></div></div>';
   html+='<div class="detail-item"><div class="d-label">Приоритет</div><div class="d-val"><span class="pill prio-'+prio+'">'+prioLabel(prio)+'</span></div></div>';
-  html+='<div class="detail-item"><div class="d-label">Рок</div><div class="d-val'+(overdue?' style="color:var(--red);font-weight:700"':'')+'">'+(t.due_date?formatDateTime(t.due_date):'–')+'</div></div>';
+  html+='<div class="detail-item"><div class="d-label">Рок</div><div class="d-val'+(overdue?' style="color:var(--red);font-weight:700"':'')+'">'+(t.due_datetime||t.due_date?formatDateTime(t.due_datetime||t.due_date):'–')+'</div></div>';
   if(isDoc){
     html+='<div class="detail-item"><div class="d-label">Доделено на</div><div class="d-val">'+esc(staffName(t.assignee_id))+'</div></div>';
     html+='<div class="detail-item"><div class="d-label">Создадено од</div><div class="d-val">'+esc(staffName(t.creator_id))+'</div></div>';
@@ -1167,8 +1172,8 @@ function openEditModal(id){
     '<div class="f-group"><label class="f-label">Приоритет</label><select id="editPriority" class="f-select">'+
       ['low','medium','high','urgent'].map(function(p){return'<option value="'+p+'"'+((t.priority||'medium')===p?' selected':'')+'>'+prioLabel(p)+'</option>';}).join('')+
     '</select></div>'+
-    // FIX: use utcToLocal() to convert before binding to input
-    '<div class="f-group"><label class="f-label">Рок</label><input id="editDueDate" type="datetime-local" class="f-input" value="'+utcToLocal(t.due_date)+'"/></div>'+
+    // FIX: use utcToLocal() with due_datetime preferred, due_date as fallback
+    '<div class="f-group"><label class="f-label">Рок</label><input id="editDueDate" type="datetime-local" class="f-input" value="'+utcToLocal(t.due_datetime||t.due_date)+'"/></div>'+
     '</div>'+
     '<div style="margin-bottom:.9rem"><label class="f-label">Чек-листа</label><div id="editChecklistItems"></div>'+
     '<div class="checklist-add"><input type="text" id="editChecklistInput" placeholder="Додади ставка…"/><button type="button" onclick="addChecklistItem(\'edit\')">+</button></div></div>'+
@@ -1211,7 +1216,8 @@ async function saveEdit(){
     assignee_id: document.getElementById('editAssignee').value,
     status:      newStatus,
     priority:    document.getElementById('editPriority').value,
-    due_date:    localToUtc(document.getElementById('editDueDate').value), // FIX: UTC convert
+    due_date:    document.getElementById('editDueDate').value?document.getElementById('editDueDate').value.slice(0,10):null,
+    due_datetime:localToUtc(document.getElementById('editDueDate').value),
     recur_freq:  recurFreq,
     recur_day:   recurDay,
     recur_date:  recurDate,
@@ -1256,25 +1262,25 @@ function showDueSoonPopup(){
   var now=new Date();
   var in15=new Date(now.getTime()+15*60*1000);
   var urgent=allTasks.filter(function(t){
-    if(!t.due_date||t.status==='completed'||t.status==='archived')return false;
-    var due=new Date(t.due_date);
+    if((!t.due_datetime&&!t.due_date)||t.status==='completed'||t.status==='archived')return false;
+    var due=new Date(t.due_datetime||t.due_date);
     return due<=in15; // overdue OR due within 15 min
   });
   if(!urgent.length)return;
   var html=urgent.map(function(t){
-    var due=new Date(t.due_date);
+    var due=new Date(t.due_datetime||t.due_date);
     var isOverdue=due<now;
     var mins=Math.round((due-now)/60000);
     var timeStr=isOverdue
       ?'Задоцнето за '+Math.abs(mins)+' мин'
       :(mins<=0?'Рокот е сега':'За '+mins+' мин');
-    return '<div class="dsp-item" onclick="openTaskDetail(\''+t.id+'\');document.getElementById(\'dueSoonPopup\').classList.remove(\'show\')">'+
+    return '<div class="dsp-item" onclick="openTaskDetail(\''+t.id+'\');document.getElementById(\'dueSoonModal\').classList.remove(\'show\')">'+
       '<div class="dsp-item-title">'+esc(t.title)+'</div>'+
-      '<div class="dsp-item-time '+(isOverdue?'overdue':'due-soon')+'">'+timeStr+' · Рок: '+formatDateTime(t.due_date)+'</div>'+
+      '<div class="dsp-item-time '+(isOverdue?'overdue':'due-soon')+'">'+timeStr+' · Рок: '+formatDateTime(t.due_datetime||t.due_date)+'</div>'+
     '</div>';
   }).join('');
   document.getElementById('dueSoonBody').innerHTML=html;
-  document.getElementById('dueSoonPopup').classList.add('show');
+  document.getElementById('dueSoonModal').classList.add('show');
 }
 
 async function quickComplete(id){
@@ -1437,7 +1443,7 @@ function calTasks(){
   });
 }
 
-function taskDate(t){return t.due_date?new Date(t.due_date):null;}
+function taskDate(t){return(t.due_datetime||t.due_date)?new Date(t.due_datetime||t.due_date):null;}
 
 function localDateStr(d){
   // Returns YYYY-MM-DD in LOCAL time
@@ -1472,7 +1478,7 @@ function renderDay(){
   var timeline=document.getElementById('dayTimeline');
   var html='';
   for(var h=0;h<24;h++){
-    var hourTasks=dayTasks.filter(function(t){return new Date(t.due_date).getHours()===h;});
+    var hourTasks=dayTasks.filter(function(t){return new Date(t.due_datetime||t.due_date).getHours()===h;});
     var label=(h===0?'12 AM':h<12?h+' AM':h===12?'12 PM':(h-12)+' PM');
     html+='<div class="day-hour">'+
       '<div class="day-hour-label">'+label+'</div>'+
@@ -1481,7 +1487,7 @@ function renderDay(){
         hourTasks.map(function(t){
           var prio=t.priority||'medium';
           var evClass='day-event'+(prio==='urgent'?' prio-urgent-ev':prio==='high'?' prio-high-ev':'');
-          var mins=String(new Date(t.due_date).getMinutes()).padStart(2,'0');
+          var mins=String(new Date(t.due_datetime||t.due_date).getMinutes()).padStart(2,'0');
           return '<div class="'+evClass+'" onclick="openTaskDetail(\''+t.id+'\')">'+
             '<span class="day-event-title">'+esc(t.title)+'</span>'+
             '<span class="day-event-time">'+h+':'+mins+'</span>'+
