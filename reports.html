@@ -968,14 +968,7 @@ function printReport() {
   buildReportHTML();
   var reportHTML = document.getElementById('reportPreview').innerHTML;
   var win = window.open('', '_blank', 'width=900,height=700');
-  win.document.write('<!DOCTYPE html><html lang="mk"><head><meta charset="UTF-8"/>
-  <link rel="icon" href="favicon.ico" type="image/x-icon"/>
-  <link rel="manifest" href="manifest.json"/>
-  <meta name="theme-color" content="#2a7a7a"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-  <meta name="apple-mobile-web-app-title" content="Оаза Медика"/>
-  <link rel="apple-touch-icon" href="web-app-manifest-192x192.png"/>');
+  win.document.write('<!DOCTYPE html><html lang="mk"><head><meta charset="UTF-8"/>');
   win.document.write('<title>Извештај – ' + (currentReportData.staff ? currentReportData.staff.full_name : '') + '</title>');
   win.document.write('<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet"/>');
   win.document.write('<style>');
