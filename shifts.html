@@ -274,6 +274,7 @@
   <symbol id="i-chev-l" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></symbol>
   <symbol id="i-chev-r" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></symbol>
   <symbol id="i-back"   viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></symbol>
+  <symbol id="i-cal"    viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
 </svg>
 
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -294,11 +295,12 @@
   <nav class="sidebar-nav">
     <div class="nav-section-label">Мени</div>
     <a class="nav-link" href="dashboard.html"><span class="nav-icon"><svg><use href="#i-home"/></svg></span>Контролна табла</a>
-    <a class="nav-link active" href="work-hours.html"><span class="nav-icon"><svg><use href="#i-clock"/></svg></span>Работни часови</a>
+    <a class="nav-link" href="work-hours.html"><span class="nav-icon"><svg><use href="#i-clock"/></svg></span>Работни часови</a>
     <a class="nav-link" href="tasks.html"><span class="nav-icon"><svg><use href="#i-tasks"/></svg></span>Задачи</a>
     <div class="nav-section-label">Доктор</div>
     <a class="nav-link" href="dashboard.html#team"><span class="nav-icon"><svg><use href="#i-users"/></svg></span>Тим – преглед</a>
     <a class="nav-link" href="reports.html"><span class="nav-icon"><svg><use href="#i-bar"/></svg></span>Извештаи</a>
+    <a class="nav-link active" href="shifts.html"><span class="nav-icon"><svg><use href="#i-cal"/></svg></span>Смени</a>
     <a class="nav-link" href="dashboard.html#admin"><span class="nav-icon"><svg><use href="#i-gear"/></svg></span>Управување со тим</a>
   </nav>
   <div class="sidebar-ext">
@@ -603,7 +605,7 @@ async function loadHolidays() {
 }
 
 async function loadAssignments() {
-  var res        = await sb.from('worker_shifts').select('*, shifts(*), profiles(full_name,role)').order('created_at', {ascending:false});
+  var res        = await sb.from('worker_shifts').select('*, shifts(*), profiles!worker_shifts_worker_id_fkey(full_name,role)').order('created_at', {ascending:false});
   allAssignments = res.data || [];
   renderAssignList();
 }
@@ -706,12 +708,15 @@ function renderAssignList() {
   el.innerHTML = '<div class="worker-assign-list">' + allAssignments.map(function(ws) {
     var sName  = ws.shifts ? ws.shifts.name : '–';
     var sColor = ws.shifts ? (ws.shifts.color||'#2a7a7a') : '#ccc';
-    var wName  = ws.profiles ? ws.profiles.full_name : '–';
+    // profiles join may be null if FK hint mismatches — fall back to allStaff
+    var profData = ws.profiles || allStaff.find(function(s){ return s.id === ws.worker_id; });
+    var wName  = profData ? profData.full_name : '–';
+    var wRole  = profData ? profData.role : '';
     var rot    = ws.rotation_enabled ? (' <span style="font-size:.7rem;color:var(--amber);font-weight:700">РОТАЦИЈА</span>') : '';
     return '<div class="worker-assign-item">' +
       '<div class="worker-assign-top">' +
         '<div class="worker-assign-avatar">'+esc((wName||'?')[0].toUpperCase())+'</div>' +
-        '<div><div class="worker-assign-name">'+esc(wName)+'</div><div class="worker-assign-role">'+(ws.profiles&&ws.profiles.role==='doctor'?'Доктор':'Мед. сестра')+'</div></div>' +
+        '<div><div class="worker-assign-name">'+esc(wName)+'</div><div class="worker-assign-role">'+(wRole==='doctor'?'Доктор':'Мед. сестра')+'</div></div>' +
         '<button style="margin-left:auto;padding:.28rem .5rem;background:var(--red-light);color:var(--red);border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center" onclick="deleteAssignment(\''+ws.id+'\')" title="Избриши"><svg width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><use href="#i-trash"/></svg></button>' +
       '</div>' +
       '<div class="worker-assign-body">' +
@@ -777,9 +782,20 @@ async function saveAssignment() {
     created_by:         currentUser.id
   };
 
-  // Upsert on worker_id (one row per worker)
-  var res = await sb.from('worker_shifts').upsert(payload, { onConflict: 'worker_id' });
-  if (res.error) { showToast('Грешка: '+res.error.message,'error'); return; }
+  // Check if assignment already exists for this worker
+  var existing = await sb.from('worker_shifts').select('id').eq('worker_id', workerId).maybeSingle();
+  var res;
+  if (existing.data) {
+    res = await sb.from('worker_shifts').update(payload).eq('worker_id', workerId);
+  } else {
+    res = await sb.from('worker_shifts').insert(payload);
+  }
+
+  if (res.error) {
+    console.error('saveAssignment error:', res.error);
+    showToast('Грешка: '+res.error.message,'error');
+    return;
+  }
   showToast('Доделувањето е зачувано!','success');
   rotCycle = [];
   renderRotSlots();
